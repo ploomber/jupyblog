@@ -1,27 +1,29 @@
+from pathlib import Path
+from functools import partial
+from collections import defaultdict
+
+
 import jupyter_client
 import mistune
 import yaml
 from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
-from pathlib import Path
-from functools import partial
 """
 pip install mistune==2.0.0a2 pyyaml jinja2
 
 rundoc run out.md -o out.json -j python
 
-TODO:
-    * render output via rundoc
     * support for requirements.txt
     * create and destroy env
-    * hide some snippets
 
 https://github.com/eclecticiq/rundoc
 md spec: https://commonmark.org/
 
-FIXME:
-    * rundoc supports running everything in a single session
-    but if that opt is on, it will merge the output, I need
-    the output separate
+* rundoc supports running everything in a single session
+but if that opt is on, it will merge the output, I need
+the output separate. Took a look at the source code,
+they just concatenate all the code and call subprocess,
+it's gonna be hard to get splitted output, jsing jupyter-client
+instead
 """
 
 """
@@ -36,26 +38,37 @@ https://ipython.readthedocs.io/en/stable/sphinxext.html
 
 
 class JupyterSession:
+    """
+
+    >>> s = JupyterSession()
+    >>> s.execute('1 + 10')
+    """
 
     def __init__(self):
         self.km = jupyter_client.KernelManager()
         self.km.start_kernel()
         self.kc = self.km.blocking_client()
-        self.out = []
+        self.out = defaultdict(lambda: '')
 
     def output_hook(self, msg):
-        # FIXME: this is not capturing all the output
-        # print(msg['msg_type'])
-        if msg['msg_type'] == 'stream':
-            self.out.append(msg['content']['text'])
-        elif msg['msg_type'] == 'execute_result':
-            self.out.append(msg['content']['data']['text/plain'])
+        # code modified from jupyter_client.blocking.client._output_hook_default
+        msg_type = msg['header']['msg_type']
+        content = msg['content']
+        msg_id = msg['parent_header']['msg_id']
+
+        if msg_type == 'stream':
+            current = self.out[msg_id]
+            self.out[msg_id] = current + '\n' + content['text']
+        elif msg_type in ('display_data', 'execute_result'):
+            current = self.out[msg_id]
+            self.out[msg_id] = current + '\n' + content['data'].get('text/plain', '')
+        elif msg_type == 'error':
+            self.out[msg_id] = current + '\n' + content['traceback']
 
     def execute(self, code):
-        self.kc.execute_interactive(code,
-                                    output_hook=self.output_hook)
-        # verify new output is available, otherwise raise error
-        return self.out[-1]
+        reply = self.kc.execute_interactive(code,
+                                            output_hook=self.output_hook)
+        return self.out.get(reply['parent_header']['msg_id'])
 
     def __del__(self):
         self.km.shutdown_kernel()
@@ -160,32 +173,6 @@ class MarkdownRenderer:
                 md_out = md_out.replace(block['info'], block['info'].split(' ')[0])
 
         return md_out
-
-
-md_raw = """
-```python hide=true
-x = 10
-```
-
-```python id=my_sum
-x + 1
-```
-
-```
-{{my_sum}}
-```
-
-# header
-
-```python id=another_sum
-2 + 2
-```
-
-```
-{{another_sum}}
-```
-
-"""
 
 
 mdr = MarkdownRenderer('.')

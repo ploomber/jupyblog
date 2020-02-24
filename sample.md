@@ -8,7 +8,6 @@ root_path: /Users/Edu/dev/posts/self-documented-data
 ```python hide=true
 import os
 os.chdir('/Users/Edu/dev/posts/self-documented-data')
-print(42)
 ```
 
 Sample code:
