@@ -11,6 +11,11 @@ TODO:
 
 https://github.com/eclecticiq/rundoc
 md spec: https://commonmark.org/
+
+FIXME:
+    * rundoc supports running everything in a single session
+    but if that opt is on, it will merge the output, I need
+    the output separate
 """
 from functools import partial
 from pathlib import Path

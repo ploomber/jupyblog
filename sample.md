@@ -13,3 +13,5 @@ os.chdir('/Users/Edu/dev/posts/self-documented-data')
 ```python
 {{ expand('main.py') }}
 ```
+
+{{main}}
