@@ -1,3 +1,4 @@
+import mistune
 """
 https://jupyter-client.readthedocs.io/en/stable/api/manager.html
 
@@ -6,30 +7,55 @@ https://stackoverflow.com/questions/33731744/executing-code-in-ipython-kernel-wi
 """
 import jupyter_client
 
-km = jupyter_client.KernelManager()
 
-km.start_kernel()
-km.is_alive()
+class JupyterSession:
 
-# vs blocking_client?
-kc = km.blocking_client()
+    def __init__(self):
+        self.km = jupyter_client.KernelManager()
+        self.km.start_kernel()
+        self.kc = self.km.blocking_client()
+        self.out = []
 
-out = []
+    def output_hook(self, msg):
+        # print(msg['msg_type'])
+        if msg['msg_type'] == 'stream':
+            self.out.append(msg['content']['text'])
+        elif msg['msg_type'] == 'execute_result':
+            self.out.append(msg['content']['data']['text/plain'])
+
+    def execute(self, code):
+        self.kc.execute_interactive(code,
+                                    output_hook=self.output_hook)
+        return self.out[-1]
+
+    def __del__(self):
+        self.km.shutdown_kernel()
 
 
-def output(msg):
-    # print(msg['msg_type'])
-    if msg['msg_type'] == 'stream':
-        out.append(msg['content']['text'])
-    elif msg['msg_type'] == 'execute_result':
-        out.append(msg['content']['data']['text/plain'])
+session = JupyterSession()
+session.execute('print("hi")')
+session.execute('1 + 2')
+session.execute('import numpy as np; np.random.rand()')
+
+print(session.out)
 
 
-kc.execute_interactive('print("hi")', output_hook=output)
-kc.execute_interactive('1 + 2', output_hook=output)
-kc.execute_interactive('import numpy as np; np.random.rand()', output_hook=output)
+markdown = mistune.create_markdown(renderer=mistune.AstRenderer())
+md = markdown("""
+```python
+1 + 1
+```
 
+# header
 
-print(out)
+```python
+2 + 2
+```
+""")
 
-km.shutdown_kernel()
+for e in md:
+    if e['type'] == 'block_code':
+        print('In: ', e['text'])
+        print('>>> ', session.execute(e['text']))
+
+del session
