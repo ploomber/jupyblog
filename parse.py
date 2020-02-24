@@ -1,12 +1,14 @@
 """
-pip install mistune==2.0.0a2 pyyaml
+pip install mistune==2.0.0a2 pyyaml jinja2
 
 TODO:
     * be able to copy snippets from other files
     * render output via rundoc
 
+https://github.com/eclecticiq/rundoc
 md spec: https://commonmark.org/
 """
+from jinja2 import Environment, FileSystemLoader
 import yaml
 import mistune
 
@@ -27,19 +29,15 @@ def parse_metadata(md):
     return yaml.load(ast[idx+1]['children'][0]['text'], Loader=yaml.SafeLoader)
 
 
-md = """
----
-key: 1
-key2: 3
----
+def expand(path):
+    return 'testing'
 
-# header
 
-```bash expand=
-1 + 1
-``
+env = Environment(loader=FileSystemLoader('.'))
+env.globals['expand'] = expand
 
-"""
+env.get_template('sample.md').render()
+
 
 markdown = mistune.create_markdown(renderer=mistune.AstRenderer())
 ast = markdown(md)
