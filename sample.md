@@ -1,10 +1,15 @@
 ---
 key: 1
-key2: 3
+root_path: /Users/Edu/dev/posts/self-documented-data
 ---
+
+```python
+import os
+os.chdir('/Users/Edu/dev/posts/self-documented-data')
+```
 
 # header
 
-```bash
-{{ expand('/path/to/file') }}
-``
+```python
+{{ expand('main.py') }}
+```
