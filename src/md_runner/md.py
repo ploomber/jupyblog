@@ -1,3 +1,21 @@
+"""
+TODO:
+    * support for requirements.txt
+    * create and destroy env
+
+https://github.com/eclecticiq/rundoc
+md spec: https://commonmark.org/
+
+https://jupyter-client.readthedocs.io/en/stable/api/manager.html
+
+https://stackoverflow.com/questions/9977446/connecting-to-a-remote-ipython-instance
+https://stackoverflow.com/questions/33731744/executing-code-in-ipython-kernel-with-the-kernelclient-api
+
+can we use this instead of jupyter_client?
+https://ipython.readthedocs.io/en/stable/sphinxext.html
+"""
+
+
 from pathlib import Path
 from functools import partial
 from collections import defaultdict
@@ -7,34 +25,6 @@ import jupyter_client
 import mistune
 import yaml
 from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
-"""
-pip install mistune==2.0.0a2 pyyaml jinja2
-
-rundoc run out.md -o out.json -j python
-
-    * support for requirements.txt
-    * create and destroy env
-
-https://github.com/eclecticiq/rundoc
-md spec: https://commonmark.org/
-
-* rundoc supports running everything in a single session
-but if that opt is on, it will merge the output, I need
-the output separate. Took a look at the source code,
-they just concatenate all the code and call subprocess,
-it's gonna be hard to get splitted output, jsing jupyter-client
-instead
-"""
-
-"""
-https://jupyter-client.readthedocs.io/en/stable/api/manager.html
-
-https://stackoverflow.com/questions/9977446/connecting-to-a-remote-ipython-instance
-https://stackoverflow.com/questions/33731744/executing-code-in-ipython-kernel-with-the-kernelclient-api
-
-can we use this instead of jupyter_client?
-https://ipython.readthedocs.io/en/stable/sphinxext.html
-"""
 
 
 class JupyterSession:
@@ -61,9 +51,11 @@ class JupyterSession:
             self.out[msg_id] = current + '\n' + content['text']
         elif msg_type in ('display_data', 'execute_result'):
             current = self.out[msg_id]
-            self.out[msg_id] = current + '\n' + content['data'].get('text/plain', '')
+            self.out[msg_id] = current + '\n' + \
+                content['data'].get('text/plain', '')
         elif msg_type == 'error':
-            self.out[msg_id] = current + '\n' + content['traceback']
+            current = self.out[msg_id]
+            self.out[msg_id] = current + '\n' + '\n'.join(content['traceback'])
 
     def execute(self, code):
         reply = self.kc.execute_interactive(code,
@@ -95,8 +87,8 @@ class ASTExecutor:
         for block in blocks:
             if block.get('info'):
                 output = self.session.execute(block['text'])
-                print('In: ', block['text'])
-                print('>>> ', output)
+                # print('In: ', block['text'])
+                # print('>>> ', output)
                 block['output'] = output
 
         return blocks
@@ -108,20 +100,28 @@ class ASTExecutor:
 def parse_metadata(md_ast):
     """Parse markdown metadata
     """
+    found = False
     idx = 0
 
     for e in md_ast:
         if e['type'] == 'thematic_break':
+            found = True
             break
         else:
             idx += 1
 
-    return yaml.load(md_ast[idx+1]['children'][0]['text'],
-                     Loader=yaml.SafeLoader)
+    if found:
+        return yaml.load(md_ast[idx+1]['children'][0]['text'],
+                         Loader=yaml.SafeLoader)
+    else:
+        return {}
 
 
 def expand(path, root_path):
-    return Path(root_path, path).read_text()
+    if root_path is None:
+        return Path(path).read_text()
+    else:
+        return Path(root_path, path).read_text()
 
 
 class MarkdownRenderer:
@@ -143,12 +143,12 @@ class MarkdownRenderer:
         md_ast = self.parser(md_raw)
         metadata = parse_metadata(md_ast)
         self.env.globals['expand'] = partial(expand,
-                                             root_path=metadata['root_path'])
+                                             root_path=metadata.get('root_path'))
 
         # first render - expand
         content = self.env.get_template(name).render()
 
-        print(content)
+        # print(content)
 
         del self.env.globals['expand']
 
@@ -165,17 +165,13 @@ class MarkdownRenderer:
 
         for block in blocks:
             if block.get('hide'):
-                to_replace = "```{}\n{}```".format(block['info'], block['text'])
+                to_replace = "```{}\n{}```".format(
+                    block['info'], block['text'])
                 md_out = md_out.replace(to_replace, '')
 
         for block in blocks:
             if block.get('info'):
-                md_out = md_out.replace(block['info'], block['info'].split(' ')[0])
+                md_out = md_out.replace(
+                    block['info'], block['info'].split(' ')[0])
 
         return md_out
-
-
-mdr = MarkdownRenderer('.')
-out = mdr.render('sample.md')
-print(out)
-Path('out.md').write_text(out)
