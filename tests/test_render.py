@@ -1,5 +1,8 @@
+from md_runner.md import MarkdownRenderer
 
-mdr = MarkdownRenderer('.')
-out = mdr.render('sample.md')
-print(out)
-Path('out.md').write_text(out)
+
+def test_render(path_to_tests):
+    mdr = MarkdownRenderer(str(path_to_tests / 'assets'))
+    out = mdr.render('sample.md')
+    # print(out)
+    # Path('out.md').write_text(out)
