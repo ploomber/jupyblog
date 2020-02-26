@@ -68,8 +68,13 @@ class JupyterSession:
 
 def parse_info(info):
     if info is not None:
+        elements = info.split(' ')
+
+        if len(elements) == 1:
+            return {}
+
         return {t.split('=')[0]: t.split('=')[1]
-                for t in info.split(' ')[1].split(',')}
+                for t in elements[1].split(',')}
     else:
         return {}
 
@@ -158,6 +163,8 @@ class MarkdownRenderer:
         # second render, add output
         executor = ASTExecutor()
         blocks = executor(md_ast)
+
+        # TODO: automatically add output tags
 
         md_out = Template(content).render(**{block['id']: block['output']
                                              for block
