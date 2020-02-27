@@ -12,7 +12,7 @@ def add_output_tags(md, outputs):
 
     for out, end in zip(outputs, endings):
         if out is not None:
-            to_insert = "\n```{}\n```".format(out)
+            to_insert = "\n```{}```\n".format(out)
             lines.insert(end + 1 + shifts, to_insert)
             shifts += 1
 
