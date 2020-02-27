@@ -4,16 +4,17 @@ def find_endings(md):
     return endings
 
 
-def add_output_tags(md):
+def add_output_tags(md, outputs):
     endings = find_endings(md)
     lines = md.splitlines()
-    to_insert = "\n```\n{{{{ {} }}}}\n```\n"
 
     shifts = 0
 
-    for idx, end in enumerate(endings):
-        lines.insert(end + 1 + 2 * shifts, to_insert.format(idx))
-        shifts += 1
+    for out, end in zip(outputs, endings):
+        if out is not None:
+            to_insert = "\n```{}\n```".format(out)
+            lines.insert(end + 1 + shifts, to_insert)
+            shifts += 1
 
     md_new = '\n'.join(lines)
 

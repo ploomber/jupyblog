@@ -12,10 +12,20 @@ os.chdir('/Users/Edu/dev/posts/self-documented-data')
 
 Sample code:
 
-```python id=main
+```python
 {{ expand('main.py') }}
 ```
 
+
+```python
+1 + 1
 ```
-{{main}}
+
+
+```python
+2 + 2
+```
+
+```python
+3 + 3
 ```

@@ -14,8 +14,7 @@ https://stackoverflow.com/questions/33731744/executing-code-in-ipython-kernel-wi
 can we use this instead of jupyter_client?
 https://ipython.readthedocs.io/en/stable/sphinxext.html
 """
-
-
+import logging
 from pathlib import Path
 from functools import partial
 from collections import defaultdict
@@ -25,6 +24,11 @@ import jupyter_client
 import mistune
 import yaml
 from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
+
+from md_runner import util
+
+
+logger = logging.getLogger(__name__)
 
 
 class JupyterSession:
@@ -85,6 +89,8 @@ class ASTExecutor:
         self.session = JupyterSession()
 
     def __call__(self, md_ast):
+        logger.debug('Starting python code execution...')
+
         blocks = [e for e in md_ast if e['type'] == 'block_code']
         # add parsed info
         blocks = [{**block, **parse_info(block['info'])} for block in blocks]
@@ -92,9 +98,13 @@ class ASTExecutor:
         for block in blocks:
             if block.get('info'):
                 output = self.session.execute(block['text'])
-                # print('In: ', block['text'])
-                # print('>>> ', output)
+                logger.debug('In: ', block['text'])
+                logger.debug('>>> ', output)
                 block['output'] = output
+            else:
+                block['output'] = None
+
+        logger.debug('Finished python code execution...')
 
         return blocks
 
@@ -152,23 +162,25 @@ class MarkdownRenderer:
 
         # first render - expand
         content = self.env.get_template(name).render()
-
-        # print(content)
-
         del self.env.globals['expand']
+
+        logger.debug('After expand:\n%s', content)
 
         # parse again to get expanded code
         md_ast = self.parser(content)
 
         # second render, add output
         executor = ASTExecutor()
+
+        # execute
         blocks = executor(md_ast)
 
-        # TODO: automatically add output tags
+        # add output tags
+        out = [block['output'] for block in blocks]
+        md_out = util.add_output_tags(content, out)
 
-        md_out = Template(content).render(**{block['id']: block['output']
-                                             for block
-                                             in blocks if block.get('id')})
+        logger.debug('With output:\n:%s', md_out)
+
 
         for block in blocks:
             if block.get('hide'):
