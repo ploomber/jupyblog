@@ -147,11 +147,12 @@ class MarkdownRenderer:
     Path('out.md').write_text(out)
     """
 
-    def __init__(self, path_to_mds):
+    def __init__(self, path_to_mds, output_header='# Output:'):
         self.path = path_to_mds
         self.env = Environment(loader=FileSystemLoader(path_to_mds),
                                undefined=DebugUndefined)
         self.parser = mistune.create_markdown(renderer=mistune.AstRenderer())
+        self.output_header = output_header
 
     def render(self, name):
         md_raw = Path(self.path, name).read_text()
@@ -177,7 +178,7 @@ class MarkdownRenderer:
 
         # add output tags
         out = [block['output'] for block in blocks]
-        md_out = util.add_output_tags(content, out)
+        md_out = util.add_output_tags(content, out, self.output_header)
 
         logger.debug('With output:\n:%s', md_out)
 
