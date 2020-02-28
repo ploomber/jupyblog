@@ -12,6 +12,8 @@ def add_output_tags(md, outputs):
 
     for out, end in zip(outputs, endings):
         if out is not None:
+            # add trailing \n if there is not any
+            out = out if out[-1] == '\n' else out + '\n'
             to_insert = "\n```{}```\n".format(out)
             lines.insert(end + 1 + shifts, to_insert)
             shifts += 1
