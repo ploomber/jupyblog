@@ -46,11 +46,13 @@ setup(
     classifiers=[],
     keywords=[],
     install_requires=[
-        'mistune==2.0.0a2',
+        #'mistune==2.0.0a2',
+        'mistune2',
         'pyyaml',
         'jinja2',
         'jupyter_client',
         'click',
+        'jupytext'
     ],
     extras_require={},
     entry_points={

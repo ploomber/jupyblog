@@ -19,11 +19,12 @@ from pathlib import Path
 from functools import partial
 from collections import defaultdict
 
-
+from jupytext.formats import divine_format
+import jupytext
 import jupyter_client
-import mistune
+import mistune2 as mistune
 import yaml
-from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
+from jinja2 import Environment, FileSystemLoader, DebugUndefined
 
 from md_runner import util
 
@@ -85,11 +86,19 @@ def parse_info(info):
 
 class ASTExecutor:
 
-    def __init__(self):
+    def __init__(self, wd=None):
         self.session = JupyterSession()
+        self.wd = wd if wd is None else Path(wd)
 
     def __call__(self, md_ast):
         logger.debug('Starting python code execution...')
+
+        if self.wd:
+            if not self.wd.exists():
+                self.wd.mkdir(exist_ok=True, parents=True)
+
+            self.session.execute('import os; os.chdir("{}")'
+                                 .format(str(self.wd)))
 
         blocks = [e for e in md_ast if e['type'] == 'block_code']
         # add parsed info
@@ -155,15 +164,26 @@ class MarkdownRenderer:
         self.output_header = output_header
 
     def render(self, name):
-        md_raw = Path(self.path, name).read_text()
+        path = Path(self.path, name)
+        md_raw = path.read_text()
+
+        if path.suffix != '.md':
+            # print('File does not have .md extension, trying to convert it '
+            # 'using jupytext...')
+            nb = jupytext.read(path)
+            md_raw = jupytext.writes(nb, fmt='md')
+            # Path('tmp-1step.md').write_text(md_raw)
+
         md_ast = self.parser(md_raw)
-        metadata = parse_metadata(md_ast)
-        self.env.globals['expand'] = partial(expand,
-                                             root_path=metadata.get('root_path'))
+        # metadata = parse_metadata(md_ast)
+
+        content = md_raw
+        # self.env.globals['expand'] = partial(expand,
+        # root_path=metadata.get('root_path'))
 
         # first render - expand
-        content = self.env.get_template(name).render()
-        del self.env.globals['expand']
+        # content = self.env.get_template(name).render()
+        # del self.env.globals['expand']
 
         logger.debug('After expand:\n%s', content)
 
@@ -181,7 +201,6 @@ class MarkdownRenderer:
         md_out = util.add_output_tags(content, out, self.output_header)
 
         logger.debug('With output:\n:%s', md_out)
-
 
         for block in blocks:
             if block.get('hide'):
