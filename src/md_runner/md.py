@@ -14,6 +14,7 @@ https://stackoverflow.com/questions/33731744/executing-code-in-ipython-kernel-wi
 can we use this instead of jupyter_client?
 https://ipython.readthedocs.io/en/stable/sphinxext.html
 """
+from urllib import parse
 import logging
 from pathlib import Path
 from functools import partial
@@ -24,7 +25,7 @@ import jupytext
 import jupyter_client
 import mistune2 as mistune
 import yaml
-from jinja2 import Environment, FileSystemLoader, DebugUndefined
+from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
 
 from md_runner import util
 
@@ -212,5 +213,19 @@ class MarkdownRenderer:
             if block.get('info'):
                 md_out = md_out.replace(
                     block['info'], block['info'].split(' ')[0])
+
+        # finally, URLs to code and report an issuw
+        # https://github.com/isaacs/github/issues/99#issuecomment-24584307
+        # https://github.com/isaacs/github/issues/new?title=foo&body=bar
+        post_name = path.resolve().parent.name
+        url_source = 'https://github.com/ploomber/posts/tree/master/{}'.format(
+            post_name)
+        url_params = parse.quote('Issue in {}'.format(post_name))
+        url_issue = 'https://github.com/ploomber/posts/issues/new?title={}'.format(
+            url_params)
+        # print(url_issue)
+        # print(url_source)
+        md_out = Template(md_out).render(url_source=url_source,
+                                         url_issue=url_issue)
 
         return md_out
