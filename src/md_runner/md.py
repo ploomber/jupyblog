@@ -165,6 +165,10 @@ class MarkdownRenderer:
         self.output_header = output_header
 
     def render(self, name):
+        # TODO: add date if it's not there, ignore if it is
+        # from datetime import datetime, timezone
+        # datetime.now(timezone.utc).astimezone().isoformat(timespec='seconds')
+
         path = Path(self.path, name)
         md_raw = path.read_text()
 
