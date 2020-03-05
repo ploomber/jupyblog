@@ -12,6 +12,9 @@ def render_md(path):
     """Render markdown
     """
     path = Path(path)
+
+    click.echo(f'Input: {path.resolve()}')
+
     mdr = MarkdownRenderer(path.parent)
     out, post_name = mdr.render(path.name)
 
@@ -20,6 +23,6 @@ def render_md(path):
     Env.end()
 
     out_path = Path(out_dir, (post_name + '.md'))
-    print(f'Saving in {out_path}')
+    click.echo(f'Output: {out_path}')
 
     out_path.write_text(out)
