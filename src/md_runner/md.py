@@ -228,4 +228,4 @@ class MarkdownRenderer:
         md_out = Template(md_out).render(url_source=url_source,
                                          url_issue=url_issue)
 
-        return md_out
+        return md_out, post_name
