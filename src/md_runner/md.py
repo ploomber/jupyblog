@@ -33,6 +33,18 @@ from md_runner import util
 logger = logging.getLogger(__name__)
 
 
+def process_content_data(content_data):
+    html = content_data.get('text/html')
+    plain = content_data.get('text/plain')
+
+    # if html:
+        # return html
+    if plain:
+        return plain
+    else:
+        return ''
+
+
 class JupyterSession:
     """
 
@@ -58,7 +70,7 @@ class JupyterSession:
         elif msg_type in ('display_data', 'execute_result'):
             current = self.out[msg_id]
             self.out[msg_id] = current + '\n' + \
-                content['data'].get('text/plain', '')
+                process_content_data(content['data'])
         elif msg_type == 'error':
             current = self.out[msg_id]
             self.out[msg_id] = current + '\n' + '\n'.join(content['traceback'])
@@ -102,11 +114,16 @@ class ASTExecutor:
                                  .format(str(self.wd)))
 
         blocks = [e for e in md_ast if e['type'] == 'block_code']
+
+        # info captures whatever is after the triple ticks, e.g.
+        # ```python a=1 b=2
+        # Info: "python a=1 b=1"
+
         # add parsed info
         blocks = [{**block, **parse_info(block['info'])} for block in blocks]
 
         for block in blocks:
-            if block.get('info'):
+            if block.get('info') and not block.get('skip'):
                 output = self.session.execute(block['text'])
                 logger.debug('In: ', block['text'])
                 logger.debug('>>> ', output)
@@ -142,11 +159,15 @@ def parse_metadata(md_ast):
         return {}
 
 
-def expand(path, root_path):
+def expand(path, root_path=None):
+
     if root_path is None:
-        return Path(path).read_text()
+        content = Path(path).read_text()
     else:
-        return Path(root_path, path).read_text()
+        content = Path(root_path, path).read_text()
+
+    comment = '# Content of {}'.format(path)
+    return '```python skip=True\n{}\n{}\n```'.format(comment, content)
 
 
 class MarkdownRenderer:
@@ -183,11 +204,12 @@ class MarkdownRenderer:
         # metadata = parse_metadata(md_ast)
 
         content = md_raw
-        # self.env.globals['expand'] = partial(expand,
-        # root_path=metadata.get('root_path'))
+        # root_path = metadata.get('root_path')
+        expand_partial = partial(expand, root_path=self.path)
+        # self.env.globals['expand'] =
 
-        # first render - expand
-        # content = self.env.get_template(name).render()
+        # first render, just expand (expanded snippets are NOT executed)
+        content = Template(md_raw).render(expand=expand_partial)
         # del self.env.globals['expand']
 
         logger.debug('After expand:\n%s', content)
