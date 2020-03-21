@@ -8,7 +8,7 @@ from ploomber import Env
 
 @click.command()
 @click.argument('path')
-@click.argument('output')
+@click.option('--output', default=None)
 def render_md(path, output):
     """Render markdown
     """
@@ -19,10 +19,12 @@ def render_md(path, output):
     mdr = MarkdownRenderer(path.parent)
     out, post_name = mdr.render(path.name)
 
-    # env = Env.start()
-    # out_dir = env.output
-    # Env.end()
-    out_dir = output
+    if output:
+        out_dir = output
+    else:
+        env = Env.start()
+        out_dir = env.output
+        Env.end()
 
     out_path = Path(out_dir, (post_name + '.md'))
     click.echo(f'Output: {out_path}')
