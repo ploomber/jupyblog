@@ -209,7 +209,19 @@ class MarkdownRenderer:
         # self.env.globals['expand'] =
 
         # first render, just expand (expanded snippets are NOT executed)
-        content = Template(md_raw).render(expand=expand_partial)
+        # also expand urls
+        # https://github.com/isaacs/github/issues/99#issuecomment-24584307
+        # https://github.com/isaacs/github/issues/new?title=foo&body=bar
+        post_name = path.resolve().parent.name
+        url_source = 'https://github.com/ploomber/posts/tree/master/{}'.format(
+            post_name)
+        url_params = parse.quote('Issue in {}'.format(post_name))
+        url_issue = 'https://github.com/ploomber/posts/issues/new?title={}'.format(
+            url_params)
+
+        content = Template(md_raw).render(expand=expand_partial,
+                                          url_source=url_source,
+                                          url_issue=url_issue)
         # del self.env.globals['expand']
 
         logger.debug('After expand:\n%s', content)
@@ -239,19 +251,5 @@ class MarkdownRenderer:
             if block.get('info'):
                 md_out = md_out.replace(
                     block['info'], block['info'].split(' ')[0])
-
-        # finally, URLs to code and report an issuw
-        # https://github.com/isaacs/github/issues/99#issuecomment-24584307
-        # https://github.com/isaacs/github/issues/new?title=foo&body=bar
-        post_name = path.resolve().parent.name
-        url_source = 'https://github.com/ploomber/posts/tree/master/{}'.format(
-            post_name)
-        url_params = parse.quote('Issue in {}'.format(post_name))
-        url_issue = 'https://github.com/ploomber/posts/issues/new?title={}'.format(
-            url_params)
-        # print(url_issue)
-        # print(url_source)
-        md_out = Template(md_out).render(url_source=url_source,
-                                         url_issue=url_issue)
 
         return md_out, post_name
