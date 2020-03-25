@@ -52,7 +52,8 @@ setup(
         'jinja2',
         'jupyter_client',
         'click',
-        'jupytext'
+        'jupytext',
+        'parso'
     ],
     extras_require={},
     entry_points={
