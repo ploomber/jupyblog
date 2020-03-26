@@ -11,8 +11,13 @@ https://jupyter-client.readthedocs.io/en/stable/api/manager.html
 https://stackoverflow.com/questions/9977446/connecting-to-a-remote-ipython-instance
 https://stackoverflow.com/questions/33731744/executing-code-in-ipython-kernel-with-the-kernelclient-api
 
-can we use this instead of jupyter_client?
-https://ipython.readthedocs.io/en/stable/sphinxext.html
+
+TODO:
+    validate metadata
+        description: used for SEO in ploomber.io (meta description tag)
+        tags: used in dev.to
+        title, date: needed by hugo
+
 """
 from urllib import parse
 import logging
