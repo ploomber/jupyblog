@@ -19,7 +19,7 @@ from setuptools import setup
 
 _version_re = re.compile(r'__version__\s+=\s+(.*)')
 
-with open('src/md_runner/__init__.py', 'rb') as f:
+with open('src/bloggingtools/__init__.py', 'rb') as f:
     VERSION = str(ast.literal_eval(_version_re.search(
         f.read().decode('utf-8')).group(1)))
 
@@ -32,7 +32,7 @@ def read(*names, **kwargs):
 
 
 setup(
-    name='md_runner',
+    name='bloggingtools',
     version=VERSION,
     description=None,
     license=None,
@@ -57,6 +57,6 @@ setup(
     ],
     extras_require={},
     entry_points={
-        'console_scripts': ['md_runner=md_runner.cli:render_md'],
+        'console_scripts': ['btools=bloggingtools.cli:cli'],
     },
 )

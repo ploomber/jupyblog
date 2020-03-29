@@ -33,7 +33,7 @@ import yaml
 from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
 import parso
 
-from md_runner import util
+from bloggingtools import util
 
 
 logger = logging.getLogger(__name__)

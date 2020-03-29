@@ -2,14 +2,31 @@ from pathlib import Path
 
 import click
 
-from md_runner.md import MarkdownRenderer
+from bloggingtools.md import MarkdownRenderer
 from ploomber import Env
 
 
-@click.command()
+@click.group()
+def cli():
+    pass
+
+
+@cli.command()
+@click.argument('path')
+def medium(path):
+    """Take a rendered markdown and fix code tags to upload to medium:
+    https://markdowntomedium.com/
+    https://unsplash.com/
+    """
+    text = Path(path).read_text()
+    text_new = text.replace('```python', '```py')
+    click.echo(text_new)
+
+
+@cli.command()
 @click.argument('path')
 @click.option('--output', default=None)
-def render_md(path, output):
+def render(path, output):
     """Render markdown
     """
     path = Path(path)
