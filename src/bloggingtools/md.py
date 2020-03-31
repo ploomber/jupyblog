@@ -19,6 +19,7 @@ TODO:
         title, date: needed by hugo
 
 """
+from datetime import datetime, timezone
 from urllib import parse
 import logging
 from pathlib import Path
@@ -44,7 +45,7 @@ def process_content_data(content_data):
     plain = content_data.get('text/plain')
 
     # if html:
-        # return html
+    # return html
     if plain:
         return plain
     else:
@@ -165,6 +166,30 @@ def parse_metadata(md_ast):
         return {}
 
 
+def replace_metadata(md, new_metadata):
+    lines = md.split('\n')
+    idx = []
+
+    for i, line in enumerate(lines):
+        if line == '---':
+            idx.append(i)
+
+        if len(idx) == 2:
+            break
+
+    if idx[0] != 0:
+        raise ValueError('metadata not located at the top')
+
+    if len(idx) < 2:
+        raise ValueError('Closing --- for metadata not found')
+
+    lines_new = lines[idx[1] + 1:]
+
+    new_metadata_text = '---\n{}---\n'.format(yaml.dump(new_metadata))
+
+    return new_metadata_text + '\n'.join(lines_new)
+
+
 def expand(path, root_path=None):
 
     elements = path.split('@')
@@ -207,12 +232,10 @@ class MarkdownRenderer:
         self.output_header = output_header
 
     def render(self, name):
-        # TODO: add date if it's not there, ignore if it is
-        # from datetime import datetime, timezone
-        # datetime.now(timezone.utc).astimezone().isoformat(timespec='seconds')
-
         path = Path(self.path, name)
         md_raw = path.read_text()
+
+        canonical_name = name.split('.')[0]
 
         if path.suffix != '.md':
             # print('File does not have .md extension, trying to convert it '
@@ -222,7 +245,7 @@ class MarkdownRenderer:
             # Path('tmp-1step.md').write_text(md_raw)
 
         md_ast = self.parser(md_raw)
-        # metadata = parse_metadata(md_ast)
+        metadata = parse_metadata(md_ast)
 
         content = md_raw
         # root_path = metadata.get('root_path')
@@ -273,4 +296,42 @@ class MarkdownRenderer:
                 md_out = md_out.replace(
                     block['info'], block['info'].split(' ')[0])
 
+        metadata['date'] = datetime.now(timezone.utc).astimezone().isoformat(timespec='seconds')
+        metadata['canonical_url'] = 'https://ploomber.io/posts/model-selection/{}'.format(canonical_name)
+        md_out = replace_metadata(md_out, metadata)
+
+        md_out = add_footer(md_out, canonical_name)
+
         return md_out, post_name
+
+
+def add_footer(md_out, canonical_name):
+    url_source = 'https://github.com/ploomber/posts/tree/master/{}'.format(
+        canonical_name)
+    url_params = parse.quote('Issue in {}'.format(canonical_name))
+    url_issue = 'https://github.com/ploomber/posts/issues/new?title={}'.format(
+        url_params)
+
+    footer_template = """
+<!-- FOOTER STARTS -->
+
+Source code for this post is available [here]({{url_source}}).
+
+Found an error in this post? [Click here to let us know]({{url_issue}}).
+
+Looking for commercial support? [Drop us a line](mailto:support@ploomber.io).
+
+<!-- FOOTER ENDS -->
+"""
+
+    lines = md_out.split('\n')
+
+    if lines[-1] != '\n':
+        md_out += '\n'
+
+    footer = Template(footer_template).render(url_source=url_source,
+                                              url_issue=url_issue)
+
+    md_out += footer
+
+    return md_out
