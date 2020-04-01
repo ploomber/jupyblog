@@ -25,8 +25,8 @@ def medium(path):
 
 @cli.command()
 @click.argument('path')
-@click.option('--output', default=None)
-def render(path, output):
+@click.option('--outdir', default=None)
+def render(path, outdir):
     """Render markdown
     """
     path = Path(path)
@@ -36,11 +36,11 @@ def render(path, output):
     mdr = MarkdownRenderer(path.parent)
     out, post_name = mdr.render(path.name)
 
-    if output:
-        out_dir = output
+    if outdir:
+        out_dir = outdir
     else:
         env = Env.start()
-        out_dir = env.output
+        out_dir = env.outdir
         Env.end()
 
     out_path = Path(out_dir, (post_name + '.md'))

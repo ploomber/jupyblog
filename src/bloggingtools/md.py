@@ -235,8 +235,6 @@ class MarkdownRenderer:
         path = Path(self.path, name)
         md_raw = path.read_text()
 
-        canonical_name = name.split('.')[0]
-
         if path.suffix != '.md':
             # print('File does not have .md extension, trying to convert it '
             # 'using jupytext...')
@@ -256,10 +254,10 @@ class MarkdownRenderer:
         # also expand urls
         # https://github.com/isaacs/github/issues/99#issuecomment-24584307
         # https://github.com/isaacs/github/issues/new?title=foo&body=bar
-        post_name = path.resolve().parent.name
+        canonical_name = path.resolve().parent.name
         url_source = 'https://github.com/ploomber/posts/tree/master/{}'.format(
-            post_name)
-        url_params = parse.quote('Issue in {}'.format(post_name))
+            canonical_name)
+        url_params = parse.quote('Issue in {}'.format(canonical_name))
         url_issue = 'https://github.com/ploomber/posts/issues/new?title={}'.format(
             url_params)
 
@@ -302,7 +300,7 @@ class MarkdownRenderer:
 
         md_out = add_footer(md_out, canonical_name)
 
-        return md_out, post_name
+        return md_out, canonical_name
 
 
 def add_footer(md_out, canonical_name):
