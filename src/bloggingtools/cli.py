@@ -25,8 +25,10 @@ def medium(path):
 
 @cli.command()
 @click.argument('path')
-@click.option('--outdir', default=None)
-def render(path, outdir):
+@click.argument('flavor')
+@click.option('--outdir', default=None, help='Output directory')
+@click.option('--incsource', is_flag=True, help='Whether the source will be on Github or not')
+def render(path, flavor, outdir, incsource):
     """Render markdown
     """
     path = Path(path)
@@ -34,7 +36,7 @@ def render(path, outdir):
     click.echo(f'Input: {path.resolve()}')
 
     mdr = MarkdownRenderer(path.parent)
-    out, post_name = mdr.render(path.name)
+    out, post_name = mdr.render(path.name, flavor, incsource)
 
     if outdir:
         out_dir = outdir

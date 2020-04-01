@@ -34,7 +34,7 @@ import yaml
 from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
 import parso
 
-from bloggingtools import util
+from bloggingtools import util, hugo
 
 
 logger = logging.getLogger(__name__)
@@ -231,7 +231,16 @@ class MarkdownRenderer:
         self.parser = mistune.create_markdown(renderer=mistune.AstRenderer())
         self.output_header = output_header
 
-    def render(self, name):
+    def render(self, name, flavor, include_source_in_footer):
+        """
+        flavor: hugo, devto, medium
+        """
+
+        if flavor not in {'hugo', 'devto', 'medium'}:
+            raise ValueError('flavor must be one of hugo, devto or medium')
+        else:
+            print('Preparing post for "%s"' % flavor)
+
         path = Path(self.path, name)
         md_raw = path.read_text()
 
@@ -295,25 +304,39 @@ class MarkdownRenderer:
                     block['info'], block['info'].split(' ')[0])
 
         metadata['date'] = datetime.now(timezone.utc).astimezone().isoformat(timespec='seconds')
-        metadata['canonical_url'] = 'https://ploomber.io/posts/model-selection/{}'.format(canonical_name)
+
+        if flavor == 'devto':
+            metadata['canonical_url'] = 'https://ploomber.io/posts/model-selection/{}'.format(canonical_name)
+        elif flavor == 'hugo':
+            if 'tags' in metadata:
+                print('Removing tags in metadata...')
+                del metadata['tags']
+
         md_out = replace_metadata(md_out, metadata)
 
-        md_out = add_footer(md_out, canonical_name)
+        md_out = add_footer(md_out, metadata['title'], canonical_name,
+                            include_source_in_footer)
+
+        if flavor == 'hugo':
+            print('Making img links absolute and adding canonical name as prefix...')
+            md_out = hugo.make_img_links_absolute(md_out, canonical_name)
 
         return md_out, canonical_name
 
 
-def add_footer(md_out, canonical_name):
+def add_footer(md_out, title, canonical_name, include_source_in_footer):
     url_source = 'https://github.com/ploomber/posts/tree/master/{}'.format(
         canonical_name)
-    url_params = parse.quote('Issue in {}'.format(canonical_name))
+    url_params = parse.quote('Issue in post: "{}"'.format(title))
     url_issue = 'https://github.com/ploomber/posts/issues/new?title={}'.format(
         url_params)
 
     footer_template = """
 <!-- FOOTER STARTS -->
 
+{% if include_source_in_footer %}
 Source code for this post is available [here]({{url_source}}).
+{% endif %}
 
 Found an error in this post? [Click here to let us know]({{url_issue}}).
 
@@ -328,7 +351,8 @@ Looking for commercial support? [Drop us a line](mailto:support@ploomber.io).
         md_out += '\n'
 
     footer = Template(footer_template).render(url_source=url_source,
-                                              url_issue=url_issue)
+                                              url_issue=url_issue,
+                                              include_source_in_footer=include_source_in_footer)
 
     md_out += footer
 
