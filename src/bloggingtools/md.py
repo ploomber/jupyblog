@@ -306,7 +306,10 @@ class MarkdownRenderer:
         metadata['date'] = datetime.now(timezone.utc).astimezone().isoformat(timespec='seconds')
 
         if flavor == 'devto':
-            metadata['canonical_url'] = 'https://ploomber.io/posts/model-selection/{}'.format(canonical_name)
+            print('Adding canonical_url to metadata')
+            metadata['canonical_url'] = 'https://ploomber.io/posts/{}'.format(canonical_name)
+            print('Removing date in metadata...')
+            del metadata['date']
         elif flavor == 'hugo':
             if 'tags' in metadata:
                 print('Removing tags in metadata...')
@@ -315,7 +318,7 @@ class MarkdownRenderer:
         md_out = replace_metadata(md_out, metadata)
 
         md_out = add_footer(md_out, metadata['title'], canonical_name,
-                            include_source_in_footer)
+                            include_source_in_footer, flavor)
 
         if flavor == 'hugo':
             print('Making img links absolute and adding canonical name as prefix...')
@@ -324,7 +327,7 @@ class MarkdownRenderer:
         return md_out, canonical_name
 
 
-def add_footer(md_out, title, canonical_name, include_source_in_footer):
+def add_footer(md_out, title, canonical_name, include_source_in_footer, flavor):
     url_source = 'https://github.com/ploomber/posts/tree/master/{}'.format(
         canonical_name)
     url_params = parse.quote('Issue in post: "{}"'.format(title))
@@ -342,6 +345,11 @@ Found an error in this post? [Click here to let us know]({{url_issue}}).
 
 Looking for commercial support? [Drop us a line](mailto:support@ploomber.io).
 
+{% if flavor != 'hugo' %}
+---
+Originally posted at [ploomber.io]({{canonical_url}})
+{% endif %}
+
 <!-- FOOTER ENDS -->
 """
 
@@ -352,7 +360,8 @@ Looking for commercial support? [Drop us a line](mailto:support@ploomber.io).
 
     footer = Template(footer_template).render(url_source=url_source,
                                               url_issue=url_issue,
-                                              include_source_in_footer=include_source_in_footer)
+                                              include_source_in_footer=include_source_in_footer,
+                                              canonical_url='https://ploomber.io/posts/{}'.format(canonical_name))
 
     md_out += footer
 
