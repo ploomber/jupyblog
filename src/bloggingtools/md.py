@@ -44,12 +44,13 @@ def process_content_data(content_data):
     html = content_data.get('text/html')
     plain = content_data.get('text/plain')
 
-    # if html:
-    # return html
+    if html:
+        return 'text/html', html
+
     if plain:
-        return plain
+        return 'text/plain', html
     else:
-        return ''
+        return None
 
 
 class JupyterSession:
@@ -63,7 +64,7 @@ class JupyterSession:
         self.km = jupyter_client.KernelManager()
         self.km.start_kernel()
         self.kc = self.km.blocking_client()
-        self.out = defaultdict(lambda: '')
+        self.out = defaultdict(lambda: [])
 
     def output_hook(self, msg):
         # code modified from jupyter_client.blocking.client._output_hook_default
@@ -71,16 +72,18 @@ class JupyterSession:
         content = msg['content']
         msg_id = msg['parent_header']['msg_id']
 
+        # update the outout given the msg id
+
         if msg_type == 'stream':
-            current = self.out[msg_id]
-            self.out[msg_id] = current + '\n' + content['text']
+            t = ('text/plain', content['text'])
+            self.out[msg_id].append(t)
         elif msg_type in ('display_data', 'execute_result'):
-            current = self.out[msg_id]
-            self.out[msg_id] = current + '\n' + \
-                process_content_data(content['data'])
+            t = process_content_data(content['data'])
+            if t is not None:
+                self.out[msg_id].append(t)
         elif msg_type == 'error':
-            current = self.out[msg_id]
-            self.out[msg_id] = current + '\n' + '\n'.join(content['traceback'])
+            t = ('text/plain', '\n'.join(content['traceback']))
+            self.out[msg_id].append(t)
 
     def execute(self, code):
         reply = self.kc.execute_interactive(code,
@@ -224,12 +227,11 @@ class MarkdownRenderer:
     Path('out.md').write_text(out)
     """
 
-    def __init__(self, path_to_mds, output_header='# Output:'):
+    def __init__(self, path_to_mds):
         self.path = path_to_mds
         self.env = Environment(loader=FileSystemLoader(path_to_mds),
                                undefined=DebugUndefined)
         self.parser = mistune.create_markdown(renderer=mistune.AstRenderer())
-        self.output_header = output_header
 
     def render(self, name, flavor, include_source_in_footer):
         """
@@ -288,7 +290,7 @@ class MarkdownRenderer:
 
         # add output tags
         out = [block['output'] for block in blocks]
-        md_out = util.add_output_tags(content, out, self.output_header)
+        md_out = util.add_output_tags(content, out)
 
         logger.debug('With output:\n:%s', md_out)
 
