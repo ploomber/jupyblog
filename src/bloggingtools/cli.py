@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 import click
@@ -28,9 +29,13 @@ def medium(path):
 @click.argument('flavor')
 @click.option('--outdir', default=None, help='Output directory')
 @click.option('--incsource', is_flag=True, help='Whether the source will be on Github or not')
-def render(path, flavor, outdir, incsource):
+@click.option('--log', default=None, help='Set logging level')
+def render(path, flavor, outdir, incsource, log):
     """Render markdown
     """
+    if log:
+        logging.basicConfig(level=log.upper())
+
     path = Path(path)
 
     click.echo(f'Input: {path.resolve()}')

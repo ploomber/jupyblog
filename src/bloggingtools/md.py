@@ -19,6 +19,7 @@ TODO:
         title, date: needed by hugo
 
 """
+import re
 from datetime import datetime, timezone
 from urllib import parse
 import logging
@@ -48,7 +49,7 @@ def process_content_data(content_data):
         return 'text/html', html
 
     if plain:
-        return 'text/plain', html
+        return 'text/plain', plain
     else:
         return None
 
@@ -73,6 +74,8 @@ class JupyterSession:
         msg_id = msg['parent_header']['msg_id']
 
         # update the outout given the msg id
+
+        logger.debug('Received message content: %s', content)
 
         if msg_type == 'stream':
             t = ('text/plain', content['text'])
@@ -135,8 +138,8 @@ class ASTExecutor:
         for block in blocks:
             if block.get('info') and not block.get('skip'):
                 output = self.session.execute(block['text'])
-                logger.debug('In: ', block['text'])
-                logger.debug('>>> ', output)
+                logger.info('In:\n\t%s', block['text'])
+                logger.info('Out:\n\t%s', output)
                 block['output'] = output
             else:
                 block['output'] = None

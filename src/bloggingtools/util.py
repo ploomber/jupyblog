@@ -8,19 +8,21 @@ def find_endings(md):
 
 
 def build_output(parts):
+    # remove trailing and leading whitespace, remove empty content
+    parts = [(kind, content.rstrip().lstrip()) for kind, content in parts
+             if content]
 
     t = Template("""
-**Output:**
-{% for kind, content in parts %}{% if kind == 'text/plain' %}
+{% for kind, content in parts %}
+**Console output: ({{loop.index}}/{{total}}):**
+{% if kind == 'text/plain' %}
 ```
 {{content}}
 ```
 {% else %}
-{{content}}
-{% endif %}{% endfor %}
-""")
+{{content}}{% endif %}{% endfor %}""")
 
-    return t.render(parts=parts)
+    return t.render(parts=parts, total=len(parts))
 
 
 def add_output_tags(md, outputs):
