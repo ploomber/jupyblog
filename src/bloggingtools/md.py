@@ -19,7 +19,6 @@ TODO:
         title, date: needed by hugo
 
 """
-import re
 from datetime import datetime, timezone
 from urllib import parse
 import logging
@@ -316,6 +315,7 @@ class MarkdownRenderer:
             print('Removing date in metadata...')
             del metadata['date']
         elif flavor == 'hugo':
+            metadata['draft'] = True
             if 'tags' in metadata:
                 print('Removing tags in metadata...')
                 del metadata['tags']
@@ -329,6 +329,7 @@ class MarkdownRenderer:
             print('Making img links absolute and adding canonical name as prefix...')
             md_out = hugo.make_img_links_absolute(md_out, canonical_name)
 
+        # FIXME: remove canonical name, add it as a parameter
         return md_out, canonical_name
 
 
@@ -366,7 +367,8 @@ Originally posted at [ploomber.io]({{canonical_url}})
     footer = Template(footer_template).render(url_source=url_source,
                                               url_issue=url_issue,
                                               include_source_in_footer=include_source_in_footer,
-                                              canonical_url='https://ploomber.io/posts/{}'.format(canonical_name))
+                                              canonical_url='https://ploomber.io/posts/{}'.format(canonical_name),
+                                              flavor=flavor)
 
     md_out += footer
 

@@ -1,3 +1,6 @@
+import shutil
+from pathlib import Path
+from glob import glob
 from jinja2 import Template
 
 
@@ -45,3 +48,11 @@ def add_output_tags(md, outputs):
     md_new = '\n'.join(lines)
 
     return md_new
+
+
+def move_images(path, canonical_name, target):
+    for img in glob(str(Path(path, '*.png'))):
+        name = Path(img).name
+        target_file = str(Path(target, canonical_name+'-'+name))
+        print('Moving %s to %s' % (img, target_file))
+        shutil.move(img, target_file)

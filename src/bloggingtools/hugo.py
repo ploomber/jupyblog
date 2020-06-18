@@ -1,6 +1,7 @@
 import re
 
-regex = re.compile(f'!\[\w*\]\((.*)\)')
+# match ![any num of word characters or hyphens](filename)
+regex = re.compile(f'!\[[\w-]*\]\((.*)\)')
 
 
 def make_img_links_absolute(post, prefix):
