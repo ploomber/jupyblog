@@ -235,7 +235,7 @@ class MarkdownRenderer:
                                undefined=DebugUndefined)
         self.parser = mistune.create_markdown(renderer=mistune.AstRenderer())
 
-    def render(self, name, flavor, include_source_in_footer):
+    def render(self, name, flavor, include_source_in_footer, expand_opt):
         """
         flavor: hugo, devto, medium
         """
@@ -258,9 +258,7 @@ class MarkdownRenderer:
         md_ast = self.parser(md_raw)
         metadata = parse_metadata(md_ast)
 
-        content = md_raw
         # root_path = metadata.get('root_path')
-        expand_partial = partial(expand, root_path=self.path)
         # self.env.globals['expand'] =
 
         # first render, just expand (expanded snippets are NOT executed)
@@ -274,9 +272,14 @@ class MarkdownRenderer:
         url_issue = 'https://github.com/ploomber/posts/issues/new?title={}'.format(
             url_params)
 
-        content = Template(md_raw).render(expand=expand_partial,
-                                          url_source=url_source,
-                                          url_issue=url_issue)
+        if expand_opt:
+            expand_partial = partial(expand, root_path=self.path)
+            content = Template(md_raw).render(expand=expand_partial,
+                                              url_source=url_source,
+                                              url_issue=url_issue)
+        else:
+            content = md_raw
+
         # del self.env.globals['expand']
 
         logger.debug('After expand:\n%s', content)
@@ -307,15 +310,16 @@ class MarkdownRenderer:
                 md_out = md_out.replace(
                     block['info'], block['info'].split(' ')[0])
 
-        metadata['date'] = datetime.now(timezone.utc).astimezone().isoformat(timespec='seconds')
+        metadata['date'] = datetime.now(
+            timezone.utc).astimezone().isoformat(timespec='seconds')
 
         if flavor == 'devto':
             print('Adding canonical_url to metadata')
-            metadata['canonical_url'] = 'https://ploomber.io/posts/{}'.format(canonical_name)
+            metadata['canonical_url'] = 'https://ploomber.io/posts/{}'.format(
+                canonical_name)
             print('Removing date in metadata...')
             del metadata['date']
         elif flavor == 'hugo':
-            metadata['draft'] = True
             if 'tags' in metadata:
                 print('Removing tags in metadata...')
                 del metadata['tags']
@@ -349,7 +353,6 @@ Source code for this post is available [here]({{url_source}}).
 
 Found an error in this post? [Click here to let us know]({{url_issue}}).
 
-Looking for commercial support? [Drop us a line](mailto:support@ploomber.io).
 
 {% if flavor != 'hugo' %}
 ---
@@ -367,7 +370,8 @@ Originally posted at [ploomber.io]({{canonical_url}})
     footer = Template(footer_template).render(url_source=url_source,
                                               url_issue=url_issue,
                                               include_source_in_footer=include_source_in_footer,
-                                              canonical_url='https://ploomber.io/posts/{}'.format(canonical_name),
+                                              canonical_url='https://ploomber.io/posts/{}'.format(
+                                                  canonical_name),
                                               flavor=flavor)
 
     md_out += footer

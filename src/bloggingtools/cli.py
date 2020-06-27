@@ -38,7 +38,8 @@ def medium(path):
 @click.option('--incsource', is_flag=True, help='Whether the source will be on Github or not')
 @click.option('--log', default=None, help='Set logging level')
 @click.option('--name', default='post.md', help='File with the post')
-def render(path, flavor, outdir, incsource, log, name):
+@click.option('--expand', default=False, help='Expand')
+def render(path, flavor, outdir, incsource, log, name, expand):
     """Render markdown
 
     * Looks for post and static location in an env.yaml (only for hugo)
@@ -80,7 +81,8 @@ def render(path, flavor, outdir, incsource, log, name):
     click.echo('Rendering markdown...')
     mdr = MarkdownRenderer(path_to_mds=path)
     out, _ = mdr.render(name=name, flavor=flavor,
-                        include_source_in_footer=incsource)
+                        include_source_in_footer=incsource,
+                        expand_opt=expand)
 
     out_path = Path(post_dir, (post_name + '.md'))
     click.echo(f'Output: {out_path}')
