@@ -36,7 +36,6 @@ import parso
 
 from bloggingtools import util, hugo
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -59,7 +58,6 @@ class JupyterSession:
     >>> s = JupyterSession()
     >>> s.execute('1 + 10')
     """
-
     def __init__(self):
         self.km = jupyter_client.KernelManager()
         self.km.start_kernel()
@@ -88,8 +86,7 @@ class JupyterSession:
             self.out[msg_id].append(t)
 
     def execute(self, code):
-        reply = self.kc.execute_interactive(code,
-                                            output_hook=self.output_hook)
+        reply = self.kc.execute_interactive(code, output_hook=self.output_hook)
         return self.out.get(reply['parent_header']['msg_id'])
 
     def __del__(self):
@@ -103,14 +100,15 @@ def parse_info(info):
         if len(elements) == 1:
             return {}
 
-        return {t.split('=')[0]: t.split('=')[1]
-                for t in elements[1].split(',')}
+        return {
+            t.split('=')[0]: t.split('=')[1]
+            for t in elements[1].split(',')
+        }
     else:
         return {}
 
 
 class ASTExecutor:
-
     def __init__(self, wd=None):
         self.session = JupyterSession()
         self.wd = wd if wd is None else Path(wd)
@@ -122,8 +120,8 @@ class ASTExecutor:
             if not self.wd.exists():
                 self.wd.mkdir(exist_ok=True, parents=True)
 
-            self.session.execute('import os; os.chdir("{}")'
-                                 .format(str(self.wd)))
+            self.session.execute('import os; os.chdir("{}")'.format(
+                str(self.wd)))
 
         blocks = [e for e in md_ast if e['type'] == 'block_code']
 
@@ -165,7 +163,7 @@ def parse_metadata(md_ast):
             idx += 1
 
     if found:
-        return yaml.load(md_ast[idx+1]['children'][0]['text'],
+        return yaml.load(md_ast[idx + 1]['children'][0]['text'],
                          Loader=yaml.SafeLoader)
     else:
         return {}
@@ -181,6 +179,9 @@ def replace_metadata(md, new_metadata):
 
         if len(idx) == 2:
             break
+
+    if not idx:
+        raise ValueError('Markdown file does not have YAML front matter')
 
     if idx[0] != 0:
         raise ValueError('metadata not located at the top')
@@ -213,8 +214,10 @@ def expand(path, root_path=None):
 
     if symbol_name:
         module = parso.parse(content)
-        named = {c.name.value: c.get_code()
-                 for c in module.children if hasattr(c, 'name')}
+        named = {
+            c.name.value: c.get_code()
+            for c in module.children if hasattr(c, 'name')
+        }
         content = named[symbol_name]
 
     comment = '# Content of {}'.format(path)
@@ -228,7 +231,6 @@ class MarkdownRenderer:
     out = mdr.render('sample.md')
     Path('out.md').write_text(out)
     """
-
     def __init__(self, path_to_mds):
         self.path = path_to_mds
         self.env = Environment(loader=FileSystemLoader(path_to_mds),
@@ -301,17 +303,19 @@ class MarkdownRenderer:
 
         for block in blocks:
             if block.get('hide'):
-                to_replace = "```{}\n{}```".format(
-                    block['info'], block['text'])
+                to_replace = "```{}\n{}```".format(block['info'],
+                                                   block['text'])
                 md_out = md_out.replace(to_replace, '')
 
         for block in blocks:
             if block.get('info'):
-                md_out = md_out.replace(
-                    block['info'], block['info'].split(' ')[0])
+                md_out = md_out.replace(block['info'],
+                                        block['info'].split(' ')[0])
 
         metadata['date'] = datetime.now(
             timezone.utc).astimezone().isoformat(timespec='seconds')
+        metadata['authors'] = ['Eduardo Blancas']
+        metadata['toc'] = True
 
         if flavor == 'devto':
             print('Adding canonical_url to metadata')
@@ -330,14 +334,17 @@ class MarkdownRenderer:
                             include_source_in_footer, flavor)
 
         if flavor == 'hugo':
-            print('Making img links absolute and adding canonical name as prefix...')
+            print(
+                'Making img links absolute and adding canonical name as prefix...'
+            )
             md_out = hugo.make_img_links_absolute(md_out, canonical_name)
 
         # FIXME: remove canonical name, add it as a parameter
         return md_out, canonical_name
 
 
-def add_footer(md_out, title, canonical_name, include_source_in_footer, flavor):
+def add_footer(md_out, title, canonical_name, include_source_in_footer,
+               flavor):
     url_source = 'https://github.com/ploomber/posts/tree/master/{}'.format(
         canonical_name)
     url_params = parse.quote('Issue in post: "{}"'.format(title))
@@ -351,7 +358,9 @@ def add_footer(md_out, title, canonical_name, include_source_in_footer, flavor):
 Source code for this post is available [here]({{url_source}}).
 {% endif %}
 
-Found an error in this post? [Click here to let us know]({{url_issue}}).
+---
+
+Found an error? [Click here to let us know]({{url_issue}}).
 
 
 {% if flavor != 'hugo' %}
@@ -367,12 +376,12 @@ Originally posted at [ploomber.io]({{canonical_url}})
     if lines[-1] != '\n':
         md_out += '\n'
 
-    footer = Template(footer_template).render(url_source=url_source,
-                                              url_issue=url_issue,
-                                              include_source_in_footer=include_source_in_footer,
-                                              canonical_url='https://ploomber.io/posts/{}'.format(
-                                                  canonical_name),
-                                              flavor=flavor)
+    footer = Template(footer_template).render(
+        url_source=url_source,
+        url_issue=url_issue,
+        include_source_in_footer=include_source_in_footer,
+        canonical_url='https://ploomber.io/posts/{}'.format(canonical_name),
+        flavor=flavor)
 
     md_out += footer
 

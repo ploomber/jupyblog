@@ -20,15 +20,14 @@ from setuptools import setup
 _version_re = re.compile(r'__version__\s+=\s+(.*)')
 
 with open('src/bloggingtools/__init__.py', 'rb') as f:
-    VERSION = str(ast.literal_eval(_version_re.search(
-        f.read().decode('utf-8')).group(1)))
+    VERSION = str(
+        ast.literal_eval(
+            _version_re.search(f.read().decode('utf-8')).group(1)))
 
 
 def read(*names, **kwargs):
-    return io.open(
-        join(dirname(__file__), *names),
-        encoding=kwargs.get('encoding', 'utf8')
-    ).read()
+    return io.open(join(dirname(__file__), *names),
+                   encoding=kwargs.get('encoding', 'utf8')).read()
 
 
 setup(
@@ -46,14 +45,12 @@ setup(
     classifiers=[],
     keywords=[],
     install_requires=[
-        #'mistune==2.0.0a2',
-        'mistune2',
         'pyyaml',
         'jinja2',
         'jupyter_client',
         'click',
         'jupytext',
-        'parso'
+        'parso',
     ],
     extras_require={},
     entry_points={
