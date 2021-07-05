@@ -35,11 +35,14 @@ def medium(path):
 @click.argument('path')
 @click.argument('flavor')
 @click.option('--outdir', default=None, help='Output directory')
-@click.option('--incsource', is_flag=True, help='Whether the source will be on Github or not')
+@click.option('--incsource',
+              is_flag=True,
+              help='Whether the source will be on Github or not')
 @click.option('--log', default=None, help='Set logging level')
 @click.option('--name', default='post.md', help='File with the post')
 @click.option('--expand', default=False, help='Expand')
-def render(path, flavor, outdir, incsource, log, name, expand):
+@click.option('--no-execute', is_flag=True)
+def render(path, flavor, outdir, incsource, log, name, expand, no_execute):
     """Render markdown
 
     * Looks for post and static location in an env.yaml (only for hugo)
@@ -67,7 +70,8 @@ def render(path, flavor, outdir, incsource, log, name, expand):
         post_dir = Path(env.post_dir).resolve()
     else:
         post_dir = Path(flavor)
-        post_dir.mkdir(exist_ok=True)
+
+    post_dir.mkdir(exist_ok=True, parents=True)
 
     click.echo(f'Input: {path.resolve()}')
     click.echo('Processing post "%s"' % post_name)
@@ -80,9 +84,11 @@ def render(path, flavor, outdir, incsource, log, name, expand):
 
     click.echo('Rendering markdown...')
     mdr = MarkdownRenderer(path_to_mds=path)
-    out, _ = mdr.render(name=name, flavor=flavor,
+    out, _ = mdr.render(name=name,
+                        flavor=flavor,
                         include_source_in_footer=incsource,
-                        expand_opt=expand)
+                        expand_opt=expand,
+                        execute_code=not no_execute)
 
     out_path = Path(post_dir, (post_name + '.md'))
     click.echo(f'Output: {out_path}')
@@ -93,7 +99,8 @@ def render(path, flavor, outdir, incsource, log, name, expand):
         img_dir = Path(env.img_dir).resolve()
 
         if not img_dir.exists():
-                raise FileNotFoundError('img_dir "img_dir" does not exist')
+            img_dir.mkdir(exist_ok=True, parents=True)
+
         util.move_images(path, post_name, target=img_dir)
     else:
         util.move_images(path, post_name, target=post_dir)

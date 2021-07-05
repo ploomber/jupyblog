@@ -237,7 +237,8 @@ class MarkdownRenderer:
                                undefined=DebugUndefined)
         self.parser = mistune.create_markdown(renderer=mistune.AstRenderer())
 
-    def render(self, name, flavor, include_source_in_footer, expand_opt):
+    def render(self, name, flavor, include_source_in_footer, expand_opt,
+               execute_code):
         """
         flavor: hugo, devto, medium
         """
@@ -251,17 +252,11 @@ class MarkdownRenderer:
         md_raw = path.read_text()
 
         if path.suffix != '.md':
-            # print('File does not have .md extension, trying to convert it '
-            # 'using jupytext...')
             nb = jupytext.read(path)
             md_raw = jupytext.writes(nb, fmt='md')
-            # Path('tmp-1step.md').write_text(md_raw)
 
         md_ast = self.parser(md_raw)
         metadata = parse_metadata(md_ast)
-
-        # root_path = metadata.get('root_path')
-        # self.env.globals['expand'] =
 
         # first render, just expand (expanded snippets are NOT executed)
         # also expand urls
@@ -282,35 +277,14 @@ class MarkdownRenderer:
         else:
             content = md_raw
 
-        # del self.env.globals['expand']
-
         logger.debug('After expand:\n%s', content)
 
         # parse again to get expanded code
-        md_ast = self.parser(content)
-
-        # second render, add output
-        executor = ASTExecutor()
-
-        # execute
-        blocks = executor(md_ast)
-
-        # add output tags
-        out = [block['output'] for block in blocks]
-        md_out = util.add_output_tags(content, out)
-
-        logger.debug('With output:\n:%s', md_out)
-
-        for block in blocks:
-            if block.get('hide'):
-                to_replace = "```{}\n{}```".format(block['info'],
-                                                   block['text'])
-                md_out = md_out.replace(to_replace, '')
-
-        for block in blocks:
-            if block.get('info'):
-                md_out = md_out.replace(block['info'],
-                                        block['info'].split(' ')[0])
+        if execute_code:
+            md_ast = self.parser(content)
+            md_out = run_snippets(md_ast, content)
+        else:
+            md_out = content
 
         metadata['date'] = datetime.now(
             timezone.utc).astimezone().isoformat(timespec='seconds')
@@ -384,5 +358,30 @@ Originally posted at [ploomber.io]({{canonical_url}})
         flavor=flavor)
 
     md_out += footer
+
+    return md_out
+
+
+def run_snippets(md_ast, content):
+    # second render, add output
+    executor = ASTExecutor()
+
+    # execute
+    blocks = executor(md_ast)
+
+    # add output tags
+    out = [block['output'] for block in blocks]
+    md_out = util.add_output_tags(content, out)
+
+    logger.debug('With output:\n:%s', md_out)
+
+    for block in blocks:
+        if block.get('hide'):
+            to_replace = "```{}\n{}```".format(block['info'], block['text'])
+            md_out = md_out.replace(to_replace, '')
+
+    for block in blocks:
+        if block.get('info'):
+            md_out = md_out.replace(block['info'], block['info'].split(' ')[0])
 
     return md_out
