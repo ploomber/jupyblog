@@ -36,3 +36,4 @@ def test_image(tmp_image):
 
     assert '![jupyter](/image-jupyter.png)' in content
     assert Path('static', 'image-jupyter.png').is_file()
+    assert Path('jupyter.png').is_file()

@@ -101,6 +101,6 @@ def render(path, flavor, outdir, incsource, log, name, expand, no_execute):
         if not img_dir.exists():
             img_dir.mkdir(exist_ok=True, parents=True)
 
-        util.move_images(path, post_name, target=img_dir)
+        util.copy_images(path, post_name, target=img_dir)
     else:
-        util.move_images(path, post_name, target=post_dir)
+        util.copy_images(path, post_name, target=post_dir)

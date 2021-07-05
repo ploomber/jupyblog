@@ -50,9 +50,9 @@ def add_output_tags(md, outputs):
     return md_new
 
 
-def move_images(path, canonical_name, target):
+def copy_images(path, canonical_name, target):
     for img in glob(str(Path(path, '*.png'))):
         name = Path(img).name
-        target_file = str(Path(target, canonical_name+'-'+name))
+        target_file = str(Path(target, canonical_name + '-' + name))
         print('Moving %s to %s' % (img, target_file))
-        shutil.move(img, target_file)
+        shutil.copy(img, target_file)
