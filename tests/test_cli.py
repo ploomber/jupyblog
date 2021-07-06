@@ -34,6 +34,6 @@ def test_image(tmp_image):
 
     content = Path('posts', 'image.md').read_text()
 
-    assert '![jupyter](/image-jupyter.png)' in content
-    assert Path('static', 'image-jupyter.png').is_file()
+    assert '![jupyter](/image/jupyter.png)' in content
+    assert Path('static', 'image', 'jupyter.png').is_file()
     assert Path('jupyter.png').is_file()

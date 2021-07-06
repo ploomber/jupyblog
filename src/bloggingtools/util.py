@@ -53,6 +53,9 @@ def add_output_tags(md, outputs):
 def copy_images(path, canonical_name, target):
     for img in glob(str(Path(path, '*.png'))):
         name = Path(img).name
-        target_file = str(Path(target, canonical_name + '-' + name))
+        # target location: {target}/{post-name}/{image-name}
+        target_file = Path(target, canonical_name, name)
+        target_file.parent.mkdir(parents=True, exist_ok=True)
         print('Moving %s to %s' % (img, target_file))
+
         shutil.copy(img, target_file)
