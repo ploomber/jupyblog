@@ -5,8 +5,7 @@ from pathlib import Path
 import click
 
 from bloggingtools.md import MarkdownRenderer
-from bloggingtools import util
-from ploomber import Env
+from bloggingtools import util, config
 
 
 @click.group()
@@ -45,6 +44,9 @@ def medium(path):
 def render(path, flavor, outdir, incsource, log, name, expand, no_execute):
     """Render markdown
 
+    # convert post in current directory
+    btools . hugo
+
     * Looks for post and static location in an env.yaml (only for hugo)
     * Runs build.sh first if it exists
     * Runs cells and include output as new cells (post.md)
@@ -66,8 +68,8 @@ def render(path, flavor, outdir, incsource, log, name, expand, no_execute):
     post_name = path.name
 
     if flavor == 'hugo':
-        env = Env()
-        post_dir = Path(env.post_dir).resolve()
+        post_dir, img_dir = config.get_config()
+        post_dir = Path(post_dir).resolve()
     else:
         post_dir = Path(flavor)
 
@@ -96,11 +98,11 @@ def render(path, flavor, outdir, incsource, log, name, expand, no_execute):
     out_path.write_text(out)
 
     if flavor == 'hugo':
-        img_dir = Path(env.img_dir).resolve()
+        img_dir = Path(img_dir).resolve()
 
         if not img_dir.exists():
             img_dir.mkdir(exist_ok=True, parents=True)
 
-        util.copy_images(path, post_name, target=img_dir)
+        util.copy_all_pngs(src=path, target=img_dir, dir_name=post_name)
     else:
-        util.copy_images(path, post_name, target=post_dir)
+        util.copy_all_pngs(src=path, target=post_dir, dir_name=post_name)

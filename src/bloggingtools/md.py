@@ -29,7 +29,7 @@ from collections import defaultdict
 from jupytext.formats import divine_format
 import jupytext
 import jupyter_client
-import mistune2 as mistune
+import mistune
 import yaml
 from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
 import parso

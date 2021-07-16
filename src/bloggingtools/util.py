@@ -50,11 +50,14 @@ def add_output_tags(md, outputs):
     return md_new
 
 
-def copy_images(path, canonical_name, target):
-    for img in glob(str(Path(path, '*.png'))):
-        name = Path(img).name
-        # target location: {target}/{post-name}/{image-name}
-        target_file = Path(target, canonical_name, name)
+def copy_all_pngs(src, target, dir_name):
+    """
+    Copy all .png files in src to target inside a folder with the passed name
+    """
+    for img in glob(str(Path(src, '**', '*.png')), recursive=True):
+        # target location: {target}/{dir-name}/{original-relative-path}
+        rel_path = str(Path(img).relative_to(src))
+        target_file = Path(target, dir_name, rel_path)
         target_file.parent.mkdir(parents=True, exist_ok=True)
         print('Moving %s to %s' % (img, target_file))
 

@@ -51,6 +51,7 @@ setup(
         'click',
         'jupytext',
         'parso',
+        'mistune>=2.0.0rc1',
     ],
     extras_require={},
     entry_points={
