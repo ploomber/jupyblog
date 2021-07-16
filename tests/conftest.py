@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 
 import pytest
-from ploomber import Env
 
 
 def _path_to_tests():
@@ -42,8 +41,6 @@ def tmp_sample_post(tmp_path):
     os.chdir(str(tmp))
     yield tmp
     os.chdir(old)
-    # delete this once we remove the dependency with Env
-    Env.end()
 
 
 @pytest.fixture
@@ -53,8 +50,6 @@ def tmp_with_py_code(tmp_path):
     os.chdir(str(tmp))
     yield tmp
     os.chdir(old)
-    # delete this once we remove the dependency with Env
-    Env.end()
 
 
 @pytest.fixture
@@ -64,5 +59,3 @@ def tmp_image(tmp_path):
     os.chdir(str(tmp))
     yield tmp
     os.chdir(old)
-    # delete this once we remove the dependency with Env
-    Env.end()
