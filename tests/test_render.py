@@ -1,4 +1,4 @@
-from md_runner.md import MarkdownRenderer
+from bloggingtools.md import MarkdownRenderer
 
 
 def test_render(path_to_tests):
