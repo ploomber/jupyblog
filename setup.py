@@ -48,6 +48,7 @@ setup(
         'pyyaml',
         'jinja2',
         'jupyter_client',
+        'ipykernel',
         'click',
         'jupytext',
         'parso',
