@@ -125,7 +125,7 @@ def test_execute(tmp_image, md, expected):
     renderer = MarkdownRenderer('.')
 
     out = renderer.render('post.md',
-                          'hugo',
+                          is_hugo=True,
                           include_source_in_footer=False,
                           execute_code=True)
     assert expected in out[0]
@@ -134,7 +134,7 @@ def test_execute(tmp_image, md, expected):
 def test_expand(tmp_expand_placeholder):
     renderer = MarkdownRenderer('.')
     out = renderer.render('post.md',
-                          'hugo',
+                          is_hugo=True,
                           include_source_in_footer=False,
                           execute_code=True)
     expected = """\
@@ -149,7 +149,7 @@ def test_expand(tmp_expand_placeholder):
 def test_expand_symbol(tmp_expand_placeholder):
     renderer = MarkdownRenderer('.')
     out = renderer.render('another.md',
-                          'hugo',
+                          is_hugo=True,
                           include_source_in_footer=False,
                           execute_code=True)
     expected = """\
@@ -174,7 +174,7 @@ def test_image_serialize(tmp_image):
     (serialized / 'old.png').touch()
 
     out = renderer.render('post.md',
-                          'hugo',
+                          is_hugo=True,
                           include_source_in_footer=False,
                           execute_code=True)
 

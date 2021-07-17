@@ -8,7 +8,7 @@ from jupyblog.md import parse_metadata
 
 def test_sample_post(tmp_sample_post):
     runner = CliRunner()
-    result = runner.invoke(render, ['hugo'], catch_exceptions=False)
+    result = runner.invoke(render, ['--hugo'], catch_exceptions=False)
 
     content = Path('content', 'posts', 'sample_post.md').read_text()
     metadata = parse_metadata(content)
@@ -22,7 +22,7 @@ def test_sample_post(tmp_sample_post):
 def test_with_python_code(tmp_with_py_code):
 
     runner = CliRunner()
-    result = runner.invoke(render, ['hugo', '--no-execute'],
+    result = runner.invoke(render, ['--hugo', '--no-execute'],
                            catch_exceptions=False)
 
     content = Path('content', 'posts', 'with_py_code.md').read_text()
@@ -37,7 +37,7 @@ def test_with_python_code(tmp_with_py_code):
 def test_image(tmp_image):
 
     runner = CliRunner()
-    result = runner.invoke(render, ['hugo', '--no-execute'],
+    result = runner.invoke(render, ['--hugo', '--no-execute'],
                            catch_exceptions=False)
 
     content = Path('content', 'posts', 'image.md').read_text()
@@ -55,7 +55,7 @@ def test_image(tmp_image):
 def test_image_nested(tmp_image_nested):
 
     runner = CliRunner()
-    result = runner.invoke(render, ['hugo', '--no-execute'],
+    result = runner.invoke(render, ['--hugo', '--no-execute'],
                            catch_exceptions=False)
 
     content = Path('content', 'posts', 'image-nested.md').read_text()
@@ -71,14 +71,13 @@ def test_image_nested(tmp_image_nested):
 
 def test_image_medium(tmp_image):
     runner = CliRunner()
-    result = runner.invoke(render, ['medium', '--no-execute'],
-                           catch_exceptions=False)
+    result = runner.invoke(render, ['--no-execute'], catch_exceptions=False)
 
-    content = Path('medium', 'image.md').read_text()
+    content = Path('output', 'image.md').read_text()
     metadata = parse_metadata(content)
 
     assert not result.exit_code
     assert '![jupyter](image/jupyter.png)' in content
-    assert Path('medium', 'image', 'jupyter.png').is_file()
+    assert Path('output', 'image', 'jupyter.png').is_file()
     assert metadata['authors']
     assert metadata['title'] == 'some awesome post'

@@ -294,15 +294,10 @@ class MarkdownRenderer:
                                undefined=DebugUndefined)
         self.parser = ast_parser()
 
-    def render(self, name, flavor, *, include_source_in_footer, execute_code):
+    def render(self, name, *, is_hugo, include_source_in_footer, execute_code):
         """
         flavor: hugo, devto, medium
         """
-        if flavor not in {'hugo', 'devto', 'medium'}:
-            raise ValueError('flavor must be one of hugo, devto or medium')
-        else:
-            print('Preparing post for "%s"' % flavor)
-
         path = Path(self.path, name)
         md_raw = path.read_text()
 
@@ -350,21 +345,15 @@ class MarkdownRenderer:
         metadata['authors'] = ['Eduardo Blancas']
         metadata['toc'] = True
 
-        if flavor == 'devto':
-            print('Adding canonical_url to metadata')
-            metadata['canonical_url'] = 'https://ploomber.io/posts/{}'.format(
-                canonical_name)
-            print('Removing date in metadata...')
-            del metadata['date']
-        elif flavor == 'hugo':
+        if is_hugo:
             if 'tags' in metadata:
                 print('Removing tags in metadata...')
                 del metadata['tags']
 
         md_out = add_footer(md_out, metadata['title'], canonical_name,
-                            include_source_in_footer, flavor)
+                            include_source_in_footer, is_hugo)
 
-        if flavor == 'hugo':
+        if is_hugo:
             print('Making img links absolute and adding '
                   'canonical name as prefix...')
             md_out = images.process_image_links(md_out,
@@ -389,7 +378,7 @@ class MarkdownRenderer:
 
 
 def add_footer(md_out, title, canonical_name, include_source_in_footer,
-               flavor):
+               is_hugo):
     url_source = 'https://github.com/ploomber/posts/tree/master/{}'.format(
         canonical_name)
     url_params = parse.quote('Issue in post: "{}"'.format(title))
@@ -408,7 +397,7 @@ Source code for this post is available [here]({{url_source}}).
 Found an error? [Click here to let us know]({{url_issue}}).
 
 
-{% if flavor != 'hugo' %}
+{% if not is_hugo %}
 ---
 Originally posted at [ploomber.io]({{canonical_url}})
 {% endif %}
@@ -426,7 +415,7 @@ Originally posted at [ploomber.io]({{canonical_url}})
         url_issue=url_issue,
         include_source_in_footer=include_source_in_footer,
         canonical_url='https://ploomber.io/posts/{}'.format(canonical_name),
-        flavor=flavor)
+        is_hugo=is_hugo)
 
     md_out += footer
 

@@ -10,13 +10,13 @@ from jupyblog import medium as medium_module
 
 
 @click.command()
-@click.argument('flavor')
+@click.option('--hugo', '-h', is_flag=True, help='Export to Hugo')
 @click.option('--incsource',
               is_flag=True,
               help='Whether the source will be on Github or not')
 @click.option('--log', default=None, help='Set logging level')
 @click.option('--no-execute', is_flag=True, help='Skip code execution')
-def render(flavor, incsource, log, no_execute):
+def render(hugo, incsource, log, no_execute):
     """Render markdown
 
     >>> jupyblog render . hugo # looks for post.md
@@ -38,11 +38,11 @@ def render(flavor, incsource, log, no_execute):
 
     post_name = path.name
 
-    if flavor == 'hugo':
+    if hugo:
         post_dir, img_dir = config.get_config()
         post_dir = Path(post_dir).resolve()
     else:
-        post_dir = Path(flavor)
+        post_dir = Path('output')
         img_dir = post_dir
 
     post_dir.mkdir(exist_ok=True, parents=True)
@@ -59,13 +59,13 @@ def render(flavor, incsource, log, no_execute):
     click.echo('Rendering markdown...')
     mdr = MarkdownRenderer(path_to_mds=path, img_dir=img_dir)
     out, _ = mdr.render(name='post.md',
-                        flavor=flavor,
+                        is_hugo=hugo,
                         include_source_in_footer=incsource,
                         execute_code=not no_execute)
     out_path = Path(post_dir, (post_name + '.md'))
     click.echo(f'Output: {out_path}')
 
-    if flavor == 'medium':
+    if not hugo:
         out = medium_module.export(out)
 
     out_path.write_text(out)
