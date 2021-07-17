@@ -62,7 +62,7 @@ def render(flavor, incsource, log, expand, no_execute):
     out, _ = mdr.render(name='post.md',
                         flavor=flavor,
                         include_source_in_footer=incsource,
-                        expand_opt=expand,
+                        expand_enable=expand,
                         execute_code=not no_execute)
     out_path = Path(post_dir, (post_name + '.md'))
     click.echo(f'Output: {out_path}')

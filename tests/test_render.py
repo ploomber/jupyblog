@@ -124,7 +124,47 @@ def test_execute(tmp_image, md, expected):
     Path('post.md').write_text(md)
     renderer = MarkdownRenderer('.')
 
-    out = renderer.render('post.md', 'hugo', False, False, True)
+    out = renderer.render('post.md',
+                          'hugo',
+                          include_source_in_footer=False,
+                          expand_enable=False,
+                          execute_code=True)
+    assert expected in out[0]
+
+
+def test_expand(tmp_expand_placeholder):
+    renderer = MarkdownRenderer('.')
+    out = renderer.render('post.md',
+                          'hugo',
+                          include_source_in_footer=False,
+                          expand_enable=True,
+                          execute_code=True)
+    expected = """\
+```python
+# Content of script.py
+1 + 1
+```
+"""
+    assert expected in out[0]
+
+
+def test_expand_symbol(tmp_expand_placeholder):
+    renderer = MarkdownRenderer('.')
+    out = renderer.render('another.md',
+                          'hugo',
+                          include_source_in_footer=False,
+                          expand_enable=True,
+                          execute_code=True)
+    expected = """\
+```python
+# Content of functions.py
+
+
+def fn(x):
+    return x
+
+```
+"""
     assert expected in out[0]
 
 
@@ -136,7 +176,11 @@ def test_image_serialize(tmp_image):
     serialized.mkdir(parents=True)
     (serialized / 'old.png').touch()
 
-    out = renderer.render('post.md', 'hugo', False, False, True)
+    out = renderer.render('post.md',
+                          'hugo',
+                          include_source_in_footer=False,
+                          expand_enable=False,
+                          execute_code=True)
 
     assert Path('static', 'image', 'serialized', '1.png').exists()
     # must clean up existing images
