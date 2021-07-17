@@ -381,6 +381,8 @@ class MarkdownRenderer:
                                                 canonical_name,
                                                 absolute=False)
 
+            # TODO: extrac title from front matter and put it as H1 header
+
         md_out = replace_metadata(md_out, metadata)
 
         # FIXME: remove canonical name, add it as a parameter
