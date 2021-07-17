@@ -368,12 +368,18 @@ class MarkdownRenderer:
         if flavor == 'hugo':
             print('Making img links absolute and adding '
                   'canonical name as prefix...')
-            md_out = images.make_img_links_absolute(md_out, canonical_name)
+            md_out = images.process_image_links(md_out,
+                                                canonical_name,
+                                                absolute=True)
 
             path = images.get_first_image_path(md_out)
 
             if path:
                 metadata['images'] = [path]
+        else:
+            md_out = images.process_image_links(md_out,
+                                                canonical_name,
+                                                absolute=False)
 
         md_out = replace_metadata(md_out, metadata)
 

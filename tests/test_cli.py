@@ -51,3 +51,18 @@ def test_image(tmp_image):
     assert metadata['authors']
     assert metadata['title'] == 'some awesome post'
     assert metadata['images'][0] == '/image/jupyter.png'
+
+
+def test_image_medium(tmp_image):
+    runner = CliRunner()
+    result = runner.invoke(cli, ['render', '.', 'medium', '--no-execute'],
+                           catch_exceptions=False)
+
+    content = Path('medium', 'image.md').read_text()
+    metadata = parse_metadata(content)
+
+    assert not result.exit_code
+    assert '![jupyter](image/jupyter.png)' in content
+    assert Path('medium', 'image', 'jupyter.png').is_file()
+    assert metadata['authors']
+    assert metadata['title'] == 'some awesome post'

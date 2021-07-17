@@ -65,6 +65,7 @@ def render(path, flavor, outdir, incsource, log, name, expand, no_execute):
         post_dir = Path(post_dir).resolve()
     else:
         post_dir = Path(flavor)
+        img_dir = post_dir
 
     post_dir.mkdir(exist_ok=True, parents=True)
 
@@ -89,12 +90,9 @@ def render(path, flavor, outdir, incsource, log, name, expand, no_execute):
 
     out_path.write_text(out)
 
-    if flavor == 'hugo':
-        img_dir = Path(img_dir).resolve()
+    img_dir = Path(img_dir).resolve()
 
-        if not img_dir.exists():
-            img_dir.mkdir(exist_ok=True, parents=True)
+    if not img_dir.exists():
+        img_dir.mkdir(exist_ok=True, parents=True)
 
-        util.copy_all_pngs(src=path, target=img_dir, dir_name=post_name)
-    else:
-        util.copy_all_pngs(src=path, target=post_dir, dir_name=post_name)
+    util.copy_all_pngs(src=path, target=img_dir, dir_name=post_name)

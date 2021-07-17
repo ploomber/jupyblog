@@ -45,9 +45,9 @@ def test_get_first_image_path(post):
     assert images.get_first_image_path(post) == 'path.png'
 
 
-def test_file_make_img_links_absolute():
+def test_file_process_image_links():
     post = '![img](static/img.png)\n\n![img2](static/img2.png)'
-    post_new = images.make_img_links_absolute(post, 'post')
+    post_new = images.process_image_links(post, 'post', absolute=True)
     assert post_new == '![img](/post/img.png)\n\n![img2](/post/img2.png)'
 
 
@@ -58,9 +58,15 @@ def test_file_make_img_links_absolute():
     ("![some-ima_ge](some-ima_ge.png)",
      "![some-ima_ge](/name/some-ima_ge.png)"),
 ])
-def test_make_img_links_absolute(test_input, expected):
-    post_new = images.make_img_links_absolute(test_input, 'name')
+def test_process_image_links(test_input, expected):
+    post_new = images.process_image_links(test_input, 'name', absolute=True)
     assert post_new == expected
+
+
+def test_process_image_links_relative():
+    test_input = "![img](img.png)"
+    post_new = images.process_image_links(test_input, 'name', absolute=False)
+    assert post_new == "![img](name/img.png)"
 
 
 one_placeholders_expected = """
