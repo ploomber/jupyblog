@@ -16,17 +16,6 @@ def cli():
 
 @cli.command()
 @click.argument('path')
-def medium(path):
-    """Take a rendered markdown and fix code tags to upload to medium:
-    >>> btools path/to/post.md > out.md
-    Then upload with: https://markdowntomedium.com/
-    """
-    md = Path(path).read_text()
-    click.echo(medium_module.export(md))
-
-
-@cli.command()
-@click.argument('path')
 @click.argument('flavor')
 @click.option('--outdir', default=None, help='Output directory')
 @click.option('--incsource',
@@ -40,6 +29,8 @@ def render(path, flavor, outdir, incsource, log, name, expand, no_execute):
     """Render markdown
 
     >>> btools . hugo # looks for post.md
+    >>> btools . medium # Then upload with: https://markdowntomedium.com/
+
 
     * Runs build.sh first if it exists
     * Runs cells and include output as new cells (post.md)
