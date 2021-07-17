@@ -18,10 +18,8 @@ def cli():
 @click.argument('path')
 def medium(path):
     """Take a rendered markdown and fix code tags to upload to medium:
-    https://markdowntomedium.com/
-    https://unsplash.com/
-
-    TODO: seems like markdowntomedium deletes H1 headers
+    >>> btools path/to/post.md > out.md
+    Then upload with: https://markdowntomedium.com/
     """
     md = Path(path).read_text()
     click.echo(medium.export(md))
