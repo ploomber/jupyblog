@@ -66,32 +66,27 @@ class JupyterSession:
     def __init__(self):
         self.km = jupyter_client.KernelManager()
         self.km.start_kernel()
-        self.kc = self.km.blocking_client()
+        self.kc = self.km.client()
+        self.kc.start_channels()
+        self.kc.wait_for_ready()
         self.out = defaultdict(lambda: [])
 
     def execute(self, code):
         out = []
-        msg_id = self.kc.execute(code)
-
-        io_msg = self.kc.get_iopub_msg(timeout=10)
-        io_msg_content = io_msg['content']
-
-        if 'execution_state' in io_msg_content and io_msg_content[
-                'execution_state'] == 'idle':
-            return "no output"
+        self.kc.execute(code)
 
         while True:
-            if 'execution_state' not in io_msg['content']:
-                out.append(io_msg)
-
             try:
-                io_msg = self.kc.get_iopub_msg(timeout=2)
+                io_msg = self.kc.get_iopub_msg(timeout=1)
                 io_msg_content = io_msg['content']
                 if 'execution_state' in io_msg_content and io_msg_content[
                         'execution_state'] == 'idle':
                     break
             except queue.Empty:
                 break
+
+            if 'execution_state' not in io_msg['content']:
+                out.append(io_msg)
 
         return [
             _process_content_data(o['content']) for o in out
