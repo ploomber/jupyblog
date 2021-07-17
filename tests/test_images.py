@@ -1,5 +1,5 @@
 import pytest
-from bloggingtools import hugo
+from bloggingtools import images
 
 one = """
 # Header
@@ -37,17 +37,17 @@ two_expected = [
 ],
                          ids=['one', 'two'])
 def test_find_images(post, links):
-    assert list(hugo.find_images(post)) == list(links)
+    assert list(images.find_images(post)) == list(links)
 
 
 @pytest.mark.parametrize('post', [one, two])
 def test_get_first_image_path(post):
-    assert hugo.get_first_image_path(post) == 'path.png'
+    assert images.get_first_image_path(post) == 'path.png'
 
 
 def test_file_make_img_links_absolute():
     post = '![img](static/img.png)\n\n![img2](static/img2.png)'
-    post_new = hugo.make_img_links_absolute(post, 'post')
+    post_new = images.make_img_links_absolute(post, 'post')
     assert post_new == '![img](/post/img.png)\n\n![img2](/post/img2.png)'
 
 
@@ -59,7 +59,7 @@ def test_file_make_img_links_absolute():
      "![some-ima_ge](/name/some-ima_ge.png)"),
 ])
 def test_make_img_links_absolute(test_input, expected):
-    post_new = hugo.make_img_links_absolute(test_input, 'name')
+    post_new = images.make_img_links_absolute(test_input, 'name')
     assert post_new == expected
 
 
@@ -90,4 +90,4 @@ two_placeholders_expected = """
 ],
                          ids=['one', 'two'])
 def test_replace_images_with_placeholders(post, expected):
-    assert hugo.replace_images_with_placeholders(post) == expected
+    assert images.replace_images_with_placeholders(post) == expected

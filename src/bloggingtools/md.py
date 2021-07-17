@@ -19,7 +19,7 @@ import yaml
 from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
 import parso
 
-from bloggingtools import util, hugo
+from bloggingtools import util, images
 
 logger = logging.getLogger(__name__)
 
@@ -317,9 +317,9 @@ class MarkdownRenderer:
             print(
                 'Making img links absolute and adding canonical name as prefix...'
             )
-            md_out = hugo.make_img_links_absolute(md_out, canonical_name)
+            md_out = images.make_img_links_absolute(md_out, canonical_name)
 
-            path = hugo.get_first_image_path(md_out)
+            path = images.get_first_image_path(md_out)
 
             if path:
                 metadata['images'] = [path]

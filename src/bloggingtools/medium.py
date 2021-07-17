@@ -1,6 +1,6 @@
 import mistune
 
-from bloggingtools.hugo import replace_images_with_placeholders
+from bloggingtools.images import replace_images_with_placeholders
 
 
 def export(md):
