@@ -26,3 +26,12 @@ def get_first_image_path(md):
         return None
 
     return path
+
+
+def replace_images_with_placeholders(md):
+    """This helps when uploading to medium
+    """
+    for img_tag, img_link in find_images(md):
+        md = md.replace(img_tag, f'**ADD {img_link} HERE**')
+
+    return md

@@ -6,6 +6,7 @@ import click
 
 from bloggingtools.md import MarkdownRenderer
 from bloggingtools import util, config
+from bloggingtools import medium
 
 
 @click.group()
@@ -20,14 +21,10 @@ def medium(path):
     https://markdowntomedium.com/
     https://unsplash.com/
 
-    TODO: replace img tags with manual label in capital letters
-    so I know where to embed the image
-
     TODO: seems like markdowntomedium deletes H1 headers
     """
-    text = Path(path).read_text()
-    text_new = text.replace('```python', '```py')
-    click.echo(text_new)
+    md = Path(path).read_text()
+    click.echo(medium.export(md))
 
 
 @cli.command()

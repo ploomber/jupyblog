@@ -50,3 +50,22 @@ def test_file_make_img_links_absolute():
 def test_make_img_links_absolute(test_input, expected):
     post_new = hugo.make_img_links_absolute(test_input, 'name')
     assert post_new == expected
+
+
+one_placeholders_expected = """
+**ADD path.png HERE**
+"""
+
+two_placeholders_expected = """
+**ADD path.png HERE**
+**ADD another/path.png HERE**
+"""
+
+
+@pytest.mark.parametrize('post, expected', [
+    [one, one_placeholders_expected],
+    [two, two_placeholders_expected],
+],
+                         ids=['one', 'two'])
+def test_replace_images_with_placeholders(post, expected):
+    assert hugo.replace_images_with_placeholders(post) == expected
