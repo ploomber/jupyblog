@@ -16,12 +16,21 @@ def find_headers(md):
     parser = mistune.create_markdown(renderer=mistune.AstRenderer())
 
     for node in parser(md):
-        if node['type'] == 'heading' and node['level'] == 1:
-            yield node["children"][0]["text"]
+        if node['type'] == 'heading':
+            text = node["children"][0]["text"]
+            level = node['level']
+
+            if level == 6:
+                raise ValueError(
+                    f'Level 6 headers aren ot supoprted: {text!r}')
+
+            yield text, level
 
 
 def replace_headers(md):
-    for header in find_headers(md):
-        md = md.replace(f'# {header}', f'## {header}')
+    for header, level in find_headers(md):
+        prefix = '#' * level
+        prefix_new = '#' * (level + 1)
+        md = md.replace(f'{prefix} {header}', f'{prefix_new} {header}')
 
     return md

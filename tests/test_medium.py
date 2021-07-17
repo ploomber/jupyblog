@@ -51,8 +51,8 @@ def test_export(md, expected):
 
 
 @pytest.mark.parametrize('md, expected', [
-    [one, ['Header']],
-    [two, ['Header', 'Another']],
+    [one, [('Header', 1)]],
+    [two, [('Header', 1), ('Another', 1)]],
 ],
                          ids=['one', 'two'])
 def test_find_headers(md, expected):
@@ -77,11 +77,35 @@ two_out = """
 ```
 """
 
+all_headers = """
+# H1
+## H2
+### H3
+#### H4
+##### H5
+"""
+
+all_headers_expected = """
+## H1
+### H2
+#### H3
+##### H4
+###### H5
+"""
+
 
 @pytest.mark.parametrize('md, expected', [
     [one, one_out],
     [two, two_out],
+    [all_headers, all_headers_expected],
 ],
-                         ids=['one', 'two'])
+                         ids=['one', 'two', 'headers'])
 def test_replace_headers(md, expected):
     assert medium.replace_headers(md) == expected
+
+
+def test_error_if_level_six_header():
+    with pytest.raises(ValueError) as excinfo:
+        medium.replace_headers('###### H6')
+
+    assert str(excinfo.value) == 'Level 6 headers aren ot supoprted: \'H6\''
