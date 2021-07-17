@@ -1,4 +1,3 @@
-from itertools import chain
 from glob import glob
 from pathlib import Path
 

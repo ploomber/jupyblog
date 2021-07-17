@@ -13,7 +13,6 @@ from pathlib import Path
 from functools import partial
 from collections import defaultdict
 
-from jupytext.formats import divine_format
 import jupytext
 import jupyter_client
 import mistune
@@ -59,7 +58,8 @@ def _process_content_data(content,
                 path_to_image = serialized / filename
                 base64_2_image(image_base64, path_to_image)
 
-                return HTML, f'![{idx}](/{canonical_name}/serialized/{filename})'
+                return (HTML,
+                        f'![{idx}](/{canonical_name}/serialized/{filename})')
             else:
                 return PNG, base64_html_tag(image_base64)
         if data.get('text/html'):
@@ -325,8 +325,8 @@ class MarkdownRenderer:
         url_source = 'https://github.com/ploomber/posts/tree/master/{}'.format(
             canonical_name)
         url_params = parse.quote('Issue in {}'.format(canonical_name))
-        url_issue = 'https://github.com/ploomber/posts/issues/new?title={}'.format(
-            url_params)
+        URL_ISSUE = 'https://github.com/ploomber/posts/issues/new?title={}'
+        url_issue = URL_ISSUE.format(url_params)
 
         if expand_opt:
             expand_partial = partial(expand, root_path=self.path)
@@ -366,9 +366,8 @@ class MarkdownRenderer:
                             include_source_in_footer, flavor)
 
         if flavor == 'hugo':
-            print(
-                'Making img links absolute and adding canonical name as prefix...'
-            )
+            print('Making img links absolute and adding '
+                  'canonical name as prefix...')
             md_out = images.make_img_links_absolute(md_out, canonical_name)
 
             path = images.get_first_image_path(md_out)

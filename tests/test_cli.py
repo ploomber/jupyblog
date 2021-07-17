@@ -14,6 +14,7 @@ def test_sample_post(tmp_sample_post):
     content = Path('content', 'posts', 'sample_post.md').read_text()
     metadata = parse_metadata(content)
 
+    assert not result.exit_code
     assert content
     assert metadata['authors']
     assert metadata['title'] == 'some awesome post'
@@ -28,6 +29,7 @@ def test_with_python_code(tmp_with_py_code):
     content = Path('content', 'posts', 'with_py_code.md').read_text()
     metadata = parse_metadata(content)
 
+    assert not result.exit_code
     assert content
     assert metadata['authors']
     assert metadata['title'] == 'some awesome post'
@@ -42,6 +44,7 @@ def test_image(tmp_image):
     content = Path('content', 'posts', 'image.md').read_text()
     metadata = parse_metadata(content)
 
+    assert not result.exit_code
     assert '![jupyter](/image/jupyter.png)' in content
     assert Path('static', 'image', 'jupyter.png').is_file()
     assert Path('jupyter.png').is_file()

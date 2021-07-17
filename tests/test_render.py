@@ -1,7 +1,7 @@
 import pytest
 from pathlib import Path
 
-from bloggingtools.md import MarkdownRenderer, JupyterSession, ASTExecutor
+from bloggingtools.md import MarkdownRenderer, JupyterSession
 
 simple = """\
 ---

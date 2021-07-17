@@ -6,7 +6,7 @@ import click
 
 from bloggingtools.md import MarkdownRenderer
 from bloggingtools import util, config
-from bloggingtools import medium
+from bloggingtools import medium as medium_module
 
 
 @click.group()
@@ -22,7 +22,7 @@ def medium(path):
     Then upload with: https://markdowntomedium.com/
     """
     md = Path(path).read_text()
-    click.echo(medium.export(md))
+    click.echo(medium_module.export(md))
 
 
 @cli.command()
