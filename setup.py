@@ -34,6 +34,8 @@ DEV = [
     'pytest',
     'yapf',
     'flake8',
+    'mkdocs',
+    'invoke',
 ]
 
 setup(
