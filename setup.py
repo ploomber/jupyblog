@@ -23,13 +23,26 @@ def read(*names, **kwargs):
                    encoding=kwargs.get('encoding', 'utf8')).read()
 
 
+REQUIRES = [
+    'pyyaml',
+    'jinja2',
+    'jupyter_client',
+    'ipykernel',
+    'click',
+    'jupytext',
+    'parso',
+    'mistune>=2.0.0rc1',
+    'pydantic',
+]
+
 DEV = [
     'pytest',
     'yapf',
     'flake8',
     'mkdocs',
     'invoke',
-    'pydantic',
+    # for plotting example
+    'matplotlib',
 ]
 
 setup(
@@ -46,16 +59,7 @@ setup(
     package_data={"": ["*.txt", "*.rst"]},
     classifiers=[],
     keywords=[],
-    install_requires=[
-        'pyyaml',
-        'jinja2',
-        'jupyter_client',
-        'ipykernel',
-        'click',
-        'jupytext',
-        'parso',
-        'mistune>=2.0.0rc1',
-    ],
+    install_requires=REQUIRES,
     extras_require={'dev': DEV},
     entry_points={
         'console_scripts': ['jupyblog=jupyblog.cli:render'],
