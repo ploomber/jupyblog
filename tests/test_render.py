@@ -127,7 +127,6 @@ def test_execute(tmp_image, md, expected):
     out = renderer.render('post.md',
                           'hugo',
                           include_source_in_footer=False,
-                          expand_enable=False,
                           execute_code=True)
     assert expected in out[0]
 
@@ -137,7 +136,6 @@ def test_expand(tmp_expand_placeholder):
     out = renderer.render('post.md',
                           'hugo',
                           include_source_in_footer=False,
-                          expand_enable=True,
                           execute_code=True)
     expected = """\
 ```python
@@ -153,7 +151,6 @@ def test_expand_symbol(tmp_expand_placeholder):
     out = renderer.render('another.md',
                           'hugo',
                           include_source_in_footer=False,
-                          expand_enable=True,
                           execute_code=True)
     expected = """\
 ```python
@@ -179,7 +176,6 @@ def test_image_serialize(tmp_image):
     out = renderer.render('post.md',
                           'hugo',
                           include_source_in_footer=False,
-                          expand_enable=False,
                           execute_code=True)
 
     assert Path('static', 'image', 'serialized', '1.png').exists()

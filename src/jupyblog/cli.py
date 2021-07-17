@@ -15,9 +15,8 @@ from jupyblog import medium as medium_module
               is_flag=True,
               help='Whether the source will be on Github or not')
 @click.option('--log', default=None, help='Set logging level')
-@click.option('--expand', default=False, help='Expand')
 @click.option('--no-execute', is_flag=True, help='Skip code execution')
-def render(flavor, incsource, log, expand, no_execute):
+def render(flavor, incsource, log, no_execute):
     """Render markdown
 
     >>> jupyblog render . hugo # looks for post.md
@@ -62,7 +61,6 @@ def render(flavor, incsource, log, expand, no_execute):
     out, _ = mdr.render(name='post.md',
                         flavor=flavor,
                         include_source_in_footer=incsource,
-                        expand_enable=expand,
                         execute_code=not no_execute)
     out_path = Path(post_dir, (post_name + '.md'))
     click.echo(f'Output: {out_path}')

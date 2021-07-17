@@ -294,17 +294,9 @@ class MarkdownRenderer:
                                undefined=DebugUndefined)
         self.parser = ast_parser()
 
-    def render(self, name, flavor, *, include_source_in_footer, expand_enable,
-               execute_code):
+    def render(self, name, flavor, *, include_source_in_footer, execute_code):
         """
         flavor: hugo, devto, medium
-
-        Parmeters
-        ---------
-        expand_enable : bool
-            If True, it allows the use of '{{expand("file.py")'}} to replace
-            with the content of such file or '{{expand("file.py@symbol")'}}
-            to replace with a specific symbol in such file
         """
         if flavor not in {'hugo', 'devto', 'medium'}:
             raise ValueError('flavor must be one of hugo, devto or medium')
@@ -335,7 +327,7 @@ class MarkdownRenderer:
         URL_ISSUE = 'https://github.com/ploomber/posts/issues/new?title={}'
         url_issue = URL_ISSUE.format(url_params)
 
-        if expand_enable:
+        if front_matter.settings.allow_expand:
             expand_partial = partial(expand, root_path=self.path)
             content = Template(md_raw).render(expand=expand_partial,
                                               url_source=url_source,
