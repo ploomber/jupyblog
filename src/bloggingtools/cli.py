@@ -78,7 +78,7 @@ def render(path, flavor, outdir, incsource, log, name, expand, no_execute):
         click.echo('Finished running build.sh\n\n')
 
     click.echo('Rendering markdown...')
-    mdr = MarkdownRenderer(path_to_mds=path)
+    mdr = MarkdownRenderer(path_to_mds=path, img_dir=img_dir)
     out, _ = mdr.render(name=name,
                         flavor=flavor,
                         include_source_in_footer=incsource,

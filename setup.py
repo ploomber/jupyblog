@@ -36,6 +36,7 @@ DEV = [
     'flake8',
     'mkdocs',
     'invoke',
+    'pydantic',
 ]
 
 setup(

@@ -1,3 +1,4 @@
+from pathlib import PurePosixPath
 import re
 
 # match ![any num of word characters or hyphens](filename)
@@ -11,8 +12,11 @@ def find_images(md):
 
 def make_img_links_absolute(post, prefix):
     for img, img_link in find_images(post):
-        img_link_fixed = '/' + prefix + '/' + img_link.split('/')[-1]
-        post = post.replace(img, img.replace(img_link, img_link_fixed))
+        # ignore paths that are already absolute, they come from
+        # serialized images
+        if not PurePosixPath(img_link).is_absolute():
+            img_link_fixed = '/' + prefix + '/' + img_link.split('/')[-1]
+            post = post.replace(img, img.replace(img_link, img_link_fixed))
 
     return post
 

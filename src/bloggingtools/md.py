@@ -3,6 +3,8 @@ TODO:
 * support for requirements.txt
 * create and destroy env
 """
+import shutil
+import base64
 import queue
 from datetime import datetime, timezone
 from urllib import parse
@@ -19,7 +21,7 @@ import yaml
 from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
 import parso
 
-from bloggingtools import util, images
+from bloggingtools import util, images, models
 
 logger = logging.getLogger(__name__)
 
@@ -28,16 +30,38 @@ HTML = 'text/html'
 PNG = 'image/png'
 
 
+def base64_2_image(message, path_to_image):
+    bytes = message.encode().strip()
+    message_bytes = base64.b64decode(bytes)
+    Path(path_to_image).write_bytes(message_bytes)
+
+
 def base64_html_tag(base64):
     return f'<img src="data:image/png;base64, {base64.strip()}"/>'
 
 
-def _process_content_data(content):
+def _process_content_data(content,
+                          idx,
+                          serialize_images=False,
+                          img_dir=None,
+                          canonical_name=None):
     if 'data' in content:
         data = content['data']
 
         if data.get('image/png'):
-            return PNG, base64_html_tag(data.get('image/png'))
+            image_base64 = data.get('image/png')
+
+            if serialize_images:
+                serialized = Path(img_dir, canonical_name, 'serialized')
+                serialized.mkdir(exist_ok=True, parents=True)
+
+                filename = f'{idx}.png'
+                path_to_image = serialized / filename
+                base64_2_image(image_base64, path_to_image)
+
+                return HTML, f'![{idx}](/{canonical_name}/serialized/{filename})'
+            else:
+                return PNG, base64_html_tag(image_base64)
         if data.get('text/html'):
             return HTML, data.get('text/html')
         else:
@@ -55,13 +79,16 @@ class JupyterSession:
     >>> s = JupyterSession()
     >>> s.execute('1 + 10')
     """
-    def __init__(self):
+    def __init__(self, front_matter=None, img_dir=None, canonical_name=None):
         self.km = jupyter_client.KernelManager()
         self.km.start_kernel()
         self.kc = self.km.client()
         self.kc.start_channels()
         self.kc.wait_for_ready()
         self.out = defaultdict(lambda: [])
+        self._front_matter = front_matter or models.FrontMatter()
+        self._img_dir = img_dir
+        self._canonical_name = canonical_name
 
     def execute(self, code):
         out = []
@@ -80,10 +107,24 @@ class JupyterSession:
             if 'execution_state' not in io_msg['content']:
                 out.append(io_msg)
 
-        return [
-            _process_content_data(o['content']) for o in out
-            if _process_content_data(o['content'])
+        # clean up folder with serialized images if needed
+        if self._front_matter.settings.serialize_images:
+            serialized = Path(self._img_dir, self._canonical_name,
+                              'serialized')
+
+            if serialized.is_dir():
+                shutil.rmtree(serialized)
+
+        processed = [
+            _process_content_data(
+                o['content'],
+                idx,
+                serialize_images=self._front_matter.settings.serialize_images,
+                img_dir=self._img_dir,
+                canonical_name=self._canonical_name)
+            for idx, o in enumerate(out)
         ]
+        return [content for content in processed if content]
 
     def __del__(self):
         self.km.shutdown_kernel()
@@ -105,8 +146,14 @@ def parse_info(info):
 
 
 class ASTExecutor:
-    def __init__(self, wd=None):
-        self.session = JupyterSession()
+    def __init__(self,
+                 wd=None,
+                 front_matter=None,
+                 img_dir=None,
+                 canonical_name=None):
+        self.session = JupyterSession(front_matter=front_matter,
+                                      img_dir=img_dir,
+                                      canonical_name=canonical_name)
         self.wd = wd if wd is None else Path(wd)
 
     def __call__(self, md_ast):
@@ -240,8 +287,9 @@ class MarkdownRenderer:
     out = mdr.render('sample.md')
     Path('out.md').write_text(out)
     """
-    def __init__(self, path_to_mds):
+    def __init__(self, path_to_mds, img_dir=None):
         self.path = path_to_mds
+        self._img_dir = img_dir
         self.env = Environment(loader=FileSystemLoader(path_to_mds),
                                undefined=DebugUndefined)
         self.parser = ast_parser()
@@ -264,7 +312,10 @@ class MarkdownRenderer:
             md_raw = jupytext.writes(nb, fmt='md')
 
         md_ast = self.parser(md_raw)
+        # TODO: replace and use model object
         metadata = parse_metadata(md_raw)
+
+        front_matter = models.FrontMatter(**metadata)
 
         # first render, just expand (expanded snippets are NOT executed)
         # also expand urls
@@ -290,7 +341,8 @@ class MarkdownRenderer:
         # parse again to get expanded code
         if execute_code:
             md_ast = self.parser(content)
-            md_out = run_snippets(md_ast, content)
+            md_out = run_snippets(md_ast, content, front_matter, self._img_dir,
+                                  canonical_name)
         else:
             md_out = content
 
@@ -375,9 +427,11 @@ Originally posted at [ploomber.io]({{canonical_url}})
     return md_out
 
 
-def run_snippets(md_ast, content):
+def run_snippets(md_ast, content, front_matter, img_dir, canonical_name):
     # second render, add output
-    executor = ASTExecutor()
+    executor = ASTExecutor(front_matter=front_matter,
+                           img_dir=img_dir,
+                           canonical_name=canonical_name)
 
     # execute
     blocks = executor(md_ast)

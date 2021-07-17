@@ -87,6 +87,32 @@ Image('jupyter.png')
 <img src="data:image/png;base64, \
 """
 
+image_serialize = """\
+---
+title: title
+description: description
+settings:
+    serialize_images: True
+---
+
+```python
+from IPython.display import Image
+Image('jupyter.png')
+```
+"""
+
+image_serialize_expected = """\
+```python
+from IPython.display import Image
+Image('jupyter.png')
+```
+
+
+**Console output: (1/1):**
+
+![1](/image/serialized/1.png)
+"""
+
 
 @pytest.mark.parametrize('md, expected', [
     [simple, expected],
@@ -99,9 +125,23 @@ def test_execute(tmp_image, md, expected):
     renderer = MarkdownRenderer('.')
 
     out = renderer.render('post.md', 'hugo', False, False, True)
-
-    print(out[0])
     assert expected in out[0]
+
+
+def test_image_serialize(tmp_image):
+    Path('post.md').write_text(image_serialize)
+    renderer = MarkdownRenderer('.', 'static')
+
+    serialized = Path('static', 'image', 'serialized')
+    serialized.mkdir(parents=True)
+    (serialized / 'old.png').touch()
+
+    out = renderer.render('post.md', 'hugo', False, False, True)
+
+    assert Path('static', 'image', 'serialized', '1.png').exists()
+    # must clean up existing images
+    assert not (serialized / 'old.png').exists()
+    assert image_serialize_expected in out[0]
 
 
 @pytest.mark.parametrize('code, output', [
