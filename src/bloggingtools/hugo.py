@@ -19,5 +19,10 @@ def make_img_links_absolute(post, prefix):
 
 def get_first_image_path(md):
     images = find_images(md)
-    _, path = next(images)
+
+    try:
+        _, path = next(images)
+    except StopIteration:
+        return None
+
     return path

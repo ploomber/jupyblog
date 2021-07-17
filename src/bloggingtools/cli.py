@@ -91,7 +91,6 @@ def render(path, flavor, outdir, incsource, log, name, expand, no_execute):
                         include_source_in_footer=incsource,
                         expand_opt=expand,
                         execute_code=not no_execute)
-
     out_path = Path(post_dir, (post_name + '.md'))
     click.echo(f'Output: {out_path}')
 

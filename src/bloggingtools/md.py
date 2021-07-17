@@ -149,28 +149,16 @@ class ASTExecutor:
         del self.session
 
 
-def parse_metadata(md_ast):
+def parse_metadata(md):
     """Parse markdown metadata
     """
-    found = False
-    idx = 0
-
-    for e in md_ast:
-        if e['type'] == 'thematic_break':
-            found = True
-            break
-        else:
-            idx += 1
-
-    if found:
-        return yaml.load(md_ast[idx + 1]['children'][0]['text'],
-                         Loader=yaml.SafeLoader)
-    else:
-        return {}
+    start, end = find_metadata_lines(md)
+    lines = md.splitlines()
+    return yaml.safe_load('\n'.join(lines[start:end])) or {}
 
 
-def replace_metadata(md, new_metadata):
-    lines = md.split('\n')
+def find_metadata_lines(md):
+    lines = md.splitlines()
     idx = []
 
     for i, line in enumerate(lines):
@@ -188,6 +176,13 @@ def replace_metadata(md, new_metadata):
 
     if len(idx) < 2:
         raise ValueError('Closing --- for metadata not found')
+
+    return idx
+
+
+def replace_metadata(md, new_metadata):
+    lines = md.splitlines()
+    idx = find_metadata_lines(md)
 
     lines_new = lines[idx[1] + 1:]
 
@@ -224,6 +219,10 @@ def expand(path, root_path=None):
     return '```python skip=True\n{}\n{}\n```'.format(comment, content)
 
 
+def ast_parser():
+    return mistune.create_markdown(renderer=mistune.AstRenderer())
+
+
 class MarkdownRenderer:
     """
 
@@ -235,14 +234,13 @@ class MarkdownRenderer:
         self.path = path_to_mds
         self.env = Environment(loader=FileSystemLoader(path_to_mds),
                                undefined=DebugUndefined)
-        self.parser = mistune.create_markdown(renderer=mistune.AstRenderer())
+        self.parser = ast_parser()
 
     def render(self, name, flavor, include_source_in_footer, expand_opt,
                execute_code):
         """
         flavor: hugo, devto, medium
         """
-
         if flavor not in {'hugo', 'devto', 'medium'}:
             raise ValueError('flavor must be one of hugo, devto or medium')
         else:
@@ -256,7 +254,7 @@ class MarkdownRenderer:
             md_raw = jupytext.writes(nb, fmt='md')
 
         md_ast = self.parser(md_raw)
-        metadata = parse_metadata(md_ast)
+        metadata = parse_metadata(md_raw)
 
         # first render, just expand (expanded snippets are NOT executed)
         # also expand urls
@@ -302,8 +300,6 @@ class MarkdownRenderer:
                 print('Removing tags in metadata...')
                 del metadata['tags']
 
-        md_out = replace_metadata(md_out, metadata)
-
         md_out = add_footer(md_out, metadata['title'], canonical_name,
                             include_source_in_footer, flavor)
 
@@ -312,6 +308,13 @@ class MarkdownRenderer:
                 'Making img links absolute and adding canonical name as prefix...'
             )
             md_out = hugo.make_img_links_absolute(md_out, canonical_name)
+
+            path = hugo.get_first_image_path(md_out)
+
+            if path:
+                metadata['images'] = [path]
+
+        md_out = replace_metadata(md_out, metadata)
 
         # FIXME: remove canonical name, add it as a parameter
         return md_out, canonical_name
