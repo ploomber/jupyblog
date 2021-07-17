@@ -63,12 +63,38 @@ skip_expected = """\
 ```
 """
 
+image = """\
+---
+title: title
+description: description
+---
+
+```python
+from IPython.display import Image
+Image('jupyter.png')
+```
+"""
+
+image_expected = """\
+```python
+from IPython.display import Image
+Image('jupyter.png')
+```
+
+
+**Console output: (1/1):**
+
+<img src="data:image/png;base64, \
+"""
+
 
 @pytest.mark.parametrize('md, expected', [
     [simple, expected],
     [skip, skip_expected],
-])
-def test_execute(tmp_empty, md, expected):
+    [image, image_expected],
+],
+                         ids=['simple', 'skip', 'image'])
+def test_execute(tmp_image, md, expected):
     Path('post.md').write_text(md)
     renderer = MarkdownRenderer('.')
 

@@ -25,11 +25,19 @@ logger = logging.getLogger(__name__)
 
 PLAIN = 'text/plain'
 HTML = 'text/html'
+PNG = 'image/png'
+
+
+def base64_html_tag(base64):
+    return f'<img src="data:image/png;base64, {base64.strip()}"/>'
 
 
 def _process_content_data(content):
     if 'data' in content:
         data = content['data']
+
+        if data.get('image/png'):
+            return PNG, base64_html_tag(data.get('image/png'))
         if data.get('text/html'):
             return HTML, data.get('text/html')
         else:
