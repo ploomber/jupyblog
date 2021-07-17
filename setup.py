@@ -30,6 +30,12 @@ def read(*names, **kwargs):
                    encoding=kwargs.get('encoding', 'utf8')).read()
 
 
+DEV = [
+    'pytest',
+    'yapf',
+    'flake8',
+]
+
 setup(
     name='bloggingtools',
     version=VERSION,
@@ -54,7 +60,7 @@ setup(
         'parso',
         'mistune>=2.0.0rc1',
     ],
-    extras_require={},
+    extras_require={'dev': DEV},
     entry_points={
         'console_scripts': ['btools=bloggingtools.cli:cli'],
     },
