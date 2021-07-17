@@ -1,23 +1,7 @@
 """
 TODO:
-    * support for requirements.txt
-    * create and destroy env
-
-https://github.com/eclecticiq/rundoc
-md spec: https://commonmark.org/
-
-https://jupyter-client.readthedocs.io/en/stable/api/manager.html
-
-https://stackoverflow.com/questions/9977446/connecting-to-a-remote-ipython-instance
-https://stackoverflow.com/questions/33731744/executing-code-in-ipython-kernel-with-the-kernelclient-api
-
-
-TODO:
-    validate metadata
-        description: used for SEO in ploomber.io (meta description tag)
-        tags: used in dev.to
-        title, date: needed by hugo
-
+* support for requirements.txt
+* create and destroy env
 """
 import queue
 from datetime import datetime, timezone
