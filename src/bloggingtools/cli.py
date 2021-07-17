@@ -88,6 +88,9 @@ def render(path, flavor, outdir, incsource, log, name, expand, no_execute):
     out_path = Path(post_dir, (post_name + '.md'))
     click.echo(f'Output: {out_path}')
 
+    if flavor == 'medium':
+        out = medium_module.export(out)
+
     out_path.write_text(out)
 
     img_dir = Path(img_dir).resolve()

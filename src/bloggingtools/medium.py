@@ -1,13 +1,13 @@
 import mistune
 
-from bloggingtools.images import replace_images_with_placeholders
+from bloggingtools.images import add_image_placeholders
 
 
 def export(md):
     """Export markdown string for Medium
     """
     md = md.replace('```python', '```py')
-    md = replace_images_with_placeholders(md)
+    md = add_image_placeholders(md)
     md = replace_headers(md)
     return md
 

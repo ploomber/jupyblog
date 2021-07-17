@@ -12,6 +12,7 @@ one_expected = """
 ## Header
 
 **ADD img.png HERE**
+![img](img.png)
 """
 
 two = """
@@ -30,6 +31,7 @@ two_expected = """
 ## Header
 
 **ADD img.png HERE**
+![img](img.png)
 
 ## Another
 

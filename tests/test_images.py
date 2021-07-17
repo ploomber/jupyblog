@@ -74,6 +74,7 @@ one_placeholders_expected = """
 # Header
 
 **ADD path.png HERE**
+![something](path.png)
 
 ```python
 # Not a header
@@ -84,10 +85,12 @@ two_placeholders_expected = """
 # Header
 
 **ADD path.png HERE**
+![something](path.png)
 
 # Another
 
 **ADD another/path.png HERE**
+![another](another/path.png)
 """
 
 
@@ -97,4 +100,4 @@ two_placeholders_expected = """
 ],
                          ids=['one', 'two'])
 def test_replace_images_with_placeholders(post, expected):
-    assert images.replace_images_with_placeholders(post) == expected
+    assert images.add_image_placeholders(post) == expected
