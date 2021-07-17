@@ -1,6 +1,6 @@
 import pytest
 
-from bloggingtools import util
+from jupyblog import util
 
 md_in = """
 

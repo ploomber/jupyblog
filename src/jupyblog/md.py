@@ -20,7 +20,7 @@ import yaml
 from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
 import parso
 
-from bloggingtools import util, images, models
+from jupyblog import util, images, models
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +75,7 @@ def _process_content_data(content,
 class JupyterSession:
     """
 
-    >>> from bloggingtools.md import JupyterSession
+    >>> from jupyblog.md import JupyterSession
     >>> s = JupyterSession()
     >>> s.execute('1 + 10')
     """

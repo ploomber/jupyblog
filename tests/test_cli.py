@@ -2,8 +2,8 @@ from pathlib import Path
 
 from click.testing import CliRunner
 
-from bloggingtools.cli import cli
-from bloggingtools.md import parse_metadata
+from jupyblog.cli import cli
+from jupyblog.md import parse_metadata
 
 
 def test_sample_post(tmp_sample_post):

@@ -1,5 +1,5 @@
 import pytest
-from bloggingtools import md
+from jupyblog import md
 
 
 def test_error_if_no_front_matter():

@@ -1,4 +1,4 @@
-from bloggingtools.models import FrontMatter
+from jupyblog.models import FrontMatter
 
 
 def test_defaults():

@@ -4,9 +4,9 @@ from pathlib import Path
 
 import click
 
-from bloggingtools.md import MarkdownRenderer
-from bloggingtools import util, config
-from bloggingtools import medium as medium_module
+from jupyblog.md import MarkdownRenderer
+from jupyblog import util, config
+from jupyblog import medium as medium_module
 
 
 @click.group()

@@ -1,6 +1,6 @@
 import pytest
 
-from bloggingtools import medium
+from jupyblog import medium
 
 one = """
 # Header

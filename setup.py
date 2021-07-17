@@ -19,7 +19,7 @@ from setuptools import setup
 
 _version_re = re.compile(r'__version__\s+=\s+(.*)')
 
-with open('src/bloggingtools/__init__.py', 'rb') as f:
+with open('src/jupyblog/__init__.py', 'rb') as f:
     VERSION = str(
         ast.literal_eval(
             _version_re.search(f.read().decode('utf-8')).group(1)))
@@ -40,7 +40,7 @@ DEV = [
 ]
 
 setup(
-    name='bloggingtools',
+    name='jupyblog',
     version=VERSION,
     description=None,
     license=None,
@@ -65,6 +65,6 @@ setup(
     ],
     extras_require={'dev': DEV},
     entry_points={
-        'console_scripts': ['btools=bloggingtools.cli:cli'],
+        'console_scripts': ['jupyblog=jupyblog.cli:cli'],
     },
 )

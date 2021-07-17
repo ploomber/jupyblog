@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from bloggingtools.util import copy_all_pngs
+from jupyblog.util import copy_all_pngs
 
 
 @pytest.mark.parametrize('images, images_expected', [

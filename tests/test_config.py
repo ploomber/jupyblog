@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from bloggingtools.config import get_config
+from jupyblog.config import get_config
 
 
 def test_missing_config_toml(tmp_empty):

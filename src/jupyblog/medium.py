@@ -1,6 +1,6 @@
 import mistune
 
-from bloggingtools.images import add_image_placeholders
+from jupyblog.images import add_image_placeholders
 
 
 def export(md):

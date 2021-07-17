@@ -1,4 +1,4 @@
-# bloggingtools
+# jupyblog
 
 ## Installation
 

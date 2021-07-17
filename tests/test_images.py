@@ -1,5 +1,5 @@
 import pytest
-from bloggingtools import images
+from jupyblog import images
 
 one = """
 # Header
