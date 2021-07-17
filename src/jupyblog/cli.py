@@ -11,15 +11,13 @@ from jupyblog import medium as medium_module
 
 @click.command()
 @click.argument('flavor')
-@click.option('--outdir', default=None, help='Output directory')
 @click.option('--incsource',
               is_flag=True,
               help='Whether the source will be on Github or not')
 @click.option('--log', default=None, help='Set logging level')
-@click.option('--name', default='post.md', help='File with the post')
 @click.option('--expand', default=False, help='Expand')
-@click.option('--no-execute', is_flag=True)
-def render(flavor, outdir, incsource, log, name, expand, no_execute):
+@click.option('--no-execute', is_flag=True, help='Skip code execution')
+def render(flavor, incsource, log, expand, no_execute):
     """Render markdown
 
     >>> jupyblog render . hugo # looks for post.md
@@ -61,7 +59,7 @@ def render(flavor, outdir, incsource, log, name, expand, no_execute):
 
     click.echo('Rendering markdown...')
     mdr = MarkdownRenderer(path_to_mds=path, img_dir=img_dir)
-    out, _ = mdr.render(name=name,
+    out, _ = mdr.render(name='post.md',
                         flavor=flavor,
                         include_source_in_footer=incsource,
                         expand_opt=expand,
