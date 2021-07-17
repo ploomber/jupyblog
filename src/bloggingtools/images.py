@@ -16,8 +16,8 @@ def process_image_links(post, prefix, *, absolute):
         # serialized images
 
         if not PurePosixPath(img_link).is_absolute():
-            img_link_fixed = ('/' if absolute else
-                              '') + prefix + '/' + img_link.split('/')[-1]
+            img_link_fixed = ('/'
+                              if absolute else '') + prefix + '/' + img_link
             post = post.replace(img, img.replace(img_link, img_link_fixed))
 
     return post

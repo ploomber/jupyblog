@@ -59,6 +59,6 @@ def copy_all_pngs(src, target, dir_name):
         rel_path = str(Path(img).relative_to(src))
         target_file = Path(target, dir_name, rel_path)
         target_file.parent.mkdir(parents=True, exist_ok=True)
-        print('Moving %s to %s' % (img, target_file))
+        print('Copying %s to %s' % (img, target_file))
 
         shutil.copy(img, target_file)

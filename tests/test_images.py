@@ -48,7 +48,8 @@ def test_get_first_image_path(post):
 def test_file_process_image_links():
     post = '![img](static/img.png)\n\n![img2](static/img2.png)'
     post_new = images.process_image_links(post, 'post', absolute=True)
-    assert post_new == '![img](/post/img.png)\n\n![img2](/post/img2.png)'
+    expected = '![img](/post/static/img.png)\n\n![img2](/post/static/img2.png)'
+    assert post_new == expected
 
 
 @pytest.mark.parametrize("test_input,expected", [

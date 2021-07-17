@@ -53,6 +53,23 @@ def test_image(tmp_image):
     assert metadata['images'][0] == '/image/jupyter.png'
 
 
+def test_image_nested(tmp_image_nested):
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ['render', '.', 'hugo', '--no-execute'],
+                           catch_exceptions=False)
+
+    content = Path('content', 'posts', 'image-nested.md').read_text()
+    metadata = parse_metadata(content)
+
+    assert not result.exit_code
+    assert '![jupyter](/image-nested/images/jupyter.png)' in content
+    assert Path('static', 'image-nested', 'images', 'jupyter.png').is_file()
+    assert metadata['authors']
+    assert metadata['title'] == 'some awesome post'
+    assert metadata['images'][0] == '/image-nested/images/jupyter.png'
+
+
 def test_image_medium(tmp_image):
     runner = CliRunner()
     result = runner.invoke(cli, ['render', '.', 'medium', '--no-execute'],

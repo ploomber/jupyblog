@@ -59,3 +59,12 @@ def tmp_image(tmp_path):
     os.chdir(str(tmp))
     yield tmp
     os.chdir(old)
+
+
+@pytest.fixture
+def tmp_image_nested(tmp_path):
+    tmp = _copy_from_assets(tmp_path, 'image-nested')
+    old = os.getcwd()
+    os.chdir(str(tmp))
+    yield tmp
+    os.chdir(old)
