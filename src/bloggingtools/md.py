@@ -19,6 +19,7 @@ TODO:
         title, date: needed by hugo
 
 """
+import queue
 from datetime import datetime, timezone
 from urllib import parse
 import logging
@@ -38,23 +39,27 @@ from bloggingtools import util, hugo
 
 logger = logging.getLogger(__name__)
 
+PLAIN = 'text/plain'
+HTML = 'text/html'
 
-def process_content_data(content_data):
-    html = content_data.get('text/html')
-    plain = content_data.get('text/plain')
 
-    if html:
-        return 'text/html', html
-
-    if plain:
-        return 'text/plain', plain
-    else:
-        return None
+def _process_content_data(content):
+    if 'data' in content:
+        data = content['data']
+        if data.get('text/html'):
+            return HTML, data.get('text/html')
+        else:
+            return PLAIN, data['text/plain']
+    elif 'text' in content:
+        return (PLAIN, content['text'].rstrip())
+    elif 'traceback' in content:
+        return PLAIN, '\n'.join(content['traceback'])
 
 
 class JupyterSession:
     """
 
+    >>> from bloggingtools.md import JupyterSession
     >>> s = JupyterSession()
     >>> s.execute('1 + 10')
     """
@@ -64,30 +69,34 @@ class JupyterSession:
         self.kc = self.km.blocking_client()
         self.out = defaultdict(lambda: [])
 
-    def output_hook(self, msg):
-        # code modified from jupyter_client.blocking.client._output_hook_default
-        msg_type = msg['header']['msg_type']
-        content = msg['content']
-        msg_id = msg['parent_header']['msg_id']
-
-        # update the outout given the msg id
-
-        logger.debug('Received message content: %s', content)
-
-        if msg_type == 'stream':
-            t = ('text/plain', content['text'])
-            self.out[msg_id].append(t)
-        elif msg_type in ('display_data', 'execute_result'):
-            t = process_content_data(content['data'])
-            if t is not None:
-                self.out[msg_id].append(t)
-        elif msg_type == 'error':
-            t = ('text/plain', '\n'.join(content['traceback']))
-            self.out[msg_id].append(t)
-
     def execute(self, code):
-        reply = self.kc.execute_interactive(code, output_hook=self.output_hook)
-        return self.out.get(reply['parent_header']['msg_id'])
+        out = []
+        msg_id = self.kc.execute(code)
+
+        io_msg = self.kc.get_iopub_msg(timeout=10)
+        io_msg_content = io_msg['content']
+
+        if 'execution_state' in io_msg_content and io_msg_content[
+                'execution_state'] == 'idle':
+            return "no output"
+
+        while True:
+            if 'execution_state' not in io_msg['content']:
+                out.append(io_msg)
+
+            try:
+                io_msg = self.kc.get_iopub_msg(timeout=2)
+                io_msg_content = io_msg['content']
+                if 'execution_state' in io_msg_content and io_msg_content[
+                        'execution_state'] == 'idle':
+                    break
+            except queue.Empty:
+                break
+
+        return [
+            _process_content_data(o['content']) for o in out
+            if _process_content_data(o['content'])
+        ]
 
     def __del__(self):
         self.km.shutdown_kernel()
@@ -114,6 +123,7 @@ class ASTExecutor:
         self.wd = wd if wd is None else Path(wd)
 
     def __call__(self, md_ast):
+
         logger.debug('Starting python code execution...')
 
         if self.wd:
