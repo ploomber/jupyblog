@@ -171,6 +171,7 @@ def test_expand(tmp_expand_placeholder, renderer):
 ```python
 # Content of script.py
 1 + 1
+
 ```
 """
     assert expected in out[0]
