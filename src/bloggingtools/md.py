@@ -149,12 +149,23 @@ class ASTExecutor:
         del self.session
 
 
-def parse_metadata(md):
+def validate_metadata(metadata):
+    for field in ['title', 'description']:
+        if field not in metadata:
+            raise ValueError(f'missing {field} in:\n{metadata}')
+
+
+def parse_metadata(md, validate=True):
     """Parse markdown metadata
     """
     start, end = find_metadata_lines(md)
     lines = md.splitlines()
-    return yaml.safe_load('\n'.join(lines[start:end])) or {}
+    metadata = yaml.safe_load('\n'.join(lines[start:end])) or {}
+
+    if validate:
+        validate_metadata(metadata)
+
+    return metadata
 
 
 def find_metadata_lines(md):

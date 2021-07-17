@@ -45,4 +45,4 @@ b:
     }],
 ])
 def test_parse_metadata(md_str, metadata):
-    assert md.parse_metadata(md_str) == metadata
+    assert md.parse_metadata(md_str, validate=False) == metadata
