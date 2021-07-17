@@ -19,9 +19,8 @@ from jupyblog import medium as medium_module
 def render(hugo, incsource, log, no_execute):
     """Render markdown
 
-    >>> jupyblog render . hugo # looks for post.md
-    >>> jupyblog render . medium # Then upload with: https://markdowntomedium.com/
-
+    >>> jupyblog # Then upload with: https://markdowntomedium.com/
+    >>> jupyblog --hugo # looks for post.md
 
     * Runs build.sh first if it exists
     * Runs cells and include output as new cells (post.md)
