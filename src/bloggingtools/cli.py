@@ -44,10 +44,8 @@ def medium(path):
 def render(path, flavor, outdir, incsource, log, name, expand, no_execute):
     """Render markdown
 
-    # convert post in current directory
-    btools . hugo
+    >>> btools . hugo # looks for post.md
 
-    * Looks for post and static location in an env.yaml (only for hugo)
     * Runs build.sh first if it exists
     * Runs cells and include output as new cells (post.md)
     * Fix relative links to images (moves images and renames them as well)

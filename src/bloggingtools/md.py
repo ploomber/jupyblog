@@ -150,6 +150,8 @@ class ASTExecutor:
 
 
 def validate_metadata(metadata):
+    # description required for open graph:
+    # https://gohugo.io/templates/internal/#open-graph
     for field in ['title', 'description']:
         if field not in metadata:
             raise ValueError(f'missing {field} in:\n{metadata}')
