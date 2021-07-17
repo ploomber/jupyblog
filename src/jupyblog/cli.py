@@ -28,8 +28,8 @@ def cli():
 def render(path, flavor, outdir, incsource, log, name, expand, no_execute):
     """Render markdown
 
-    >>> btools . hugo # looks for post.md
-    >>> btools . medium # Then upload with: https://markdowntomedium.com/
+    >>> jupyblog . hugo # looks for post.md
+    >>> jupyblog . medium # Then upload with: https://markdowntomedium.com/
 
 
     * Runs build.sh first if it exists
@@ -38,7 +38,7 @@ def render(path, flavor, outdir, incsource, log, name, expand, no_execute):
     * Add datetime to front matter
     * For hugo sets draft=True
     * Keeps all other files intact
-    * Adds btools commit version that generated it to front matter
+    * Adds jupyblog commit version that generated it to front matter
 
     Notes
     -----
