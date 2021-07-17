@@ -1,2 +1,6 @@
 site_name: My Docs
 site_url: https://example.com/
+nav:
+  - Home: index.md
+  - Example: post.md
+  - Rendered: output/docs.md

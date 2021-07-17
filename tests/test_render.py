@@ -113,13 +113,30 @@ Image('jupyter.png')
 ![1](/image/serialized/1.png)
 """
 
+plot = """\
+---
+title: title
+description: description
+---
+
+```python
+import matplotlib.pyplot as plt
+plt.plot([1, 2, 3])
+```
+"""
+
+plot_expected = """\
+<img src="data:image/png;base64,\
+"""
+
 
 @pytest.mark.parametrize('md, expected', [
     [simple, expected],
     [skip, skip_expected],
     [image, image_expected],
+    [plot, plot_expected],
 ],
-                         ids=['simple', 'skip', 'image'])
+                         ids=['simple', 'skip', 'image', 'plot'])
 def test_execute(tmp_image, md, expected):
     Path('post.md').write_text(md)
     renderer = MarkdownRenderer('.')
@@ -184,6 +201,13 @@ def test_image_serialize(tmp_image):
     assert image_serialize_expected in out[0]
 
 
+@pytest.fixture
+def session():
+    s = JupyterSession()
+    yield s
+    del s
+
+
 @pytest.mark.parametrize(
     'code, output',
     [['print(1); print(1)', ('text/plain', '1\n1')],
@@ -192,13 +216,12 @@ def test_image_serialize(tmp_image):
          'from IPython.display import HTML; HTML("<div>hi</div>")',
          ('text/html', '<div>hi</div>')
      ]])
-def test_jupyter_session(code, output):
-    s = JupyterSession()
-    assert s.execute(code) == [output]
+def test_jupyter_session(session, code, output):
+    assert session.execute(code) == [output]
 
 
-def test_jupyter_session_traceback():
-    s = JupyterSession()
-    out = s.execute('raise ValueError("message")')[0][1]
+def test_jupyter_session_traceback(session):
+    session = JupyterSession()
+    out = session.execute('raise ValueError("message")')[0][1]
     assert 'Traceback (most recent call last)' in out
     assert 'ValueError: message' in out
