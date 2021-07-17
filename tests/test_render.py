@@ -158,6 +158,7 @@ def test_execute(tmp_image, renderer, md, expected):
                           is_hugo=True,
                           include_source_in_footer=False,
                           execute_code=True)
+    print(out[0])
     assert expected in out[0]
 
 
