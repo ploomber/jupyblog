@@ -88,6 +88,9 @@ class JupyterSession:
     >>> s = JupyterSession()
     >>> s.execute('1 + 10')
     """
+
+    # Reference for managing kernels
+    # https://github.com/jupyter/jupyter_client/blob/5742d84ca2162e21179d82e8b36e10baf0f8d978/jupyter_client/manager.py#L660
     def __init__(self, front_matter=None, img_dir=None, canonical_name=None):
         self.km = jupyter_client.KernelManager()
         self.km.start_kernel()
@@ -136,7 +139,8 @@ class JupyterSession:
         return [content for content in processed if content]
 
     def __del__(self):
-        self.km.shutdown_kernel()
+        self.kc.stop_channels()
+        self.km.shutdown_kernel(now=True)
 
 
 def parse_info(info):
@@ -454,5 +458,9 @@ def run_snippets(md_ast, content, front_matter, img_dir, canonical_name):
     for block in blocks:
         if block.get('info'):
             md_out = md_out.replace(block['info'], block['info'].split(' ')[0])
+
+    # FIXME: implement ASTExecutor as context manager
+    # clean up resources and kernel
+    del executor
 
     return md_out

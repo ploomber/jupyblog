@@ -130,6 +130,20 @@ plot_expected = """\
 """
 
 
+@pytest.fixture
+def session():
+    s = JupyterSession()
+    yield s
+    del s
+
+
+@pytest.fixture
+def renderer():
+    renderer = MarkdownRenderer('.')
+    yield renderer
+    del renderer
+
+
 @pytest.mark.parametrize('md, expected', [
     [simple, expected],
     [skip, skip_expected],
@@ -137,9 +151,8 @@ plot_expected = """\
     [plot, plot_expected],
 ],
                          ids=['simple', 'skip', 'image', 'plot'])
-def test_execute(tmp_image, md, expected):
+def test_execute(tmp_image, renderer, md, expected):
     Path('post.md').write_text(md)
-    renderer = MarkdownRenderer('.')
 
     out = renderer.render('post.md',
                           is_hugo=True,
@@ -148,8 +161,7 @@ def test_execute(tmp_image, md, expected):
     assert expected in out[0]
 
 
-def test_expand(tmp_expand_placeholder):
-    renderer = MarkdownRenderer('.')
+def test_expand(tmp_expand_placeholder, renderer):
     out = renderer.render('post.md',
                           is_hugo=True,
                           include_source_in_footer=False,
@@ -163,8 +175,7 @@ def test_expand(tmp_expand_placeholder):
     assert expected in out[0]
 
 
-def test_expand_symbol(tmp_expand_placeholder):
-    renderer = MarkdownRenderer('.')
+def test_expand_symbol(tmp_expand_placeholder, renderer):
     out = renderer.render('another.md',
                           is_hugo=True,
                           include_source_in_footer=False,
@@ -201,13 +212,6 @@ def test_image_serialize(tmp_image):
     assert image_serialize_expected in out[0]
 
 
-@pytest.fixture
-def session():
-    s = JupyterSession()
-    yield s
-    del s
-
-
 @pytest.mark.parametrize(
     'code, output',
     [['print(1); print(1)', ('text/plain', '1\n1')],
@@ -221,7 +225,6 @@ def test_jupyter_session(session, code, output):
 
 
 def test_jupyter_session_traceback(session):
-    session = JupyterSession()
     out = session.execute('raise ValueError("message")')[0][1]
     assert 'Traceback (most recent call last)' in out
     assert 'ValueError: message' in out
