@@ -2,7 +2,13 @@ import pytest
 from bloggingtools import hugo
 
 one = """
+# Header
+
 ![something](path.png)
+
+```python
+# Not a header
+```
 """
 
 one_expected = [
@@ -10,7 +16,12 @@ one_expected = [
 ]
 
 two = """
+# Header
+
 ![something](path.png)
+
+# Another
+
 ![another](another/path.png)
 """
 
@@ -53,11 +64,22 @@ def test_make_img_links_absolute(test_input, expected):
 
 
 one_placeholders_expected = """
+# Header
+
 **ADD path.png HERE**
+
+```python
+# Not a header
+```
 """
 
 two_placeholders_expected = """
+# Header
+
 **ADD path.png HERE**
+
+# Another
+
 **ADD another/path.png HERE**
 """
 

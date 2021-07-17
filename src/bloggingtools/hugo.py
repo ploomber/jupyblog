@@ -1,11 +1,11 @@
 import re
 
 # match ![any num of word characters or hyphens](filename)
-REGEX = re.compile(f'!\[[\w-]*\]\((.*)\)')
+REGEX_IMAGE = re.compile(r'!\[[\w-]*\]\((.*)\)')
 
 
 def find_images(md):
-    for match in re.finditer(REGEX, md):
+    for match in re.finditer(REGEX_IMAGE, md):
         yield match.group(0), match.group(1)
 
 
