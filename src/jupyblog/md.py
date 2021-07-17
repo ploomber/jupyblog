@@ -3,6 +3,7 @@ TODO:
 * support for requirements.txt
 * create and destroy env
 """
+import re
 import shutil
 import base64
 import queue
@@ -27,6 +28,14 @@ logger = logging.getLogger(__name__)
 PLAIN = 'text/plain'
 HTML = 'text/html'
 PNG = 'image/png'
+ANSI_ESCAPE = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+
+
+def remove_ansi_escape(s):
+    """
+    https://stackoverflow.com/a/14693789/709975
+    """
+    return ANSI_ESCAPE.sub('', s)
 
 
 def base64_2_image(message, path_to_image):
@@ -69,7 +78,7 @@ def _process_content_data(content,
     elif 'text' in content:
         return (PLAIN, content['text'].rstrip())
     elif 'traceback' in content:
-        return PLAIN, '\n'.join(content['traceback'])
+        return PLAIN, remove_ansi_escape('\n'.join(content['traceback']))
 
 
 class JupyterSession:

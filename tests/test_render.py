@@ -184,15 +184,21 @@ def test_image_serialize(tmp_image):
     assert image_serialize_expected in out[0]
 
 
-@pytest.mark.parametrize('code, output', [
-    ['print(1); print(1)', ('text/plain', '1\n1')],
-    ['1 + 1', ('text/plain', '2')],
-    ['print(1 + 1)', ('text/plain', '2')],
-    [
-        'from IPython.display import HTML; HTML("<div>hi</div>")',
-        ('text/html', '<div>hi</div>')
-    ],
-])
+@pytest.mark.parametrize(
+    'code, output',
+    [['print(1); print(1)', ('text/plain', '1\n1')],
+     ['1 + 1', ('text/plain', '2')], ['print(1 + 1)', ('text/plain', '2')],
+     [
+         'from IPython.display import HTML; HTML("<div>hi</div>")',
+         ('text/html', '<div>hi</div>')
+     ]])
 def test_jupyter_session(code, output):
     s = JupyterSession()
     assert s.execute(code) == [output]
+
+
+def test_jupyter_session_traceback():
+    s = JupyterSession()
+    out = s.execute('raise ValueError("message")')[0][1]
+    assert 'Traceback (most recent call last)' in out
+    assert 'ValueError: message' in out
