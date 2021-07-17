@@ -9,13 +9,7 @@ from jupyblog import util, config
 from jupyblog import medium as medium_module
 
 
-@click.group()
-def cli():
-    pass
-
-
-@cli.command()
-@click.argument('path')
+@click.command()
 @click.argument('flavor')
 @click.option('--outdir', default=None, help='Output directory')
 @click.option('--incsource',
@@ -25,11 +19,11 @@ def cli():
 @click.option('--name', default='post.md', help='File with the post')
 @click.option('--expand', default=False, help='Expand')
 @click.option('--no-execute', is_flag=True)
-def render(path, flavor, outdir, incsource, log, name, expand, no_execute):
+def render(flavor, outdir, incsource, log, name, expand, no_execute):
     """Render markdown
 
-    >>> jupyblog . hugo # looks for post.md
-    >>> jupyblog . medium # Then upload with: https://markdowntomedium.com/
+    >>> jupyblog render . hugo # looks for post.md
+    >>> jupyblog render . medium # Then upload with: https://markdowntomedium.com/
 
 
     * Runs build.sh first if it exists
@@ -39,15 +33,11 @@ def render(path, flavor, outdir, incsource, log, name, expand, no_execute):
     * For hugo sets draft=True
     * Keeps all other files intact
     * Adds jupyblog commit version that generated it to front matter
-
-    Notes
-    -----
-    To prevent blocks from executing do ```python skip=True
     """
     if log:
         logging.basicConfig(level=log.upper())
 
-    path = Path(path).resolve()
+    path = Path('.').resolve()
 
     post_name = path.name
 

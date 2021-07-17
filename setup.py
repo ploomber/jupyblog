@@ -1,10 +1,3 @@
-"""
-Minimal setup.py
-
-Built using: https://github.com/ploomber/template
-setup.py reference: https://setuptools.readthedocs.io/en/latest/setuptools.html
-More on pkg structure: https://blog.ionelmc.ro/2014/05/25/python-packaging/
-"""
 import io
 import re
 import ast
@@ -65,6 +58,6 @@ setup(
     ],
     extras_require={'dev': DEV},
     entry_points={
-        'console_scripts': ['jupyblog=jupyblog.cli:cli'],
+        'console_scripts': ['jupyblog=jupyblog.cli:render'],
     },
 )

@@ -5,7 +5,7 @@
 Looks for post.md
 
 ```
-jupyblog . hugo
+jupyblog hugo
 ```
 
 ## Skipping code execution
