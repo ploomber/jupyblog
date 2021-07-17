@@ -31,9 +31,42 @@ expected = """\
 ```
 """
 
+skip = """\
+---
+title: title
+description: description
+---
+
+```python skip=True
+1 + 1
+```
+
+```python
+21 + 21
+```
+"""
+
+skip_expected = """\
+```python
+1 + 1
+```
+
+```python
+21 + 21
+```
+
+
+**Console output: (1/1):**
+
+```
+42
+```
+"""
+
 
 @pytest.mark.parametrize('md, expected', [
     [simple, expected],
+    [skip, skip_expected],
 ])
 def test_execute(tmp_empty, md, expected):
     Path('post.md').write_text(md)
@@ -57,6 +90,3 @@ def test_execute(tmp_empty, md, expected):
 def test_jupyter_session(code, output):
     s = JupyterSession()
     assert s.execute(code) == [output]
-
-
-# assert s.execute('raise ValueError(1)')
