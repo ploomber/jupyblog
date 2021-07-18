@@ -26,6 +26,13 @@ print(2)
 raise ValueError('some error')
 ```
 
+## Tables
+
+```python
+import pandas as pd
+pd.DataFrame({'x': [1, 2, 3]})
+```
+
 ## Plots
 
 ```python

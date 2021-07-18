@@ -42,8 +42,9 @@ DEV = [
     'mkdocs',
     'mkdocs-material',
     'invoke',
-    # for plotting example
+    # for docs example
     'matplotlib',
+    'pandas',
 ]
 
 setup(
