@@ -128,7 +128,7 @@ class JupyterSession:
                 out.append(io_msg)
 
         # clean up folder with serialized images if needed
-        if self._front_matter.settings.serialize_images:
+        if self._front_matter.jupyblog.serialize_images:
             serialized = Path(self._img_dir, self._canonical_name,
                               'serialized')
 
@@ -139,7 +139,7 @@ class JupyterSession:
             _process_content_data(
                 o['content'],
                 idx,
-                serialize_images=self._front_matter.settings.serialize_images,
+                serialize_images=self._front_matter.jupyblog.serialize_images,
                 img_dir=self._img_dir,
                 canonical_name=self._canonical_name)
             for idx, o in enumerate(out)

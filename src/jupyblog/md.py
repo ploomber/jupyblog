@@ -146,7 +146,7 @@ class MarkdownRenderer:
         URL_ISSUE = 'https://github.com/ploomber/posts/issues/new?title={}'
         url_issue = URL_ISSUE.format(url_params)
 
-        if front_matter.settings.allow_expand:
+        if front_matter.jupyblog.allow_expand:
             expand_partial = partial(expand, root_path=self.path)
             content = Template(md_raw).render(expand=expand_partial,
                                               url_source=url_source,
@@ -157,7 +157,7 @@ class MarkdownRenderer:
         logger.debug('After expand:\n%s', content)
 
         # parse again to get expanded code
-        if front_matter.settings.execute_code:
+        if front_matter.jupyblog.execute_code:
             md_ast = self.parser(content)
             md_out = run_snippets(md_ast, content, front_matter, self._img_dir,
                                   canonical_name)
