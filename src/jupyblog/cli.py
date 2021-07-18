@@ -15,8 +15,7 @@ from jupyblog import medium as medium_module
               is_flag=True,
               help='Whether the source will be on Github or not')
 @click.option('--log', default=None, help='Set logging level')
-@click.option('--no-execute', is_flag=True, help='Skip code execution')
-def render(hugo, incsource, log, no_execute):
+def render(hugo, incsource, log):
     """Render markdown
 
     >>> jupyblog # Then upload with: https://markdowntomedium.com/
@@ -59,8 +58,7 @@ def render(hugo, incsource, log, no_execute):
     mdr = MarkdownRenderer(path_to_mds=path, img_dir=img_dir)
     out, _ = mdr.render(name='post.md',
                         is_hugo=hugo,
-                        include_source_in_footer=incsource,
-                        execute_code=not no_execute)
+                        include_source_in_footer=incsource)
     out_path = Path(post_dir, (post_name + '.md'))
     click.echo(f'Output: {out_path}')
 

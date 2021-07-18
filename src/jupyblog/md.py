@@ -118,7 +118,7 @@ class MarkdownRenderer:
                                undefined=DebugUndefined)
         self.parser = mistune.create_markdown(renderer=mistune.AstRenderer())
 
-    def render(self, name, *, is_hugo, include_source_in_footer, execute_code):
+    def render(self, name, *, is_hugo, include_source_in_footer):
         """
         flavor: hugo, devto, medium
         """
@@ -157,7 +157,7 @@ class MarkdownRenderer:
         logger.debug('After expand:\n%s', content)
 
         # parse again to get expanded code
-        if execute_code:
+        if front_matter.settings.execute_code:
             md_ast = self.parser(content)
             md_out = run_snippets(md_ast, content, front_matter, self._img_dir,
                                   canonical_name)

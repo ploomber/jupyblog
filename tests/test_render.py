@@ -153,8 +153,7 @@ def test_execute(tmp_image, renderer, md, expected):
 
     out = renderer.render('post.md',
                           is_hugo=True,
-                          include_source_in_footer=False,
-                          execute_code=True)
+                          include_source_in_footer=False)
 
     assert expected in out[0]
 
@@ -162,8 +161,7 @@ def test_execute(tmp_image, renderer, md, expected):
 def test_expand(tmp_expand_placeholder, renderer):
     out = renderer.render('post.md',
                           is_hugo=True,
-                          include_source_in_footer=False,
-                          execute_code=True)
+                          include_source_in_footer=False)
     expected = """\
 ```python
 # Content of script.py
@@ -177,8 +175,7 @@ def test_expand(tmp_expand_placeholder, renderer):
 def test_expand_symbol(tmp_expand_placeholder, renderer):
     out = renderer.render('another.md',
                           is_hugo=True,
-                          include_source_in_footer=False,
-                          execute_code=True)
+                          include_source_in_footer=False)
     expected = """\
 ```python
 # Content of functions.py
@@ -202,8 +199,7 @@ def test_image_serialize(tmp_image):
 
     out = renderer.render('post.md',
                           is_hugo=True,
-                          include_source_in_footer=False,
-                          execute_code=True)
+                          include_source_in_footer=False)
 
     assert Path('static', 'image', 'serialized', '1.png').exists()
     # must clean up existing images

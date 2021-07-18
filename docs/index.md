@@ -90,6 +90,7 @@ Use YAML front matter to configure execution settings:
 settings:
     serialize_images: False
     allow_expand: False
+    execute_code: True
 ---
 
 # My post
@@ -100,3 +101,4 @@ Some content
 
 * `serialize_images`: Saves images to external files (`serialized/` directory), otherwise embeds them in the same file as base64 strings
 * `allow_expand`: If True, it allows the use of `'{{expand("file.py")'}}` to include the content of a file or `'{{expand("file.py@symbol")'}}` to replace with a specific symbol in such file.
+* `execute_code`: Execute code snippets.
