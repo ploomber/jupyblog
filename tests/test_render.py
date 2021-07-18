@@ -91,7 +91,7 @@ image_serialize = """\
 ---
 title: title
 description: description
-settings:
+jupyblog:
     serialize_images: True
 ---
 

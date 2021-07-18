@@ -1,7 +1,7 @@
 ---
 title: some awesome post
 description: something
-settings:
+jupyblog:
     allow_expand: True
 ---
 

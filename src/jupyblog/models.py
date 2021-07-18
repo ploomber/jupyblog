@@ -8,4 +8,4 @@ class Settings(BaseModel):
 
 
 class FrontMatter(BaseModel):
-    settings: Settings = Field(default_factory=Settings)
+    jupyblog: Settings = Field(default_factory=Settings)

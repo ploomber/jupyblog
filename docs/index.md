@@ -83,11 +83,11 @@ my-post-name/
 
 ## Settings
 
-Use YAML front matter to configure execution settings:
+Use YAML front matter to configure execution jupyblog:
 
 ```md
 ---
-settings:
+jupyblog:
     serialize_images: False
     allow_expand: False
     execute_code: True
