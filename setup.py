@@ -40,6 +40,7 @@ DEV = [
     'yapf',
     'flake8',
     'mkdocs',
+    'mkdocs-material',
     'invoke',
     # for plotting example
     'matplotlib',
