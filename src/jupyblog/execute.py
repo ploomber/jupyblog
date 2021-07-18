@@ -144,6 +144,7 @@ class JupyterSession:
                 canonical_name=self._canonical_name)
             for idx, o in enumerate(out)
         ]
+
         return [content for content in processed if content]
 
     def __del__(self):
