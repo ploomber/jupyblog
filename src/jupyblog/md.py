@@ -15,7 +15,7 @@ import yaml
 from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
 import parso
 
-from jupyblog import util, images, models
+from jupyblog import util, images, models, medium
 from jupyblog.execute import ASTExecutor
 
 logger = logging.getLogger(__name__)
@@ -128,6 +128,8 @@ class MarkdownRenderer:
         if path.suffix != '.md':
             nb = jupytext.read(path)
             md_raw = jupytext.writes(nb, fmt='md')
+
+        medium.check_headers(md_raw)
 
         md_ast = self.parser(md_raw)
         # TODO: replace and use model object

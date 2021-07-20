@@ -9,7 +9,7 @@ one = """
 """
 
 one_expected = """
-## Header
+# Header
 
 **ADD img.png HERE**
 ![img](img.png)
@@ -28,12 +28,12 @@ two = """
 """
 
 two_expected = """
-## Header
+# Header
 
 **ADD img.png HERE**
 ![img](img.png)
 
-## Another
+# Another
 
 ```py
 1 + 1

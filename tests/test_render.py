@@ -205,3 +205,16 @@ def test_image_serialize(tmp_image):
     # must clean up existing images
     assert not (serialized / 'old.png').exists()
     assert image_serialize_expected in out[0]
+
+
+def test_error_if_h1_header(tmp_empty, renderer):
+    Path('post.md').write_text("""
+# Some H1 header
+""")
+
+    with pytest.raises(ValueError) as excinfo:
+        renderer.render('post.md',
+                        is_hugo=True,
+                        include_source_in_footer=False)
+
+    assert 'H1 level headers are not allowed' in str(excinfo.value)
