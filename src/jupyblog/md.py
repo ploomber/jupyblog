@@ -7,7 +7,6 @@ from datetime import datetime, timezone
 from urllib import parse
 import logging
 from pathlib import Path
-from functools import partial
 
 import jupytext
 import mistune
@@ -121,10 +120,10 @@ class MarkdownRenderer:
         url_issue = URL_ISSUE.format(url_params)
 
         if front_matter.jupyblog.allow_expand:
-            expand_partial = partial(expand, root_path=self.path)
-            content = Template(md_raw).render(expand=expand_partial,
-                                              url_source=url_source,
-                                              url_issue=url_issue)
+            content = expand(md_raw,
+                             root_path=self.path,
+                             url_source=url_source,
+                             url_issue=url_issue)
         else:
             content = md_raw
 

@@ -1,12 +1,19 @@
 """
 Expand markdown files that reference external files
 """
+from functools import partial
 from pathlib import Path
 
 import parso
+from jinja2 import Template
 
 
-def expand(path, root_path=None):
+def expand(md, root_path, **params):
+    expand_partial = partial(_expand, root_path=root_path)
+    return Template(md).render(expand=expand_partial, **params)
+
+
+def _expand(path, root_path=None):
 
     elements = path.split('@')
 
