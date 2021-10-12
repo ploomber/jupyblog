@@ -7,6 +7,10 @@ from pathlib import Path
 import parso
 from jinja2 import Template
 
+_ext2tag = {
+    '.py': 'python',
+}
+
 
 def expand(md, root_path=None, args=None, **params):
     """Expand markdown string
@@ -66,5 +70,8 @@ def _expand(path, root_path=None, args=None, lines=None):
         start, end = lines[0] - 1, lines[1]
         content = '\n'.join(content_lines[start:end])
 
+    suffix = Path(path).suffix
+    tag = _ext2tag.get(suffix, suffix[1:])
+
     comment = '# Content of {}'.format(path)
-    return '```python{}\n{}\n{}\n```'.format(args, comment, content)
+    return '```{}{}\n{}\n{}\n```'.format(tag, args, comment, content)

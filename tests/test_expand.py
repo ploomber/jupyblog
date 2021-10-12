@@ -20,6 +20,10 @@ def divide(a, b):
     return a / b
 """)
 
+    Path('env.yaml').write_text("""
+key: value
+""")
+
 
 @pytest.mark.parametrize('content, expected', [
     [
@@ -36,6 +40,10 @@ def divide(a, b):
         "{{expand('operations.py@divide')}}",
         ('```python\n# Content of operations.py'
          '\n\ndef divide(a, b):\n    return a / b\n\n```')
+    ],
+    [
+        "{{expand('env.yaml')}}",
+        ('```yaml\n# Content of env.yaml\n\nkey: value\n\n```')
     ],
 ])
 def test_expand(tmp_empty, create_files, content, expected):
