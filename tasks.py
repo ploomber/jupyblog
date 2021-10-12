@@ -1,3 +1,4 @@
+import versioneer
 from invoke import task
 
 
@@ -24,3 +25,17 @@ def docs_serve(c):
         c.run('jupyblog')
 
     c.run('mkdocs serve')
+
+
+@task
+def release(c):
+    """Create a new version of this project
+    """
+    versioneer.version(project_root='.', tag=True)
+
+
+@task
+def upload(c, tag, production=True):
+    """Upload to PyPI (prod by default): inv upload {tag}
+    """
+    versioneer.upload(tag, production=production)

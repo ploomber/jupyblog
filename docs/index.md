@@ -55,7 +55,7 @@ my-post-name/
 Run:
 
 ```
-jupyblog
+jupyblog render
 ```
 
 Generates a new folder `output/` with the executed markdown file:
