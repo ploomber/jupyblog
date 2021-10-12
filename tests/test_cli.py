@@ -2,13 +2,27 @@ from pathlib import Path
 
 from click.testing import CliRunner
 
-from jupyblog.cli import render
+from jupyblog.cli import cli
 from jupyblog.md import parse_metadata
+
+
+def test_expand(tmp_empty):
+    Path('file.py').write_text('1 + 1')
+    Path('file.md').write_text('{{expand("file.py")}}')
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ['expand', 'file.md', '--output', 'out.md'],
+                           catch_exceptions=False)
+
+    content = Path('out.md').read_text()
+
+    assert not result.exit_code
+    assert content == '```python\n# Content of file.py\n1 + 1\n```'
 
 
 def test_sample_post(tmp_sample_post):
     runner = CliRunner()
-    result = runner.invoke(render, ['--hugo'], catch_exceptions=False)
+    result = runner.invoke(cli, ['render', '--hugo'], catch_exceptions=False)
 
     content = Path('content', 'posts', 'sample_post.md').read_text()
     metadata = parse_metadata(content)
@@ -22,7 +36,7 @@ def test_sample_post(tmp_sample_post):
 def test_with_python_code(tmp_with_py_code):
 
     runner = CliRunner()
-    result = runner.invoke(render, ['--hugo'], catch_exceptions=False)
+    result = runner.invoke(cli, ['render', '--hugo'], catch_exceptions=False)
 
     content = Path('content', 'posts', 'with_py_code.md').read_text()
     metadata = parse_metadata(content)
@@ -36,7 +50,7 @@ def test_with_python_code(tmp_with_py_code):
 def test_image(tmp_image):
 
     runner = CliRunner()
-    result = runner.invoke(render, ['--hugo'], catch_exceptions=False)
+    result = runner.invoke(cli, ['render', '--hugo'], catch_exceptions=False)
 
     content = Path('content', 'posts', 'image.md').read_text()
     metadata = parse_metadata(content)
@@ -53,7 +67,7 @@ def test_image(tmp_image):
 def test_image_nested(tmp_image_nested):
 
     runner = CliRunner()
-    result = runner.invoke(render, ['--hugo'], catch_exceptions=False)
+    result = runner.invoke(cli, ['render', '--hugo'], catch_exceptions=False)
 
     content = Path('content', 'posts', 'image-nested.md').read_text()
     metadata = parse_metadata(content)
@@ -68,7 +82,7 @@ def test_image_nested(tmp_image_nested):
 
 def test_image_medium(tmp_image):
     runner = CliRunner()
-    result = runner.invoke(render, [], catch_exceptions=False)
+    result = runner.invoke(cli, ['render'], catch_exceptions=False)
 
     content = Path('output', 'image.md').read_text()
     metadata = parse_metadata(content)

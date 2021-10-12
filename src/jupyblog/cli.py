@@ -5,11 +5,32 @@ from pathlib import Path
 import click
 
 from jupyblog.md import MarkdownRenderer
+from jupyblog.expand import expand as _expand
 from jupyblog import util, config
 from jupyblog import medium as medium_module
 
 
-@click.command()
+@click.group()
+def cli():
+    pass
+
+
+@cli.command()
+@click.argument('path')
+@click.option('--output', '-o', default=None, help='Path to output')
+def expand(path, output):
+    """Expand markdown
+    """
+    md = Path(path).read_text()
+    out = _expand(md, root_path=None)
+
+    if not output:
+        click.echo(out)
+    else:
+        Path(output).write_text(out)
+
+
+@cli.command()
 @click.option('--hugo', '-h', is_flag=True, help='Export to Hugo')
 @click.option('--incsource',
               is_flag=True,

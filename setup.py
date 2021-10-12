@@ -64,6 +64,6 @@ setup(
     install_requires=REQUIRES,
     extras_require={'dev': DEV},
     entry_points={
-        'console_scripts': ['jupyblog=jupyblog.cli:render'],
+        'console_scripts': ['jupyblog=jupyblog.cli:cli'],
     },
 )
