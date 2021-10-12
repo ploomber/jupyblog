@@ -66,7 +66,7 @@ setup(
     keywords=[],
     install_requires=REQUIRES,
     extras_require={
-        'all': ALL
+        'all': ALL,
         'dev': DEV + ALL,
     },
     entry_points={
