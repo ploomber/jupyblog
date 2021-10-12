@@ -13,10 +13,10 @@ import jupytext
 import mistune
 import yaml
 from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
-import parso
 
 from jupyblog import util, images, models, medium
 from jupyblog.execute import ASTExecutor
+from jupyblog.expand import expand
 
 logger = logging.getLogger(__name__)
 
@@ -74,34 +74,6 @@ def replace_metadata(md, new_metadata):
     new_metadata_text = '---\n{}---\n'.format(yaml.dump(new_metadata))
 
     return new_metadata_text + '\n'.join(lines_new)
-
-
-def expand(path, root_path=None):
-
-    elements = path.split('@')
-
-    if len(elements) == 1:
-        path, symbol_name = elements[0], None
-    elif len(elements) == 2:
-        path, symbol_name = elements
-    else:
-        raise ValueError('@ appears more than once')
-
-    if root_path is None:
-        content = Path(path).read_text()
-    else:
-        content = Path(root_path, path).read_text()
-
-    if symbol_name:
-        module = parso.parse(content)
-        named = {
-            c.name.value: c.get_code()
-            for c in module.children if hasattr(c, 'name')
-        }
-        content = named[symbol_name]
-
-    comment = '# Content of {}'.format(path)
-    return '```python skip=True\n{}\n{}\n```'.format(comment, content)
 
 
 class MarkdownRenderer:
