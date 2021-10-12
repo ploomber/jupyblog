@@ -9,7 +9,6 @@ import logging
 from pathlib import Path
 
 import jupytext
-import mistune
 import yaml
 from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
 
@@ -83,6 +82,8 @@ class MarkdownRenderer:
     Path('out.md').write_text(out)
     """
     def __init__(self, path_to_mds, img_dir=None):
+        import mistune
+
         self.path = path_to_mds
         self._img_dir = img_dir
         self.env = Environment(loader=FileSystemLoader(path_to_mds),

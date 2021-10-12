@@ -1,5 +1,3 @@
-import mistune
-
 from jupyblog.images import add_image_placeholders
 
 
@@ -16,6 +14,8 @@ def find_headers(md):
     Find headers in a markdown string, returns an iterator where each
     element is a (header text, level) tuple
     """
+    import mistune
+
     parser = mistune.create_markdown(renderer=mistune.AstRenderer())
 
     for node in parser(md):

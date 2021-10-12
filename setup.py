@@ -31,7 +31,6 @@ REQUIRES = [
     'click',
     'jupytext',
     'parso',
-    'mistune>=2.0.0rc1',
     'pydantic',
 ]
 
@@ -45,6 +44,10 @@ DEV = [
     # for docs example
     'matplotlib',
     'pandas',
+]
+
+ALL = [
+    'mistune>=2.0.0rc1',
 ]
 
 setup(
@@ -62,7 +65,10 @@ setup(
     classifiers=[],
     keywords=[],
     install_requires=REQUIRES,
-    extras_require={'dev': DEV},
+    extras_require={
+        'all': ALL
+        'dev': DEV + ALL,
+    },
     entry_points={
         'console_scripts': ['jupyblog=jupyblog.cli:cli'],
     },
