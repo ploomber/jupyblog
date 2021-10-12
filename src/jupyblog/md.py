@@ -123,7 +123,8 @@ class MarkdownRenderer:
             content = expand(md_raw,
                              root_path=self.path,
                              url_source=url_source,
-                             url_issue=url_issue)
+                             url_issue=url_issue,
+                             args='skip=True')
         else:
             content = md_raw
 
