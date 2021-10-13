@@ -41,6 +41,7 @@ DEV = [
     'mkdocs',
     'mkdocs-material',
     'invoke',
+    'twine',
     # for docs example
     'matplotlib',
     'pandas',
