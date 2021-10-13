@@ -15,6 +15,7 @@ from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
 from jupyblog import util, images, models, medium
 from jupyblog.execute import ASTExecutor
 from jupyblog.expand import expand
+from jupyblog.exceptions import InvalidFrontMatter
 
 logger = logging.getLogger(__name__)
 
@@ -55,12 +56,21 @@ def find_metadata_lines(md):
         raise ValueError('Markdown file does not have YAML front matter')
 
     if idx[0] != 0:
-        raise ValueError('metadata not located at the top')
+        raise InvalidFrontMatter('metadata not located at the top')
 
     if len(idx) < 2:
-        raise ValueError('Closing --- for metadata not found')
+        raise InvalidFrontMatter('Closing --- for metadata not found')
 
     return idx
+
+
+def delete_metadata(md):
+    try:
+        _, end = find_metadata_lines(md)
+    except Exception:
+        return md
+
+    return '\n'.join(md.splitlines()[end + 1:])
 
 
 def replace_metadata(md, new_metadata):

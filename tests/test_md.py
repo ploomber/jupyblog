@@ -2,6 +2,19 @@ import pytest
 from jupyblog import md
 
 
+@pytest.mark.parametrize('content, expected', [
+    ['# header\n\ncontent', '# header\n\ncontent'],
+    ["""\
+---
+a: 1
+---
+# Header""", """\
+# Header"""],
+])
+def test_delete_front_matter(content, expected):
+    assert md.delete_metadata(content) == expected
+
+
 def test_error_if_no_front_matter():
     content = """
 # Hello
