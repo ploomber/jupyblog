@@ -41,6 +41,65 @@ def parse_metadata(md, validate=True):
     return metadata
 
 
+def find_lines(md, to_find):
+    """Find lines, returns a mapping of {line: number}
+    """
+    to_find = set(to_find)
+    found = {}
+    lines = md.splitlines()
+
+    for n, line in enumerate(lines, start=1):
+        if line in to_find:
+            found[line] = n
+            to_find.remove(line)
+
+        if not to_find:
+            break
+
+    return found
+
+
+def delete_between_line_no(md, to_delete):
+    """Deletes content between the passed number of lines
+    """
+    start, end = to_delete
+
+    if end < start:
+        raise ValueError('Starting line must be lower '
+                         f'than end line, got: {to_delete}')
+
+    lines = md.splitlines()
+    return '\n'.join(lines[:start - 1] + lines[end:])
+
+
+def delete_between_line_content(md, to_delete):
+    """Deletes content between the passed content
+    """
+    if len(to_delete) != 2:
+        raise ValueError('to_delete must have two '
+                         f'elements, got: {len(to_delete)}')
+
+    location = find_lines(md, to_delete)
+
+    start = location[to_delete[0]]
+    end = location[to_delete[1]]
+
+    return delete_between_line_no(md, (start, end))
+
+
+def extract_between_line_content(md, marks):
+    if len(marks) != 2:
+        raise ValueError('marks must have two ' f'elements, got: {len(marks)}')
+
+    location = find_lines(md, marks)
+
+    start = location[marks[0]]
+    end = location[marks[1]]
+
+    lines = md.splitlines()
+    return '\n'.join(lines[start:end - 1])
+
+
 def find_metadata_lines(md):
     lines = md.splitlines()
     idx = []

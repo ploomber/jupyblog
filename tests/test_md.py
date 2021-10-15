@@ -59,3 +59,91 @@ b:
 ])
 def test_parse_metadata(md_str, metadata):
     assert md.parse_metadata(md_str, validate=False) == metadata
+
+
+@pytest.mark.parametrize('content, lines, expected', [
+    [
+        """
+some line
+
+another line
+""", ('some line', 'another line'), {
+            'some line': 2,
+            'another line': 4
+        }
+    ],
+    [
+        """
+some line
+
+
+another line
+""", ('some line', 'another line'), {
+            'some line': 2,
+            'another line': 5
+        }
+    ],
+    [
+        """
+some line
+
+
+another line
+""", ('some line', 'missing line'), {
+            'some line': 2,
+        }
+    ],
+])
+def test_find_lines(content, lines, expected):
+    assert md.find_lines(content, lines) == expected
+
+
+@pytest.mark.parametrize(
+    'content, lines, expected',
+    [["""
+start
+
+something
+
+end
+
+hello
+""", (2, 6), """
+
+hello"""]])
+def test_delete_between_line_no(content, lines, expected):
+    assert md.delete_between_line_no(content, lines) == expected
+
+
+@pytest.mark.parametrize(
+    'content, lines, expected',
+    [["""
+start
+
+something
+
+end
+
+hello
+""", ('start', 'end'), """
+
+hello"""]])
+def test_delete_between_line_content(content, lines, expected):
+    assert md.delete_between_line_content(content, lines) == expected
+
+
+@pytest.mark.parametrize('content, lines, expected', [[
+    """
+start
+
+something
+
+end
+
+hello
+""", ('start', 'end'), """
+something
+"""
+]])
+def test_extract_between_line_content(content, lines, expected):
+    assert md.extract_between_line_content(content, lines) == expected
