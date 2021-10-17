@@ -1,4 +1,3 @@
-import versioneer
 from invoke import task
 
 
@@ -31,6 +30,7 @@ def docs_serve(c):
 def release(c):
     """Create a new version of this project
     """
+    from pkgmt import versioneer
     versioneer.version(project_root='.', tag=True)
 
 
@@ -38,4 +38,5 @@ def release(c):
 def upload(c, tag, production=True):
     """Upload to PyPI (prod by default): inv upload {tag}
     """
+    from pkgmt import versioneer
     versioneer.upload(tag, production=production)

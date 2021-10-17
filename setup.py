@@ -35,6 +35,7 @@ REQUIRES = [
 ]
 
 DEV = [
+    'pkgmt',
     'pytest',
     'yapf',
     'flake8',
