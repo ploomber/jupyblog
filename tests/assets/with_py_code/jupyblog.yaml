@@ -1,3 +1,2 @@
-path:
-  posts: content/posts
-  static: static
+path_to_posts: content/posts
+path_to_static: static

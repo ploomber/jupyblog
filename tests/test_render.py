@@ -218,3 +218,29 @@ def test_error_if_h1_header(tmp_empty, renderer):
                         include_source_in_footer=False)
 
     assert 'H1 level headers are not allowed' in str(excinfo.value)
+
+
+simple_with_image = """\
+---
+title: title
+description: description
+---
+
+![image](my-image.png)
+"""
+
+
+def test_expands_relative_to_config(tmp_empty):
+    renderer = MarkdownRenderer('.',
+                                img_dir=Path('static/images').resolve(),
+                                img_prefix='static/images')
+
+    Path('post.md').write_text(simple_with_image)
+
+    out = renderer.render('post.md',
+                          is_hugo=True,
+                          include_source_in_footer=False)[0]
+
+    img_tag = ('![image](static/images/'
+               'test_expands_relative_to_confi0/my-image.png)')
+    assert img_tag in out

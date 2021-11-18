@@ -41,10 +41,23 @@ def expand(path, output):
               help='Whether the source will be on Github or not')
 @click.option('--log', default=None, help='Set logging level')
 def render(local, incsource, log):
+    """
+    >>> jupyblog # Then upload with: https://markdowntomedium.com/
+    """
+    return _render(local, log)
+
+
+def _render(local, incsource=False, log=None):
     """Render markdown
 
-    >>> jupyblog # Then upload with: https://markdowntomedium.com/
+    Parameters
+    ----------
+    local : bool
+        If True, it renders the post in an output folder, otherwise it looks
+        up for a jupyter.yaml file and uses it to determine output paths.
 
+    Notes
+    -----
     * Runs build.sh first if it exists
     * Runs cells and include output as new cells (post.md)
     * Fix relative links to images (moves images and renames them as well)
@@ -63,17 +76,15 @@ def render(local, incsource, log):
     post_name = path.name
 
     if local:
-        post_dir = Path('output')
-        img_dir = post_dir
+        cfg = config.get_local_config()
     else:
-        post_dir, img_dir = config.get_config()
-        post_dir = Path(post_dir).resolve()
+        cfg = config.get_config()
 
-    post_dir.mkdir(exist_ok=True, parents=True)
+    # post_dir.mkdir(exist_ok=True, parents=True)
 
     click.echo(f'Input: {path.resolve()}')
     click.echo('Processing post "%s"' % post_name)
-    click.echo('Post will be saved to %s' % post_dir)
+    click.echo('Post will be saved to %s' % cfg.path_to_posts_abs())
 
     if (path / 'build.sh').exists():
         click.echo('build.sh found, running...')
@@ -81,13 +92,15 @@ def render(local, incsource, log):
         click.echo('Finished running build.sh\n\n')
 
     click.echo('Rendering markdown...')
-    mdr = MarkdownRenderer(path_to_mds=path, img_dir=img_dir)
+    mdr = MarkdownRenderer(path_to_mds=path,
+                           img_dir=cfg.path_to_static_abs(),
+                           img_prefix=cfg.prefix_img)
 
     # TODO: test that expands based on img_dir
     out, _ = mdr.render(name='post.md',
                         is_hugo=hugo,
                         include_source_in_footer=incsource)
-    out_path = Path(post_dir, (post_name + '.md'))
+    out_path = Path(cfg.path_to_posts_abs(), (post_name + '.md'))
     click.echo(f'Output: {out_path}')
 
     if not hugo:
@@ -95,7 +108,7 @@ def render(local, incsource, log):
 
     out_path.write_text(out)
 
-    img_dir = Path(img_dir).resolve()
+    img_dir = cfg.path_to_static_abs()
 
     if not img_dir.exists():
         img_dir.mkdir(exist_ok=True, parents=True)

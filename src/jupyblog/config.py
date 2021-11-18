@@ -6,13 +6,17 @@ import yaml
 from pydantic import BaseModel, Field
 
 
-class Paths(BaseModel):
-    posts: str
-    static: str
-
-
 class Config(BaseModel):
-    path: Paths = Field(default_factory=Paths)
+    root: str
+    path_to_posts: str
+    path_to_static: str
+    prefix_img: str = ''
+
+    def path_to_posts_abs(self):
+        return Path(self.root, self.path_to_posts)
+
+    def path_to_static_abs(self):
+        return Path(self.root, self.path_to_static)
 
 
 def find_file_recursively(name, max_levels_up=6, starting_dir=None):
@@ -60,14 +64,19 @@ def get_config():
     if path is None:
         raise FileNotFoundError(f'Could not find {NAME}')
 
-    cfg = Config(**yaml.safe_load(Path(path).read_text()))
+    cfg = Config(**yaml.safe_load(Path(path).read_text()),
+                 root=str(path.parent))
 
-    root = path.parent
-
-    dir_posts = (root / cfg.path.posts)
-    dir_static = (root / cfg.path.static)
-
-    if dir_posts.is_dir() and dir_static.is_dir():
-        return dir_posts, dir_static
+    if cfg.path_to_posts_abs().is_dir() and cfg.path_to_static_abs().is_dir():
+        return cfg
     else:
-        raise NotADirectoryError(f'missing {dir_posts} and {dir_static}')
+        raise NotADirectoryError(
+            f'missing {cfg.path_to_posts_abs()} or {cfg.path_to_static_abs()}')
+
+
+def get_local_config():
+    Path('output').mkdir()
+    return Config(path_to_posts='output',
+                  path_to_static='output',
+                  prefix_img='',
+                  root='.')

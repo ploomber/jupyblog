@@ -6,7 +6,7 @@ TODO:
 from datetime import datetime, timezone
 from urllib import parse
 import logging
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 import jupytext
 import yaml
@@ -145,16 +145,27 @@ def replace_metadata(md, new_metadata):
 
 class MarkdownRenderer:
     """
+    Parameters
+    ----------
+    img_dir : str or pathlib.Path
+        Output path (in the current filesystem) for images.
 
-    mdr = MarkdownRenderer('.')
-    out = mdr.render('sample.md')
-    Path('out.md').write_text(out)
+    img_prefix : str, default=None
+        Prefix for image tags in markdown file. Note that this can be different
+        to img_dir depending on the configuration of your blog engine.
+
+    Examples
+    --------
+    >>> mdr = MarkdownRenderer('.')
+    >>> out = mdr.render('sample.md')
+    >>> Path('out.md').write_text(out)
     """
-    def __init__(self, path_to_mds, img_dir=None):
+    def __init__(self, path_to_mds, img_dir=None, img_prefix=None):
         import mistune
 
         self.path = path_to_mds
         self._img_dir = img_dir
+        self._img_prefix = img_prefix or ''
         self.env = Environment(loader=FileSystemLoader(path_to_mds),
                                undefined=DebugUndefined)
         self.parser = mistune.create_markdown(renderer=mistune.AstRenderer())
@@ -221,22 +232,25 @@ class MarkdownRenderer:
         md_out = add_footer(md_out, metadata['title'], canonical_name,
                             include_source_in_footer, is_hugo)
 
+        if self._img_prefix:
+            prefix = str(PurePosixPath(self._img_prefix, canonical_name))
+        else:
+            prefix = ''
+
         if is_hugo:
             # FIXME: use img_dir to expand linksq
             print('Making img links absolute and adding '
                   'canonical name as prefix...')
             md_out = images.process_image_links(md_out,
-                                                prefix=canonical_name,
-                                                absolute=True)
+                                                prefix=prefix,
+                                                absolute=False)
 
             path = images.get_first_image_path(md_out)
 
             if path:
                 metadata['images'] = [path]
         else:
-            md_out = images.process_image_links(md_out,
-                                                canonical_name,
-                                                absolute=False)
+            md_out = images.process_image_links(md_out, prefix, absolute=False)
 
             # TODO: extrac title from front matter and put it as H1 header
 
