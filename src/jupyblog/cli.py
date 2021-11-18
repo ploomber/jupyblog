@@ -31,16 +31,19 @@ def expand(path, output):
 
 
 @cli.command()
-@click.option('--hugo', '-h', is_flag=True, help='Export to Hugo')
+@click.option(
+    '--local',
+    '-l',
+    is_flag=True,
+    help='Ignore jupyblog.yaml and export to the current working directory')
 @click.option('--incsource',
               is_flag=True,
               help='Whether the source will be on Github or not')
 @click.option('--log', default=None, help='Set logging level')
-def render(hugo, incsource, log):
+def render(local, incsource, log):
     """Render markdown
 
     >>> jupyblog # Then upload with: https://markdowntomedium.com/
-    >>> jupyblog --hugo # looks for post.md
 
     * Runs build.sh first if it exists
     * Runs cells and include output as new cells (post.md)
@@ -50,6 +53,8 @@ def render(hugo, incsource, log):
     * Keeps all other files intact
     * Adds jupyblog commit version that generated it to front matter
     """
+    hugo = True
+
     if log:
         logging.basicConfig(level=log.upper())
 
@@ -57,12 +62,12 @@ def render(hugo, incsource, log):
 
     post_name = path.name
 
-    if hugo:
-        post_dir, img_dir = config.get_config()
-        post_dir = Path(post_dir).resolve()
-    else:
+    if local:
         post_dir = Path('output')
         img_dir = post_dir
+    else:
+        post_dir, img_dir = config.get_config()
+        post_dir = Path(post_dir).resolve()
 
     post_dir.mkdir(exist_ok=True, parents=True)
 
@@ -77,6 +82,8 @@ def render(hugo, incsource, log):
 
     click.echo('Rendering markdown...')
     mdr = MarkdownRenderer(path_to_mds=path, img_dir=img_dir)
+
+    # TODO: test that expands based on img_dir
     out, _ = mdr.render(name='post.md',
                         is_hugo=hugo,
                         include_source_in_footer=incsource)

@@ -222,10 +222,11 @@ class MarkdownRenderer:
                             include_source_in_footer, is_hugo)
 
         if is_hugo:
+            # FIXME: use img_dir to expand linksq
             print('Making img links absolute and adding '
                   'canonical name as prefix...')
             md_out = images.process_image_links(md_out,
-                                                canonical_name,
+                                                prefix=canonical_name,
                                                 absolute=True)
 
             path = images.get_first_image_path(md_out)
