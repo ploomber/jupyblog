@@ -1,8 +1,8 @@
 from pathlib import PurePosixPath
 import re
 
-# match ![any num of word characters or hyphens](filename)
-REGEX_IMAGE = re.compile(r'!\[[\w-]*\]\((.*)\)')
+# match ![any num of word characters, -, _ or .](filename)
+REGEX_IMAGE = re.compile(r'!\[[\_\.\-\w]*\]\((.*)\)')
 
 
 def find_images(md):

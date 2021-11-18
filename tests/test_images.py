@@ -30,12 +30,27 @@ two_expected = [
     ('![another](another/path.png)', 'another/path.png'),
 ]
 
+special_characters = """
+![something.png](path.png)
+![hello_world.png](another.png)
+"""
+
+special_characters_expected = [
+    ('![something.png](path.png)', 'path.png'),
+    ('![hello_world.png](another.png)', 'another.png'),
+]
+
 
 @pytest.mark.parametrize('post, links', [
     [one, one_expected],
     [two, two_expected],
+    [special_characters, special_characters_expected],
 ],
-                         ids=['one', 'two'])
+                         ids=[
+                             'one',
+                             'two',
+                             'special-chars',
+                         ])
 def test_find_images(post, links):
     assert list(images.find_images(post)) == list(links)
 
