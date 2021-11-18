@@ -1,6 +1,19 @@
 import os
 from pathlib import Path
 
+import yaml
+
+from pydantic import BaseModel, Field
+
+
+class Paths(BaseModel):
+    posts: str
+    static: str
+
+
+class Config(BaseModel):
+    path: Paths = Field(default_factory=Paths)
+
 
 def find_file_recursively(name, max_levels_up=6, starting_dir=None):
     """
@@ -37,15 +50,22 @@ def find_file_recursively(name, max_levels_up=6, starting_dir=None):
 
 
 def get_config():
-    path, _ = find_file_recursively('config.toml')
+    """
+    Load jupyblog configuration file
+    """
+    NAME = 'jupyblog.yaml'
+
+    path, _ = find_file_recursively(NAME)
 
     if path is None:
-        raise FileNotFoundError('Could not find config.toml')
+        raise FileNotFoundError(f'Could not find {NAME}')
+
+    cfg = Config(**yaml.safe_load(Path(path).read_text()))
 
     root = path.parent
 
-    dir_posts = (root / 'content' / 'posts')
-    dir_static = (root / 'static')
+    dir_posts = (root / cfg.path.posts)
+    dir_static = (root / cfg.path.static)
 
     if dir_posts.is_dir() and dir_static.is_dir():
         return dir_posts, dir_static
