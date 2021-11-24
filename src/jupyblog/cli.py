@@ -6,6 +6,7 @@ import click
 
 from jupyblog.md import MarkdownRenderer
 from jupyblog.expand import expand as _expand
+from jupyblog.images import add_image_placeholders
 from jupyblog import util, config
 from jupyblog import medium as medium_module
 
@@ -103,6 +104,9 @@ def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
 
     # map language in code snippets if needed
     out = medium_module.apply_language_map(out, cfg.language_mapping)
+
+    if cfg.image_placeholders:
+        out = add_image_placeholders(out)
 
     out_path.write_text(out)
 

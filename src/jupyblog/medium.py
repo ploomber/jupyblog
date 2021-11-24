@@ -1,6 +1,3 @@
-from jupyblog.images import add_image_placeholders
-
-
 def apply_language_map(md, mapping):
     """Replace code tags
     """
@@ -9,8 +6,6 @@ def apply_language_map(md, mapping):
     for old, new in mapping.items():
         md = md.replace(f'```{old}', f'```{new}')
 
-    # FIXME: this should be a separate option
-    md = add_image_placeholders(md)
     return md
 
 

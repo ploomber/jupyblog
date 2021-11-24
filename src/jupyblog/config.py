@@ -25,12 +25,17 @@ class Config(BaseModel):
 
     language_mapping : dict
         Mapping to apply to code chunks
+
+    image_placeholders : bool
+        Adds a placeholder before each image tag, useful if uploading
+        to a platform that needs manual image upload (e.g., Medium)
     """
     root: str
     path_to_posts: str
     path_to_static: str
     prefix_img: str = ''
     language_mapping: dict = None
+    image_placeholders: bool = False
 
     def path_to_posts_abs(self):
         return Path(self.root, self.path_to_posts)

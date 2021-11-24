@@ -223,3 +223,16 @@ jupyblog:
     cli_module._render(local=False, cfg='jupyblog.another.yaml')
 
     assert Path('..', 'posts', 'my-post.md').read_text()
+
+
+def test_add_image_placeholders(tmp_image):
+    Path('jupyblog.yaml').write_text("""
+path_to_posts: content/posts
+path_to_static: static
+image_placeholders: true
+""")
+
+    cli_module._render(local=False)
+
+    content = Path('content', 'posts', 'image.md').read_text()
+    assert '**ADD jupyter.png HERE**' in content
