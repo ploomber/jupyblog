@@ -1,10 +1,15 @@
 from jupyblog.images import add_image_placeholders
 
 
-def export(md):
-    """Export markdown string for Medium
+def apply_language_map(md, mapping):
+    """Replace code tags
     """
-    md = md.replace('```python', '```py')
+    mapping = mapping or {}
+
+    for old, new in mapping.items():
+        md = md.replace(f'```{old}', f'```{new}')
+
+    # FIXME: this should be a separate option
     md = add_image_placeholders(md)
     return md
 

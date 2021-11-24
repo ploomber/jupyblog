@@ -103,8 +103,8 @@ def _render(local, incsource=False, log=None):
     out_path = Path(cfg.path_to_posts_abs(), (post_name + '.md'))
     click.echo(f'Output: {out_path}')
 
-    if not hugo:
-        out = medium_module.export(out)
+    # map language in code snippets if needed
+    out = medium_module.apply_language_map(out, cfg.language_mapping)
 
     out_path.write_text(out)
 

@@ -10,6 +10,13 @@ from jupyblog.md import parse_metadata
 # TODO: mock test that render passes the right parameters to _render
 
 
+def _create_post(post_name, content):
+    parent = Path(post_name)
+    parent.mkdir()
+    (parent / 'post.md').write_text(content)
+    os.chdir(parent)
+
+
 def test_expand(tmp_empty):
     Path('file.py').write_text('1 + 1')
     Path('file.md').write_text('{{expand("file.py")}}')
@@ -109,14 +116,48 @@ description: description
 
 
 def test_local_config(tmp_empty):
-    parent = Path('some-post')
-    parent.mkdir()
-    (parent / 'post.md').write_text(simple_with_image)
-
-    os.chdir(parent)
+    _create_post('some-post', simple_with_image)
 
     cli_module._render(local=True)
 
     content = Path('output', 'some-post.md').read_text()
 
     assert '![image](my-image.png)' in content
+
+
+def test_language_mapping(tmp_empty):
+    Path('jupyblog.yaml').write_text("""
+path_to_posts: output
+path_to_static: static
+language_mapping:
+    python: py
+    bash: sh
+""")
+
+    Path('output').mkdir()
+    Path('static').mkdir()
+
+    _create_post(
+        'my-post', """\
+---
+title: title
+description: description
+jupyblog:
+    execute_code: false
+---
+
+```python
+1 + 1
+```
+
+```bash
+cp file another
+```
+""")
+
+    cli_module._render(local=False)
+
+    content = Path('..', 'output', 'my-post.md').read_text()
+
+    assert '```py\n' in content
+    assert '```sh\n' in content

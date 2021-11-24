@@ -7,10 +7,30 @@ from pydantic import BaseModel, Field
 
 
 class Config(BaseModel):
+    """
+
+    Parameters
+    ----------
+    root : str
+        Paths are relative to this directory
+
+    path_to_posts : str
+        Where to store output .md, relative to root
+
+    path_to_posts : str
+        Where to store images, relative to root
+
+    prefix_img : str
+        A prefix to add to all image tags
+
+    language_mapping : dict
+        Mapping to apply to code chunks
+    """
     root: str
     path_to_posts: str
     path_to_static: str
     prefix_img: str = ''
+    language_mapping: dict = None
 
     def path_to_posts_abs(self):
         return Path(self.root, self.path_to_posts)

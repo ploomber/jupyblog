@@ -46,8 +46,8 @@ two_expected = """
     [two, two_expected],
 ],
                          ids=['one', 'two'])
-def test_export(md, expected):
-    assert medium.export(md) == expected
+def test_apply_language_map(md, expected):
+    assert medium.apply_language_map(md, {'python': 'py'}) == expected
 
 
 @pytest.mark.parametrize('md, expected', [
