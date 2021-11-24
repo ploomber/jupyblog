@@ -91,12 +91,10 @@ def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
     mdr = MarkdownRenderer(path_to_mds=path,
                            img_dir=cfg.path_to_static_abs(),
                            img_prefix=cfg.prefix_img,
-                           footer_template=cfg.read_footer_template(),
-                           processor=cfg.load_processor(),
-                           postprocessor=cfg.load_postprocessor())
+                           footer_template=cfg.read_footer_template())
 
     # TODO: test that expands based on img_dir
-    out, _ = mdr.render(name='post.md', include_source_in_footer=incsource)
+    out, name = mdr.render(name='post.md', include_source_in_footer=incsource)
     out_path = Path(cfg.path_to_posts_abs(), (post_name + '.md'))
     click.echo(f'Output: {out_path}')
 
@@ -105,6 +103,16 @@ def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
 
     if cfg.image_placeholders:
         out = add_image_placeholders(out)
+
+    processor = cfg.load_processor()
+
+    if processor:
+        out = processor(out, name=name)
+
+    postprocessor = cfg.load_postprocessor()
+
+    if postprocessor:
+        print(postprocessor(out, name=name))
 
     out_path.write_text(out)
 
