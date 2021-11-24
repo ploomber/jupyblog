@@ -1,3 +1,4 @@
+import importlib
 import os
 from pathlib import Path
 
@@ -29,6 +30,9 @@ class Config(BaseModel):
     image_placeholders : bool
         Adds a placeholder before each image tag, useful if uploading
         to a platform that needs manual image upload (e.g., Medium)
+
+    postprocessor : str
+        Dotted path with a function to execute after processing the document
     """
     root: str
     path_to_posts: str
@@ -36,6 +40,7 @@ class Config(BaseModel):
     prefix_img: str = ''
     language_mapping: dict = None
     image_placeholders: bool = False
+    postprocessor: str = None
 
     def path_to_posts_abs(self):
         return Path(self.root, self.path_to_posts)
@@ -46,6 +51,11 @@ class Config(BaseModel):
     def read_footer_template(self):
         path = Path(self.root, 'jupyblog-footer.md')
         return None if not path.is_file() else path.read_text()
+
+    def load_postprocessor(self):
+        if self.postprocessor:
+            mod, _, attr = self.postprocessor.rpartition('.')
+            return getattr(importlib.import_module(mod), attr)
 
 
 def find_file_recursively(name, max_levels_up=6, starting_dir=None):

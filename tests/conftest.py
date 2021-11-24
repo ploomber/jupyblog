@@ -1,3 +1,5 @@
+import sys
+from copy import copy
 import shutil
 import os
 from pathlib import Path
@@ -77,3 +79,37 @@ def tmp_expand_placeholder(tmp_path):
     os.chdir(str(tmp))
     yield tmp
     os.chdir(old)
+
+
+@pytest.fixture
+def add_current_to_sys_path():
+    old = copy(sys.path)
+    sys.path.insert(0, os.path.abspath('.'))
+    yield sys.path
+    sys.path = old
+
+
+@pytest.fixture
+def no_sys_modules_cache():
+    """
+    Removes modules from sys.modules that didn't exist before the test
+    """
+    mods = set(sys.modules)
+
+    yield
+
+    current = set(sys.modules)
+
+    to_remove = current - mods
+
+    for a_module in to_remove:
+        del sys.modules[a_module]
+
+
+@pytest.fixture
+def tmp_imports(add_current_to_sys_path, no_sys_modules_cache):
+    """
+    Adds current directory to sys.path and deletes everything imported during
+    test execution upon exit
+    """
+    yield

@@ -236,3 +236,21 @@ image_placeholders: true
 
     content = Path('content', 'posts', 'image.md').read_text()
     assert '**ADD jupyter.png HERE**' in content
+
+
+def test_postprocessor(tmp_image, tmp_imports):
+    Path('jupyblog.yaml').write_text("""
+path_to_posts: content/posts
+path_to_static: static
+postprocessor: postprocess.add_footer
+""")
+
+    Path('postprocess.py').write_text("""
+def add_footer(doc, name):
+    return f'{doc}\\nmy name is {name}'
+""")
+
+    cli_module._render(local=False)
+
+    content = Path('content', 'posts', 'image.md').read_text()
+    assert 'my name is image' in content.splitlines()[-1]

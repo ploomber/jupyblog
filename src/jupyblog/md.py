@@ -143,6 +143,66 @@ def replace_metadata(md, new_metadata):
     return new_metadata_text + '\n'.join(lines_new)
 
 
+def create_md_parser():
+    import mistune
+    return mistune.create_markdown(renderer=mistune.AstRenderer())
+
+
+# TODO: use this in ast executor
+class MarkdownAST:
+    def __init__(self, doc):
+        parser = create_md_parser()
+        self.ast_raw = parser(doc)
+        self.doc = doc
+
+    def iter_blocks(self):
+        for node in self.ast_raw:
+            if node['type'] == 'block_code':
+                yield node
+
+    def replace_blocks(self, blocks_new):
+        doc = self.doc
+
+        # TODO: support for code fences with structured info
+        for block, replacement in zip(self.iter_blocks(), blocks_new):
+            to_replace = f'```{block["info"]}\n{block["text"]}```'
+            doc = doc.replace(to_replace, replacement)
+
+        return doc
+
+
+class GistUploader(MarkdownAST):
+    def __init__(self, doc):
+        super().__init__(doc)
+
+        from ghapi.all import GhApi
+        self._api = GhApi()
+
+    @staticmethod
+    def _process_block(block, name):
+        return dict(
+            description=None,
+            files={f'{name}.{block["info"]}': {
+                'content': block['text']
+            }},
+            public=False)
+
+    def _upload_block(self, data):
+        response = self._api.gists.create(**data)
+        url = f'https://gist.github.com/{response.id}'
+        print(url)
+        return url
+
+    def upload_blocks(self, prefix):
+        data = [
+            self._upload_block(
+                self._process_block(block, name=f'{prefix}-{idx}'))
+            for idx, block in enumerate(self.iter_blocks())
+        ]
+
+        return self.replace_blocks(data)
+
+
 class MarkdownRenderer:
     """
     Parameters
@@ -164,16 +224,16 @@ class MarkdownRenderer:
                  path_to_mds,
                  img_dir=None,
                  img_prefix=None,
-                 footer_template=None):
-        import mistune
-
+                 footer_template=None,
+                 postprocessor=None):
         self.path = path_to_mds
         self._img_dir = img_dir
         self._img_prefix = img_prefix or ''
         self._footer_template = footer_template
+        self._postprocessor = postprocessor
         self.env = Environment(loader=FileSystemLoader(path_to_mds),
                                undefined=DebugUndefined)
-        self.parser = mistune.create_markdown(renderer=mistune.AstRenderer())
+        self.parser = create_md_parser()
 
     def render(self, name, *, include_source_in_footer):
         path = Path(self.path, name)
@@ -251,6 +311,9 @@ class MarkdownRenderer:
         # TODO: extrac title from front matter and put it as H1 header
 
         md_out = replace_metadata(md_out, metadata)
+
+        if self._postprocessor:
+            print(self._postprocessor(md_out, name=canonical_name))
 
         # FIXME: remove canonical name, add it as a parameter
         return md_out, canonical_name

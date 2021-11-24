@@ -43,9 +43,6 @@ def expand(path, output):
 @click.option('--log', default=None, help='Set logging level')
 @click.option('--cfg', '-c', default='jupyblog.yaml', help='Config filename')
 def render(local, incsource, log, cfg):
-    """
-    >>> jupyblog # Then upload with: https://markdowntomedium.com/
-    """
     return _render(local=local, cfg=cfg, log=log)
 
 
@@ -95,7 +92,8 @@ def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
     mdr = MarkdownRenderer(path_to_mds=path,
                            img_dir=cfg.path_to_static_abs(),
                            img_prefix=cfg.prefix_img,
-                           footer_template=cfg.read_footer_template())
+                           footer_template=cfg.read_footer_template(),
+                           postprocessor=cfg.load_postprocessor())
 
     # TODO: test that expands based on img_dir
     out, _ = mdr.render(name='post.md', include_source_in_footer=incsource)

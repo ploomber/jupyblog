@@ -147,3 +147,62 @@ something
 ]])
 def test_extract_between_line_content(content, lines, expected):
     assert md.extract_between_line_content(content, lines) == expected
+
+
+def test_markdownast_iter_blocks():
+    doc = """
+```python
+1 + 1
+```
+
+```python
+2 + 2
+```
+
+"""
+    ast = md.MarkdownAST(doc)
+
+    blocks = list(ast.iter_blocks())
+
+    assert blocks == [{
+        'type': 'block_code',
+        'text': '1 + 1\n',
+        'info': 'python'
+    }, {
+        'type': 'block_code',
+        'text': '2 + 2\n',
+        'info': 'python'
+    }]
+
+
+def test_markdownast_replace_blocks():
+    doc = """\
+```python
+1 + 1
+```
+
+```python
+2 + 2
+```\
+"""
+    ast = md.MarkdownAST(doc)
+
+    new = ast.replace_blocks(['hello', 'bye'])
+
+    assert new == 'hello\n\nbye'
+
+
+@pytest.mark.skip(reason='need to mock github api')
+def test_markdownast_upload():
+    doc = """\
+```python
+1 + 1
+```
+
+```python
+2 + 2
+```\
+"""
+    ast = md.GistUploader(doc)
+    out = ast.upload_blocks('prefix')
+    assert out
