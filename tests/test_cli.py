@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 from click.testing import CliRunner
+import pytest
 
 from jupyblog.cli import cli
 from jupyblog import cli as cli_module
@@ -161,3 +162,64 @@ cp file another
 
     assert '```py\n' in content
     assert '```sh\n' in content
+
+
+@pytest.mark.parametrize('footer_template, expected', [
+    ['my footer', 'my footer'],
+    ['canonical name: {{canonical_name}}', 'canonical name: my-post'],
+])
+def test_footer_template(tmp_empty, footer_template, expected):
+    Path('jupyblog.yaml').write_text("""
+path_to_posts: output
+path_to_static: static
+""")
+
+    Path('jupyblog-footer.md').write_text(footer_template)
+
+    Path('output').mkdir()
+    Path('static').mkdir()
+
+    _create_post(
+        'my-post', """\
+---
+title: title
+description: description
+jupyblog:
+    execute_code: false
+---
+""")
+
+    cli_module._render(local=False)
+
+    content = Path('..', 'output', 'my-post.md').read_text()
+
+    assert expected in content
+
+
+def test_config(tmp_empty):
+    Path('jupyblog.yaml').write_text("""
+path_to_posts: output
+path_to_static: static
+""")
+
+    Path('jupyblog.another.yaml').write_text("""
+path_to_posts: posts
+path_to_static: static
+""")
+
+    Path('posts').mkdir()
+    Path('static').mkdir()
+
+    _create_post(
+        'my-post', """\
+---
+title: title
+description: description
+jupyblog:
+    execute_code: false
+---
+""")
+
+    cli_module._render(local=False, cfg='jupyblog.another.yaml')
+
+    assert Path('..', 'posts', 'my-post.md').read_text()

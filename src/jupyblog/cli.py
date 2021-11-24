@@ -40,14 +40,15 @@ def expand(path, output):
               is_flag=True,
               help='Whether the source will be on Github or not')
 @click.option('--log', default=None, help='Set logging level')
-def render(local, incsource, log):
+@click.option('--cfg', '-c', default='jupyblog.yaml', help='Config filename')
+def render(local, incsource, log, cfg):
     """
     >>> jupyblog # Then upload with: https://markdowntomedium.com/
     """
-    return _render(local, log)
+    return _render(local=local, cfg=cfg, log=log)
 
 
-def _render(local, incsource=False, log=None):
+def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
     """Render markdown
 
     Parameters
@@ -66,8 +67,6 @@ def _render(local, incsource=False, log=None):
     * Keeps all other files intact
     * Adds jupyblog commit version that generated it to front matter
     """
-    hugo = True
-
     if log:
         logging.basicConfig(level=log.upper())
 
@@ -78,7 +77,7 @@ def _render(local, incsource=False, log=None):
     if local:
         cfg = config.get_local_config()
     else:
-        cfg = config.get_config()
+        cfg = config.get_config(name=cfg)
 
     # post_dir.mkdir(exist_ok=True, parents=True)
 
@@ -94,12 +93,11 @@ def _render(local, incsource=False, log=None):
     click.echo('Rendering markdown...')
     mdr = MarkdownRenderer(path_to_mds=path,
                            img_dir=cfg.path_to_static_abs(),
-                           img_prefix=cfg.prefix_img)
+                           img_prefix=cfg.prefix_img,
+                           footer_template=cfg.read_footer_template())
 
     # TODO: test that expands based on img_dir
-    out, _ = mdr.render(name='post.md',
-                        is_hugo=hugo,
-                        include_source_in_footer=incsource)
+    out, _ = mdr.render(name='post.md', include_source_in_footer=incsource)
     out_path = Path(cfg.path_to_posts_abs(), (post_name + '.md'))
     click.echo(f'Output: {out_path}')
 

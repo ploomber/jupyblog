@@ -160,20 +160,22 @@ class MarkdownRenderer:
     >>> out = mdr.render('sample.md')
     >>> Path('out.md').write_text(out)
     """
-    def __init__(self, path_to_mds, img_dir=None, img_prefix=None):
+    def __init__(self,
+                 path_to_mds,
+                 img_dir=None,
+                 img_prefix=None,
+                 footer_template=None):
         import mistune
 
         self.path = path_to_mds
         self._img_dir = img_dir
         self._img_prefix = img_prefix or ''
+        self._footer_template = footer_template
         self.env = Environment(loader=FileSystemLoader(path_to_mds),
                                undefined=DebugUndefined)
         self.parser = mistune.create_markdown(renderer=mistune.AstRenderer())
 
-    def render(self, name, *, is_hugo, include_source_in_footer):
-        """
-        flavor: hugo, devto, medium
-        """
+    def render(self, name, *, include_source_in_footer):
         path = Path(self.path, name)
         md_raw = path.read_text()
 
@@ -224,13 +226,10 @@ class MarkdownRenderer:
         metadata['authors'] = ['Eduardo Blancas']
         metadata['toc'] = True
 
-        if is_hugo:
-            if 'tags' in metadata:
-                print('Removing tags in metadata...')
-                del metadata['tags']
-
-        md_out = add_footer(md_out, metadata['title'], canonical_name,
-                            include_source_in_footer, is_hugo)
+        if self._footer_template:
+            md_out = add_footer(md_out, self._footer_template,
+                                metadata['title'], canonical_name,
+                                include_source_in_footer)
 
         if self._img_prefix:
             prefix = str(PurePosixPath(self._img_prefix, canonical_name))
@@ -257,33 +256,13 @@ class MarkdownRenderer:
         return md_out, canonical_name
 
 
-def add_footer(md_out, title, canonical_name, include_source_in_footer,
-               is_hugo):
+def add_footer(md_out, footer_template, title, canonical_name,
+               include_source_in_footer):
     url_source = 'https://github.com/ploomber/posts/tree/master/{}'.format(
         canonical_name)
     url_params = parse.quote('Issue in post: "{}"'.format(title))
     url_issue = 'https://github.com/ploomber/posts/issues/new?title={}'.format(
         url_params)
-
-    footer_template = """
-<!-- FOOTER STARTS -->
-
-{% if include_source_in_footer %}
-Source code for this post is available [here]({{url_source}}).
-{% endif %}
-
----
-
-Found an error? [Click here to let us know]({{url_issue}}).
-
-
-{% if not is_hugo %}
----
-Originally posted at [ploomber.io]({{canonical_url}})
-{% endif %}
-
-<!-- FOOTER ENDS -->
-"""
 
     lines = md_out.split('\n')
 
@@ -295,7 +274,7 @@ Originally posted at [ploomber.io]({{canonical_url}})
         url_issue=url_issue,
         include_source_in_footer=include_source_in_footer,
         canonical_url='https://ploomber.io/posts/{}'.format(canonical_name),
-        is_hugo=is_hugo)
+        canonical_name=canonical_name)
 
     md_out += footer
 

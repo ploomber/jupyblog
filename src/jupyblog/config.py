@@ -3,7 +3,7 @@ from pathlib import Path
 
 import yaml
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class Config(BaseModel):
@@ -37,6 +37,10 @@ class Config(BaseModel):
 
     def path_to_static_abs(self):
         return Path(self.root, self.path_to_static)
+
+    def read_footer_template(self):
+        path = Path(self.root, 'jupyblog-footer.md')
+        return None if not path.is_file() else path.read_text()
 
 
 def find_file_recursively(name, max_levels_up=6, starting_dir=None):
@@ -73,16 +77,15 @@ def find_file_recursively(name, max_levels_up=6, starting_dir=None):
     return path_to_file, levels
 
 
-def get_config():
+def get_config(name='jupyblog.yaml'):
     """
     Load jupyblog configuration file
     """
-    NAME = 'jupyblog.yaml'
 
-    path, _ = find_file_recursively(NAME)
+    path, _ = find_file_recursively(name)
 
     if path is None:
-        raise FileNotFoundError(f'Could not find {NAME}')
+        raise FileNotFoundError(f'Could not find {name}')
 
     cfg = Config(**yaml.safe_load(Path(path).read_text()),
                  root=str(path.parent))

@@ -28,7 +28,7 @@ expected = """\
 
 ```
 6
-```
+```\
 """
 
 skip = """\
@@ -60,7 +60,7 @@ skip_expected = """\
 
 ```
 42
-```
+```\
 """
 
 image = """\
@@ -110,7 +110,7 @@ Image('jupyter.png')
 
 **Console output: (1/1):**
 
-![1](/image/serialized/1.png)
+![1](/image/serialized/1.png)\
 """
 
 plot = """\
@@ -122,7 +122,7 @@ description: description
 ```python
 import matplotlib.pyplot as plt
 plt.plot([1, 2, 3])
-```
+```\
 """
 
 plot_expected = """\
@@ -151,31 +151,25 @@ def renderer():
 def test_execute(tmp_image, renderer, md, expected):
     Path('post.md').write_text(md)
 
-    out = renderer.render('post.md',
-                          is_hugo=True,
-                          include_source_in_footer=False)
+    out = renderer.render('post.md', include_source_in_footer=False)
 
     assert expected in out[0]
 
 
 def test_expand(tmp_expand_placeholder, renderer):
-    out = renderer.render('post.md',
-                          is_hugo=True,
-                          include_source_in_footer=False)
+    out = renderer.render('post.md', include_source_in_footer=False)
     expected = """\
 ```python
 # Content of script.py
 1 + 1
 
-```
+```\
 """
     assert expected in out[0]
 
 
 def test_expand_symbol(tmp_expand_placeholder, renderer):
-    out = renderer.render('another.md',
-                          is_hugo=True,
-                          include_source_in_footer=False)
+    out = renderer.render('another.md', include_source_in_footer=False)
     expected = """\
 ```python
 # Content of functions.py
@@ -184,7 +178,7 @@ def test_expand_symbol(tmp_expand_placeholder, renderer):
 def fn(x):
     return x
 
-```
+```\
 """
     assert expected in out[0]
 
@@ -197,9 +191,7 @@ def test_image_serialize(tmp_image):
     serialized.mkdir(parents=True)
     (serialized / 'old.png').touch()
 
-    out = renderer.render('post.md',
-                          is_hugo=True,
-                          include_source_in_footer=False)
+    out = renderer.render('post.md', include_source_in_footer=False)
 
     assert Path('static', 'image', 'serialized', '1.png').exists()
     # must clean up existing images
@@ -213,9 +205,7 @@ def test_error_if_h1_header(tmp_empty, renderer):
 """)
 
     with pytest.raises(ValueError) as excinfo:
-        renderer.render('post.md',
-                        is_hugo=True,
-                        include_source_in_footer=False)
+        renderer.render('post.md', include_source_in_footer=False)
 
     assert 'H1 level headers are not allowed' in str(excinfo.value)
 
@@ -237,9 +227,7 @@ def test_expands_relative_to_config(tmp_empty):
 
     Path('post.md').write_text(simple_with_image)
 
-    out = renderer.render('post.md',
-                          is_hugo=True,
-                          include_source_in_footer=False)[0]
+    out = renderer.render('post.md', include_source_in_footer=False)[0]
 
     img_tag = ('![image](static/images/'
                'test_expands_relative_to_confi0/my-image.png)')
