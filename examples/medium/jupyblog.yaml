@@ -1,0 +1,7 @@
+path_to_posts: out
+path_to_static: out
+language_mapping:
+  python: py
+  bash: sh
+image_placeholders: true
+postprocessor: jupyblog.postprocess.upload_to_github
