@@ -10,6 +10,7 @@ def find_images(md):
         yield match.group(0), match.group(1)
 
 
+# FIXME: remove absolute arg, no longer used
 def process_image_links(post, prefix, *, absolute):
     for img, img_link in find_images(post):
         # ignore paths that are already absolute, they come from

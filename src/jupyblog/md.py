@@ -237,22 +237,19 @@ class MarkdownRenderer:
         else:
             prefix = ''
 
-        if is_hugo:
-            # FIXME: use img_dir to expand linksq
-            print('Making img links absolute and adding '
-                  'canonical name as prefix...')
-            md_out = images.process_image_links(md_out,
-                                                prefix=prefix,
-                                                absolute=False)
+        # FIXME: use img_dir to expand linksq
+        print('Making img links absolute and adding '
+              'canonical name as prefix...')
+        md_out = images.process_image_links(md_out,
+                                            prefix=prefix,
+                                            absolute=False)
 
-            path = images.get_first_image_path(md_out)
+        path = images.get_first_image_path(md_out)
 
-            if path:
-                metadata['images'] = [path]
-        else:
-            md_out = images.process_image_links(md_out, prefix, absolute=False)
+        if path:
+            metadata['images'] = [path]
 
-            # TODO: extrac title from front matter and put it as H1 header
+        # TODO: extrac title from front matter and put it as H1 header
 
         md_out = replace_metadata(md_out, metadata)
 
