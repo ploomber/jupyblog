@@ -61,9 +61,8 @@ def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
     * Runs cells and include output as new cells (post.md)
     * Fix relative links to images (moves images and renames them as well)
     * Add datetime to front matter
-    * For hugo sets draft=True
-    * Keeps all other files intact
-    * Adds jupyblog commit version that generated it to front matter
+    * Adds jupyblog commit version and command that generated it to front
+        matter - maybe store it in metadata?
     """
     if log:
         logging.basicConfig(level=log.upper())
