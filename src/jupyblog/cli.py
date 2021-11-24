@@ -93,6 +93,7 @@ def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
                            img_dir=cfg.path_to_static_abs(),
                            img_prefix=cfg.prefix_img,
                            footer_template=cfg.read_footer_template(),
+                           processor=cfg.load_processor(),
                            postprocessor=cfg.load_postprocessor())
 
     # TODO: test that expands based on img_dir

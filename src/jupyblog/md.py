@@ -225,11 +225,13 @@ class MarkdownRenderer:
                  img_dir=None,
                  img_prefix=None,
                  footer_template=None,
+                 processor=None,
                  postprocessor=None):
         self.path = path_to_mds
         self._img_dir = img_dir
         self._img_prefix = img_prefix or ''
         self._footer_template = footer_template
+        self._processor = processor
         self._postprocessor = postprocessor
         self.env = Environment(loader=FileSystemLoader(path_to_mds),
                                undefined=DebugUndefined)
@@ -311,6 +313,9 @@ class MarkdownRenderer:
         # TODO: extrac title from front matter and put it as H1 header
 
         md_out = replace_metadata(md_out, metadata)
+
+        if self._processor:
+            md_out = self._processor(md_out, name=canonical_name)
 
         if self._postprocessor:
             print(self._postprocessor(md_out, name=canonical_name))
