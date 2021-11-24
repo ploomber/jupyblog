@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 import pytest
 from jupyblog import md
 
@@ -192,17 +194,32 @@ def test_markdownast_replace_blocks():
     assert new == 'hello\n\nbye'
 
 
-@pytest.mark.skip(reason='need to mock github api')
-def test_markdownast_upload():
+def test_gistuploader():
     doc = """\
+Some text
+
 ```python
 1 + 1
 ```
+
+More text
 
 ```python
 2 + 2
 ```\
 """
+
+    mock_api = Mock()
+    mock_response = Mock()
+    mock_response.id = 'some_id'
+    mock_api.gists.create.return_value = mock_response
+
     ast = md.GistUploader(doc)
+    ast._api = mock_api
+
     out = ast.upload_blocks('prefix')
-    assert out
+
+    expected = ('Some text\n\nhttps://gist.github.com/some_id\n\n'
+                'More text\n\nhttps://gist.github.com/some_id')
+
+    assert out == expected
