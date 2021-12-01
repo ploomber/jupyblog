@@ -33,11 +33,13 @@ two_expected = [
 special_characters = """
 ![something.png](path.png)
 ![hello_world.png](another.png)
+![some image](some-image.png)
 """
 
 special_characters_expected = [
     ('![something.png](path.png)', 'path.png'),
     ('![hello_world.png](another.png)', 'another.png'),
+    ('![some image](some-image.png)', 'some-image.png'),
 ]
 
 
