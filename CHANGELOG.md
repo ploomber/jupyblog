@@ -1,5 +1,7 @@
 # CHANGELOG
 
+## 0.0.3dev
+
 ## 0.0.2 (2022-01-24)
 * `jupyblog.yaml` can be used for config
 * Removes `--hugo` option, replaces it with `--local`
