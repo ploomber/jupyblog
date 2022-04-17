@@ -1,3 +1,6 @@
+import os
+import sys
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 import importlib
@@ -80,7 +83,8 @@ class Config(BaseModel):
 
     def load_postprocessor(self):
         if self.postprocessor:
-            return self._load_dotted_path(self.postprocessor)
+            with add_to_sys_path(self.root, chdir=False):
+                return self._load_dotted_path(self.postprocessor)
 
     def load_front_matter_template(self, name):
         if self.front_matter_template:
@@ -102,6 +106,7 @@ class Config(BaseModel):
     @staticmethod
     def _load_dotted_path(dotted_path):
         mod, _, attr = dotted_path.rpartition('.')
+
         return getattr(importlib.import_module(mod), attr)
 
 
@@ -132,3 +137,22 @@ class FrontMatter(BaseModel):
     Schema for .md front matter
     """
     jupyblog: Settings = Field(default_factory=Settings)
+
+
+@contextmanager
+def add_to_sys_path(path, chdir):
+    cwd_old = os.getcwd()
+
+    if path is not None:
+        path = os.path.abspath(path)
+        sys.path.insert(0, path)
+
+        if chdir:
+            os.chdir(path)
+
+    try:
+        yield
+    finally:
+        if path is not None:
+            sys.path.remove(path)
+            os.chdir(cwd_old)

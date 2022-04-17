@@ -171,6 +171,7 @@ def test_footer_template(tmp_empty, footer_template, expected):
     Path('jupyblog.yaml').write_text("""
 path_to_posts: output
 path_to_static: static
+footer: jupyblog-footer.md
 """)
 
     Path('jupyblog-footer.md').write_text(footer_template)

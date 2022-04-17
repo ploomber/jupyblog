@@ -318,7 +318,8 @@ class MarkdownRenderer:
 
         path = images.get_first_image_path(md_out)
 
-        if path:
+        # add opengraph image only if there isnt one
+        if path and 'images' not in metadata:
             metadata['images'] = [path]
 
         # TODO: extrac title from front matter and put it as H1 header

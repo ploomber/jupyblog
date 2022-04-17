@@ -4,7 +4,7 @@ from pathlib import Path
 
 import click
 
-from jupyblog.md import MarkdownRenderer
+from jupyblog.md import MarkdownRenderer, parse_metadata
 from jupyblog.expand import expand as _expand
 from jupyblog.images import add_image_placeholders
 from jupyblog import util, config
@@ -114,7 +114,11 @@ def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
     postprocessor = cfg.load_postprocessor()
 
     if postprocessor:
-        print(postprocessor(out, name=name))
+        print(
+            postprocessor(doc=out,
+                          name=name,
+                          config=dict(cfg),
+                          front_matter=parse_metadata(out)))
 
     out_path.write_text(out)
 

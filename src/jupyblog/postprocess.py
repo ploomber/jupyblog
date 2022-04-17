@@ -1,7 +1,7 @@
 from jupyblog import md
 
 
-def upload_to_github(doc, name):
+def upload_to_github(doc, name, config, front_matter):
     """
     Upload code snippets to github
 
