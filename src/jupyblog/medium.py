@@ -1,3 +1,6 @@
+from jupyblog.exceptions import InputPostException
+
+
 def apply_language_map(md, mapping):
     """Replace code tags
     """
@@ -47,9 +50,10 @@ def check_headers(md):
     h1 = [text for text, level in find_headers(md) if level == 1]
 
     if h1:
-        raise ValueError('H1 level headers are not allowed since they '
-                         'are not compatible with Hugo\'s table of '
-                         f'contents. Replace them with H2 headers: {h1}')
+        raise InputPostException(
+            'H1 level headers are not allowed since they '
+            'are not compatible with Hugo\'s table of '
+            f'contents. Replace them with H2 headers: {h1}')
 
 
 # FIXME: not using this anymore. delete
