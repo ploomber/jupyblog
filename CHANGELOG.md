@@ -1,5 +1,7 @@
 # CHANGELOG
 
+## 0.0.4dev
+
 ## 0.0.3 (2022-04-16)
 * Increases timeout for jupyter executor
 * Creates subclass of ClickException, raised when H1 headers appear
