@@ -116,7 +116,7 @@ class JupyterSession:
 
         while True:
             try:
-                io_msg = self.kc.get_iopub_msg(timeout=1)
+                io_msg = self.kc.get_iopub_msg(timeout=10)
                 io_msg_content = io_msg['content']
                 if 'execution_state' in io_msg_content and io_msg_content[
                         'execution_state'] == 'idle':
