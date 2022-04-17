@@ -59,6 +59,7 @@ class Config(BaseModel):
     processor: str = None
     postprocessor: str = None
     front_matter_template: str = None
+    footer: str = None
 
     def path_to_posts_abs(self):
         return Path(self.root, self.path_to_posts)
@@ -67,8 +68,11 @@ class Config(BaseModel):
         return Path(self.root, self.path_to_static)
 
     def read_footer_template(self):
-        path = Path(self.root, 'jupyblog-footer.md')
-        return None if not path.is_file() else path.read_text()
+        if self.footer:
+            path = Path(self.root, self.footer)
+
+            if path.exists():
+                return path.read_text()
 
     def load_processor(self):
         if self.processor:
