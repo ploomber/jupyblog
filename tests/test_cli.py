@@ -110,6 +110,8 @@ simple_with_image = """\
 ---
 title: title
 description: description
+jupyblog:
+  execute_code: false
 ---
 
 ![image](my-image.png)

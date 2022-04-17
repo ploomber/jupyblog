@@ -1,6 +1,7 @@
 from pathlib import Path
 import importlib
 
+import yaml
 from pydantic import BaseModel, Field
 
 
@@ -35,6 +36,10 @@ class Config(BaseModel):
 
     postprocessor : str
         Dotted path with a function to execute after processing the document
+
+    front_matter_template : str
+        Relative path to a YAML to use as default values for the post's
+        front matter. If None, it uses a default front matter
     """
     root: str
     path_to_posts: str
@@ -44,6 +49,7 @@ class Config(BaseModel):
     image_placeholders: bool = False
     processor: str = None
     postprocessor: str = None
+    front_matter_template: str = None
 
     def path_to_posts_abs(self):
         return Path(self.root, self.path_to_posts)
@@ -62,6 +68,16 @@ class Config(BaseModel):
     def load_postprocessor(self):
         if self.postprocessor:
             return self._load_dotted_path(self.postprocessor)
+
+    def load_front_matter_template(self):
+        path = Path(self.root, self.front_matter_template)
+
+        if path.exists():
+            front_matter = yaml.safe_load(path.read_text())
+        else:
+            front_matter = {}
+
+        return front_matter
 
     @staticmethod
     def _load_dotted_path(dotted_path):

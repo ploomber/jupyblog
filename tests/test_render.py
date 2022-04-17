@@ -2,11 +2,14 @@ import pytest
 from pathlib import Path
 
 from jupyblog.md import MarkdownRenderer
+from jupyblog.exceptions import InputPostException
 
 simple = """\
 ---
 title: title
 description: description
+jupyblog:
+  execute_code: true
 ---
 
 ```python
@@ -35,6 +38,8 @@ skip = """\
 ---
 title: title
 description: description
+jupyblog:
+  execute_code: true
 ---
 
 ```python skip=True
@@ -67,6 +72,8 @@ image = """\
 ---
 title: title
 description: description
+jupyblog:
+  execute_code: true
 ---
 
 ```python
@@ -117,6 +124,8 @@ plot = """\
 ---
 title: title
 description: description
+jupyblog:
+  execute_code: false
 ---
 
 ```python
@@ -204,7 +213,7 @@ def test_error_if_h1_header(tmp_empty, renderer):
 # Some H1 header
 """)
 
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(InputPostException) as excinfo:
         renderer.render('post.md', include_source_in_footer=False)
 
     assert 'H1 level headers are not allowed' in str(excinfo.value)
@@ -214,6 +223,8 @@ simple_with_image = """\
 ---
 title: title
 description: description
+jupyblog:
+  execute_code: false
 ---
 
 ![image](my-image.png)
