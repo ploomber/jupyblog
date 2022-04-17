@@ -19,9 +19,15 @@ from jupyblog.exceptions import InvalidFrontMatter, InputPostException
 
 logger = logging.getLogger(__name__)
 
+JUPYBLOG = """\
+jupyblog:
+  execute_code: false
+"""
+
 REQUIRED = {
     'title': 'Title is required',
     'description': 'Description is required for OpenGraph',
+    'jupyblog': f'jupyblog section is required. Example:\n\n{JUPYBLOG}'
 }
 
 
