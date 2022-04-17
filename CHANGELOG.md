@@ -1,6 +1,13 @@
 # CHANGELOG
 
 ## 0.0.3dev
+* Increases timeout for jupyter executor
+* Creates subclass of ClickException, raised when H1 headers appear
+* Custom error when missing keys in front matter
+* Validating `jupyblog` front matter section
+* Adds support for front matter template
+* Footer template is optional
+* Adds more arguments for custom postprocessor for greater flexibility
 
 ## 0.0.2 (2022-01-24)
 * `jupyblog.yaml` can be used for config
