@@ -3,7 +3,6 @@ TODO:
 * support for requirements.txt
 * create and destroy env
 """
-from datetime import datetime, timezone
 from urllib import parse
 import logging
 from pathlib import Path, PurePosixPath
@@ -227,6 +226,9 @@ class MarkdownRenderer:
         Prefix for image tags in markdown file. Note that this can be different
         to img_dir depending on the configuration of your blog engine.
 
+    front_matter_template : dict, default=None
+        Front matter template
+
     Examples
     --------
     >>> mdr = MarkdownRenderer('.')
@@ -237,11 +239,13 @@ class MarkdownRenderer:
                  path_to_mds,
                  img_dir=None,
                  img_prefix=None,
-                 footer_template=None):
+                 footer_template=None,
+                 front_matter_template=None):
         self.path = path_to_mds
         self._img_dir = img_dir
         self._img_prefix = img_prefix or ''
         self._footer_template = footer_template
+        self._front_matter_template = front_matter_template
         self.env = Environment(loader=FileSystemLoader(path_to_mds),
                                undefined=DebugUndefined)
         self.parser = create_md_parser()
@@ -292,10 +296,8 @@ class MarkdownRenderer:
         else:
             md_out = content
 
-        metadata['date'] = datetime.now(
-            timezone.utc).astimezone().isoformat(timespec='seconds')
-        metadata['authors'] = ['Eduardo Blancas']
-        metadata['toc'] = True
+        if self._front_matter_template:
+            metadata = {**metadata, **self._front_matter_template}
 
         if self._footer_template:
             md_out = add_footer(md_out, self._footer_template,

@@ -88,10 +88,12 @@ def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
         click.echo('Finished running build.sh\n\n')
 
     click.echo('Rendering markdown...')
-    mdr = MarkdownRenderer(path_to_mds=path,
-                           img_dir=cfg.path_to_static_abs(),
-                           img_prefix=cfg.prefix_img,
-                           footer_template=cfg.read_footer_template())
+    mdr = MarkdownRenderer(
+        path_to_mds=path,
+        img_dir=cfg.path_to_static_abs(),
+        img_prefix=cfg.prefix_img,
+        footer_template=cfg.read_footer_template(),
+        front_matter_template=cfg.load_front_matter_template(name=post_name))
 
     # TODO: test that expands based on img_dir
     out, name = mdr.render(name='post.md', include_source_in_footer=incsource)

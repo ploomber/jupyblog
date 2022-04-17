@@ -1,8 +1,15 @@
+from datetime import datetime, timezone
 from pathlib import Path
 import importlib
 
 import yaml
 from pydantic import BaseModel, Field
+from jinja2 import Template
+
+
+def _now():
+    return datetime.now(
+        timezone.utc).astimezone().isoformat(timespec='seconds')
 
 
 class Config(BaseModel):
@@ -39,7 +46,9 @@ class Config(BaseModel):
 
     front_matter_template : str
         Relative path to a YAML to use as default values for the post's
-        front matter. If None, it uses a default front matter
+        front matter. If None, it uses a default front matter. The template may
+        use {{now}} and {{name}} placeholders, which render to the current
+        datetime and post name, respectively.
     """
     root: str
     path_to_posts: str
@@ -69,15 +78,22 @@ class Config(BaseModel):
         if self.postprocessor:
             return self._load_dotted_path(self.postprocessor)
 
-    def load_front_matter_template(self):
-        path = Path(self.root, self.front_matter_template)
+    def load_front_matter_template(self, name):
+        if self.front_matter_template:
+            path = Path(self.root, self.front_matter_template)
 
-        if path.exists():
-            front_matter = yaml.safe_load(path.read_text())
+            if path.exists():
+                text = path.read_text()
+
+                now = _now()
+                rendered = Template(text).render(now=now, name=name)
+                front_matter = yaml.safe_load(rendered)
+            else:
+                front_matter = {}
+
+            return front_matter
         else:
-            front_matter = {}
-
-        return front_matter
+            return dict()
 
     @staticmethod
     def _load_dotted_path(dotted_path):

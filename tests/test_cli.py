@@ -1,12 +1,14 @@
 import os
 from pathlib import Path
 
+import yaml
 from click.testing import CliRunner
 import pytest
 
 from jupyblog.cli import cli
 from jupyblog import cli as cli_module
 from jupyblog.md import parse_metadata
+from jupyblog import models
 
 # TODO: mock test that render passes the right parameters to _render
 
@@ -41,7 +43,6 @@ def test_sample_post(tmp_sample_post):
 
     assert not result.exit_code
     assert content
-    assert metadata['authors']
     assert metadata['title'] == 'some awesome post'
 
 
@@ -55,7 +56,6 @@ def test_with_python_code(tmp_with_py_code):
 
     assert not result.exit_code
     assert content
-    assert metadata['authors']
     assert metadata['title'] == 'some awesome post'
 
 
@@ -71,7 +71,6 @@ def test_image(tmp_image):
     assert '![jupyter](jupyter.png)' in content
     assert Path('static', 'image', 'jupyter.png').is_file()
     assert Path('jupyter.png').is_file()
-    assert metadata['authors']
     assert metadata['title'] == 'some awesome post'
     assert metadata['images'][0] == 'jupyter.png'
 
@@ -87,7 +86,6 @@ def test_image_nested(tmp_image_nested):
     assert not result.exit_code
     assert '![jupyter](images/jupyter.png)' in content
     assert Path('static', 'image-nested', 'images', 'jupyter.png').is_file()
-    assert metadata['authors']
     assert metadata['title'] == 'some awesome post'
     assert metadata['images'][0] == 'images/jupyter.png'
 
@@ -102,7 +100,6 @@ def test_image_medium(tmp_image):
     assert not result.exit_code
     assert '![jupyter](jupyter.png)' in content
     assert Path('static', 'image', 'jupyter.png').is_file()
-    assert metadata['authors']
     assert metadata['title'] == 'some awesome post'
 
 
@@ -256,6 +253,39 @@ def add_footer(doc, name):
 
     content = Path('content', 'posts', 'image.md').read_text()
     assert 'my name is image' in content.splitlines()[-1]
+
+
+def test_front_matter_template(tmp_sample_post, monkeypatch):
+    monkeypatch.setattr(models, '_now', lambda: 'now')
+
+    fm = yaml.safe_load(Path('jupyblog.yaml').read_text())
+    fm['front_matter_template'] = 'template.yaml'
+
+    template = {
+        'date': '{{now}}',
+        'author': 'Some name',
+        'image': '{{name}}.png'
+    }
+    Path('template.yaml').write_text(yaml.dump(template))
+    Path('jupyblog.yaml').write_text(yaml.dump(fm))
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ['render'], catch_exceptions=False)
+
+    content = Path('content', 'posts', 'sample_post.md').read_text()
+    metadata = parse_metadata(content)
+
+    assert not result.exit_code
+    assert metadata == {
+        'author': 'Some name',
+        'date': 'now',
+        'description': 'something',
+        'jupyblog': {
+            'execute_code': False
+        },
+        'title': 'some awesome post',
+        'image': 'sample_post.png',
+    }
 
 
 # FIXME: test postprocessor
