@@ -15,17 +15,24 @@ from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
 from jupyblog import util, images, models, medium
 from jupyblog.execute import ASTExecutor
 from jupyblog.expand import expand
-from jupyblog.exceptions import InvalidFrontMatter
+from jupyblog.exceptions import InvalidFrontMatter, InputPostException
 
 logger = logging.getLogger(__name__)
+
+REQUIRED = {
+    'title': 'Title is required',
+    'description': 'Description is required for OpenGraph',
+}
 
 
 def validate_metadata(metadata):
     # description required for open graph:
     # https://gohugo.io/templates/internal/#open-graph
-    for field in ['title', 'description']:
+    for field in REQUIRED:
         if field not in metadata:
-            raise ValueError(f'missing {field} in:\n{metadata}')
+            reason = REQUIRED[field]
+            raise InputPostException(
+                f'missing {field!r} in front matter: {reason}')
 
 
 def parse_metadata(md, validate=True):
