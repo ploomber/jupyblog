@@ -23,15 +23,13 @@ def find_headers(md):
 
     for node in parser(md):
         if node['type'] == 'heading':
+            node_text = node["children"][0]
 
-            node = node["children"][0]
-
-            if node['type'] == 'link':
-                text = node["children"][0]["text"]
-            else:
-                text = node["text"]
+            if node_text['type'] == 'link':
+                node_text = node_text["children"][0]
 
             level = node['level']
+            text = node_text['text']
 
             if level == 6:
                 raise ValueError(
