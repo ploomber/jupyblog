@@ -29,7 +29,7 @@ def find_headers(md):
             if node['type'] == 'link':
                 text = node["children"][0]["text"]
             else:
-                text = ["text"]
+                text = node["text"]
 
             level = node['level']
 
