@@ -109,6 +109,15 @@ class JupyterSession:
         self._front_matter = front_matter or models.FrontMatter()
         self._img_dir = img_dir
         self._canonical_name = canonical_name
+        self._counter = 0
+
+        # clean up folder with serialized images if needed
+        if self._front_matter.jupyblog.serialize_images:
+            serialized = Path(self._img_dir, self._canonical_name,
+                              'serialized')
+
+            if serialized.is_dir():
+                shutil.rmtree(serialized)
 
     def execute(self, code):
         out = []
@@ -127,17 +136,10 @@ class JupyterSession:
             if 'execution_state' not in io_msg['content']:
                 out.append(io_msg)
 
-        # clean up folder with serialized images if needed
-        if self._front_matter.jupyblog.serialize_images:
-            serialized = Path(self._img_dir, self._canonical_name,
-                              'serialized')
-
-            if serialized.is_dir():
-                shutil.rmtree(serialized)
-
         processed = [
             _process_content_data(
                 o['content'],
+                self._counter,
                 idx,
                 serialize_images=self._front_matter.jupyblog.serialize_images,
                 img_dir=self._img_dir,
@@ -145,6 +147,7 @@ class JupyterSession:
             for idx, o in enumerate(out)
         ]
 
+        self._counter += 1
         return [content for content in processed if content]
 
     def __del__(self):
@@ -159,10 +162,12 @@ ANSI_ESCAPE = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 
 
 def _process_content_data(content,
+                          counter,
                           idx,
                           serialize_images=False,
                           img_dir=None,
                           canonical_name=None):
+
     if 'data' in content:
         data = content['data']
 
@@ -173,12 +178,13 @@ def _process_content_data(content,
                 serialized = Path(img_dir, canonical_name, 'serialized')
                 serialized.mkdir(exist_ok=True, parents=True)
 
-                filename = f'{idx}.png'
+                id_ = f'{counter}-{idx}'
+                filename = f'{id_}.png'
                 path_to_image = serialized / filename
                 base64_2_image(image_base64, path_to_image)
 
                 return (HTML,
-                        f'![{idx}](/{canonical_name}/serialized/{filename})')
+                        f'![{id_}](/{canonical_name}/serialized/{filename})')
             else:
                 return PNG, base64_html_tag(image_base64)
         if data.get('text/html'):

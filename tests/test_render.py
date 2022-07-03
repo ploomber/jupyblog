@@ -117,7 +117,48 @@ Image('jupyter.png')
 
 **Console output: (1/1):**
 
-![1](/image/serialized/1.png)\
+![0-1](/image/serialized/0-1.png)\
+"""
+
+image_serialize_multiple = """\
+---
+title: title
+description: description
+jupyblog:
+    serialize_images: True
+---
+
+```python
+from IPython.display import Image
+Image('jupyter.png')
+```
+
+```python
+from IPython.display import Image
+Image('jupyter.png')
+```
+"""
+
+image_serialize_multiple_expected = """\
+```python
+from IPython.display import Image
+Image('jupyter.png')
+```
+
+
+**Console output: (1/1):**
+
+![0-1](/image/serialized/0-1.png)
+
+```python
+from IPython.display import Image
+Image('jupyter.png')
+```
+
+
+**Console output: (1/1):**
+
+![1-1](/image/serialized/1-1.png)\
 """
 
 plot = """\
@@ -202,10 +243,27 @@ def test_image_serialize(tmp_image):
 
     out = renderer.render('post.md', include_source_in_footer=False)
 
-    assert Path('static', 'image', 'serialized', '1.png').exists()
+    assert Path('static', 'image', 'serialized', '0-1.png').exists()
     # must clean up existing images
     assert not (serialized / 'old.png').exists()
     assert image_serialize_expected in out[0]
+
+
+def test_image_serialize_multiple(tmp_image):
+    Path('post.md').write_text(image_serialize_multiple)
+    renderer = MarkdownRenderer('.', 'static')
+
+    serialized = Path('static', 'image', 'serialized')
+    serialized.mkdir(parents=True)
+    (serialized / 'old.png').touch()
+
+    out = renderer.render('post.md', include_source_in_footer=False)
+
+    assert Path('static', 'image', 'serialized', '0-1.png').exists()
+    assert Path('static', 'image', 'serialized', '1-1.png').exists()
+    # must clean up existing images
+    assert not (serialized / 'old.png').exists()
+    assert image_serialize_multiple_expected in out[0]
 
 
 def test_error_if_h1_header(tmp_empty, renderer):

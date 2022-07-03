@@ -88,6 +88,7 @@ def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
         click.echo('Finished running build.sh\n\n')
 
     click.echo('Rendering markdown...')
+
     mdr = MarkdownRenderer(
         path_to_mds=path,
         img_dir=cfg.path_to_static_abs(),
