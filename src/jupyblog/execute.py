@@ -183,8 +183,7 @@ def _process_content_data(content,
                 path_to_image = serialized / filename
                 base64_2_image(image_base64, path_to_image)
 
-                return (HTML,
-                        f'![{id_}](/{canonical_name}/serialized/{filename})')
+                return (HTML, f'![{id_}](serialized/{filename})')
             else:
                 return PNG, base64_html_tag(image_base64)
         if data.get('text/html'):

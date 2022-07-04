@@ -117,7 +117,7 @@ Image('jupyter.png')
 
 **Console output: (1/1):**
 
-![0-1](/image/serialized/0-1.png)\
+![0-1](serialized/0-1.png)\
 """
 
 image_serialize_multiple = """\
@@ -148,7 +148,7 @@ Image('jupyter.png')
 
 **Console output: (1/1):**
 
-![0-1](/image/serialized/0-1.png)
+![0-1](serialized/0-1.png)
 
 ```python
 from IPython.display import Image
@@ -158,7 +158,7 @@ Image('jupyter.png')
 
 **Console output: (1/1):**
 
-![1-1](/image/serialized/1-1.png)\
+![1-1](serialized/1-1.png)\
 """
 
 plot = """\
@@ -287,6 +287,17 @@ jupyblog:
 
 ![image](my-image.png)
 """
+
+
+def test_img_prefix(tmp_empty):
+    renderer = MarkdownRenderer('.', img_prefix='some/images')
+
+    Path('post.md').write_text(simple_with_image)
+
+    out = renderer.render('post.md', include_source_in_footer=False)[0]
+
+    img_tag = '![image](some/images/test_img_prefix0/my-image.png)'
+    assert img_tag in out
 
 
 def test_expands_relative_to_config(tmp_empty):
