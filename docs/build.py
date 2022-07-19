@@ -8,7 +8,7 @@ c.cell_metadata_filter = '-all'
 
 nb = jupytext.read('_tutorial.md')
 
-cells = []
+# cells = []
 
 out = nbclient.execute(nb)
 
@@ -20,6 +20,6 @@ out = nbclient.execute(nb)
 #         cell['source'] = ''
 #         cells.append(cell)
 
-nb.cells = cells
+# nb.cells = cells
 
 jupytext.write(out, 'tutorial.ipynb')
