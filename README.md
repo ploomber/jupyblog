@@ -46,10 +46,10 @@ pip install jupyblog
 
 ## Example
 
-Input: [docs/post.md](docs/post.md)
-Output: [docs/output/docs.md](docs/output/docs.md)
+* Input: [docs/post.md](docs/post.md)
+* Output: [docs/output/docs.md](docs/output/docs.md)
 
-Get sample markdown and configuration files:
+To reproduce the example, get the sample markdown and configuration files:
 
 ```sh
 git clone https://github.com/ploomber/jupyblog

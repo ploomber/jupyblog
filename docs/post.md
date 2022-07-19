@@ -38,6 +38,11 @@ import matplotlib.pyplot as plt
 plt.plot([1, 2, 3])
 ```
 
+**Note:** The plot won't be visible from GitHub since it doesn't support
+base64 embedded images, but you can download the file and open it with any
+markdown viewer. Jupyblog also supports storing images in external files
+(e.g. `static/plot.png`)
+
 ## Import files
 
 {{expand("script.py")}}
