@@ -21,18 +21,11 @@ def test_missing_config(tmp_empty):
         get_config()
 
 
-def test_missing_static(tmp_empty, default_config):
-    Path('content/posts').mkdir(parents=True)
+def test_creates_directories(tmp_empty, default_config):
+    get_config()
 
-    with pytest.raises(NotADirectoryError):
-        get_config()
-
-
-def test_missing_content_posts(tmp_empty, default_config):
-    Path('static').mkdir(parents=True)
-
-    with pytest.raises(NotADirectoryError):
-        get_config()
+    assert Path('static').is_dir()
+    assert Path('content/posts').is_dir()
 
 
 def test_get_config(tmp_empty, default_config):
