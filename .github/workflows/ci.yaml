@@ -47,5 +47,4 @@ jobs:
           pip install .
       - name: Test readme
         run: |
-          jupytext README.md --to ipynb
-          jupyter execute README.ipynb
+          python test-readme.py
