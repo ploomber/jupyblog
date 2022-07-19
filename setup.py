@@ -32,6 +32,7 @@ REQUIRES = [
     'jupytext',
     'parso',
     'pydantic',
+    'mistune>=2.0',
 ]
 
 DEV = [
@@ -39,8 +40,6 @@ DEV = [
     'pytest',
     'yapf',
     'flake8',
-    'mkdocs',
-    'mkdocs-material',
     'invoke',
     'twine',
     'ipdb',
@@ -50,7 +49,6 @@ DEV = [
 ]
 
 ALL = [
-    'mistune>=2.0.0rc1',
     'ghapi',
 ]
 
