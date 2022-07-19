@@ -1,3 +1,11 @@
+---
+jupyter:
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
+
 <!-- #region -->
 # Jupyblog
 
@@ -58,7 +66,7 @@ git clone https://github.com/ploomber/jupyblog
 Execute markdown file:
 <!-- #endregion -->
 
-```sh
+```bash
 cd docs
 jupyblog render
 ```

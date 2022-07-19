@@ -113,7 +113,7 @@ plt.plot([1, 2, 3])
 **Console output: (1/2):**
 
 ```
-[<matplotlib.lines.Line2D at 0x119070340>]
+[<matplotlib.lines.Line2D at 0x11e925370>]
 ```
 
 **Console output: (2/2):**
