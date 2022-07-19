@@ -44,6 +44,8 @@ Jupyblog supports rich outputs like HTML tables or matplotlib plots.
 pip install jupyblog
 ```
 
+Works with Python 3.7 and higher.
+
 ## Example
 
 * Input: [docs/post.md](docs/post.md)
