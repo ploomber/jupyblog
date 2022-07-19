@@ -53,11 +53,13 @@ def get_config(name='jupyblog.yaml'):
     cfg = Config(**yaml.safe_load(Path(path).read_text()),
                  root=str(path.parent))
 
-    if cfg.path_to_posts_abs().is_dir() and cfg.path_to_static_abs().is_dir():
-        return cfg
-    else:
-        raise NotADirectoryError(
-            f'missing {cfg.path_to_posts_abs()} or {cfg.path_to_static_abs()}')
+    path_to_posts = cfg.path_to_posts_abs()
+    path_to_static = cfg.path_to_static_abs()
+
+    Path(path_to_static).mkdir(parents=True, exist_ok=True)
+    Path(path_to_posts).mkdir(parents=True, exist_ok=True)
+
+    return cfg
 
 
 def get_local_config():

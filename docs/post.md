@@ -5,8 +5,6 @@ jupyblog:
     allow_expand: True
 ---
 
-# Example
-
 ## Expression
 
 ```python
