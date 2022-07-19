@@ -1,21 +1,64 @@
-# jupyblog
+<!-- #region -->
+# Jupyblog
 
-Jupyblog is a command-line tool to create blog posts using Jupyter and markdown files.
+Jupyblog executes code snippets in markdown files and embeds the results as new code snippets. We use it at [Ploomber](https://github.com/ploomber/ploomber) to write [technical blog posts](https://ploomber.io/blog/snapshot-testing/) and publish them in our [Hugo](https://github.com/gohugoio/hugo) blog.
 
+For example, if your **input** is a markdown like this:
 
-## `jupyblog render`
+~~~md
 
-### Requirements
+# My markdown post
 
-A `post.md` file with the following front matter:
+Some description
 
-```yaml
-title: some title
-description: some description
+```python
+1 + 1
+```
+~~~
+
+The **output** will look like this:
+
+~~~md
+
+# My markdown post
+
+Some description
+
+```python
+1 + 1
 ```
 
-Move to the folder with the `post.md` file and:
+**Console output (1/1):**
+
+```
+2
+```
+
+~~~
+
+Jupyblog supports rich outputs like HTML tables or matplotlib plots.
+
+## Installation
 
 ```sh
+pip install jupyblog
+```
+
+## Example
+
+Input: [docs/post.md](docs/post.md)
+Output: [docs/output/docs.md](docs/output/docs.md)
+
+Get sample markdown and configuration files:
+
+```sh
+git clone https://github.com/ploomber/jupyblog
+```
+
+Execute markdown file:
+<!-- #endregion -->
+
+```sh
+cd docs
 jupyblog render
 ```
