@@ -62,3 +62,7 @@ Execute markdown file:
 cd docs
 jupyblog render
 ```
+
+## Documentation
+
+Check out [docs/tutorial.ipynb](docs/tutorial.ipynb).
