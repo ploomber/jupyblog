@@ -2,4 +2,4 @@
 addopts = "--pdbcls=IPython.terminal.debugger:Pdb"
 
 [tool.pkgmt]
-github = "edublancas/jupyblog"
+github = "ploomber/jupyblog"
