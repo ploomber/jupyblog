@@ -2,6 +2,7 @@ from glob import glob
 from pathlib import Path
 
 import pytest
+import os
 
 from jupyblog.util import copy_all_pngs
 
@@ -11,9 +12,9 @@ from jupyblog.util import copy_all_pngs
     [['image.png'], ['image.png']],
     [['image.png', 'another.png'], ['image.png', 'another.png']],
     [['not-an-image.pdf'], []],
-    [['nested/image.png'], ['nested/image.png']],
-    [['something.pdf', 'another/nested/im/age.png'],
-     ['another/nested/im/age.png']],
+    [[os.path.join('nested', 'image.png')], [os.path.join('nested', 'image.png')]],
+    [['something.pdf', os.path.join('another', 'nested', 'im', 'age.png')],
+     [os.path.join('another', 'nested', 'im', 'age.png')]],
 ])
 def test_copy_images(tmp_empty, images, images_expected):
     src = Path('src')
@@ -30,7 +31,7 @@ def test_copy_images(tmp_empty, images, images_expected):
     copy_all_pngs('src', 'target', 'something')
 
     files = [
-        p for p in glob('target/something/**/*.png', recursive=True)
+        p for p in glob(os.path.join('target', 'something', '**', '*.png'), recursive=True)
         if Path(p).is_file()
     ]
 
