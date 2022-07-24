@@ -70,6 +70,8 @@ cd docs
 jupyblog render
 ```
 
+Then, open `output/docs.md`
+
 ## Documentation
 
 Check out [docs/tutorial.ipynb](docs/tutorial.ipynb).
