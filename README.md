@@ -5,7 +5,8 @@ Jupyblog executes code snippets in markdown files and embeds the results as new 
 
 We use it at [Ploomber](https://github.com/ploomber/ploomber) to write [technical blog posts](https://ploomber.io/blog/snapshot-testing/) and publish them in our [Hugo](https://github.com/gohugoio/hugo) blog; however, any engine that takes markddown files works.
 
-![demo](https://ploomber.io/images/doc/jupyblog/demo.mp4)
+https://user-images.githubusercontent.com/989250/180660666-d1262a07-2cd9-45ae-9019-79d79ef693e9.mp4
+
 
 For example, if your **input** is a markdown like this:
 
