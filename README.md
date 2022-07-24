@@ -1,7 +1,11 @@
 <!-- #region -->
 # Jupyblog
 
-Jupyblog executes code snippets in markdown files and embeds the results as new code snippets. We use it at [Ploomber](https://github.com/ploomber/ploomber) to write [technical blog posts](https://ploomber.io/blog/snapshot-testing/) and publish them in our [Hugo](https://github.com/gohugoio/hugo) blog; however, any engine that takes markddown files works.
+Jupyblog executes code snippets in markdown files and embeds the results as new code snippets.
+
+We use it at [Ploomber](https://github.com/ploomber/ploomber) to write [technical blog posts](https://ploomber.io/blog/snapshot-testing/) and publish them in our [Hugo](https://github.com/gohugoio/hugo) blog; however, any engine that takes markddown files works.
+
+![demo](https://ploomber.io/images/doc/jupyblog/demo.mp4)
 
 For example, if your **input** is a markdown like this:
 
