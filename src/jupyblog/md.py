@@ -11,6 +11,7 @@ import jupytext
 import yaml
 from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
 
+import jupyblog
 from jupyblog import util, images, models, medium
 from jupyblog.execute import ASTExecutor
 from jupyblog.expand import expand
@@ -263,6 +264,7 @@ class MarkdownRenderer:
         md_ast = self.parser(md_raw)
         # TODO: replace and use model object
         metadata = parse_metadata(md_raw)
+        metadata['jupyblog']['version'] = version()
 
         front_matter = models.FrontMatter(**metadata)
 
@@ -382,3 +384,7 @@ def run_snippets(md_ast, content, front_matter, img_dir, canonical_name):
                                         block['info'].split(' ')[0])
 
     return md_out
+
+
+def version():
+    return jupyblog.__version__
