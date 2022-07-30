@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 JUPYBLOG = """\
 jupyblog:
   execute_code: false
+  version: 0.0.4
 """
 
 REQUIRED = {
@@ -263,9 +264,7 @@ class MarkdownRenderer:
 
         md_ast = self.parser(md_raw)
         # TODO: replace and use model object
-        metadata = parse_metadata(md_raw)
-        metadata['jupyblog']['version'] = version()
-
+        metadata = grab_metadata_from_markdown(md_raw)
         front_matter = models.FrontMatter(**metadata)
 
         # first render, just expand (expanded snippets are NOT executed)
@@ -388,3 +387,14 @@ def run_snippets(md_ast, content, front_matter, img_dir, canonical_name):
 
 def version():
     return jupyblog.__version__
+
+
+def set_version_to_metadata(metadata):
+    metadata['jupyblog']['version'] = version()
+
+
+def grab_metadata_from_markdown(text):
+    metadata = parse_metadata(text)
+    set_version_to_metadata(metadata)
+
+    return metadata
