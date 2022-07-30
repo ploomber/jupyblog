@@ -126,10 +126,14 @@ class Settings(BaseModel):
 
     execute_code : bool, default=True
         Execute code snippets.
+
+    version : str, default=''
+        Jupyblog version used to create the rendered file
     """
     serialize_images: bool = False
     allow_expand: bool = False
     execute_code: bool = True
+    version: str = ''
 
 
 class FrontMatter(BaseModel):
