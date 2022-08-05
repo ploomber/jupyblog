@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 JUPYBLOG = """\
 jupyblog:
   execute_code: false
-  version: 0.0.4
 """
 
 REQUIRED = {
@@ -42,12 +41,15 @@ def validate_metadata(metadata):
                 f'missing {field!r} in front matter: {reason}')
 
 
-def parse_metadata(md, validate=True):
+def parse_metadata(md, validate=True, set_version=False):
     """Parse markdown metadata
     """
     start, end = find_metadata_lines(md)
     lines = md.splitlines()
     metadata = yaml.safe_load('\n'.join(lines[start:end])) or {}
+
+    if set_version:
+        set_version_to_md(metadata)
 
     if validate:
         validate_metadata(metadata)
@@ -252,7 +254,7 @@ class MarkdownRenderer:
                                undefined=DebugUndefined)
         self.parser = create_md_parser()
 
-    def render(self, name, *, include_source_in_footer):
+    def render(self, name, *, include_source_in_footer, set_version=False):
         path = Path(self.path, name)
         md_raw = path.read_text()
 
@@ -264,7 +266,7 @@ class MarkdownRenderer:
 
         md_ast = self.parser(md_raw)
         # TODO: replace and use model object
-        metadata = grab_metadata_from_markdown(md_raw)
+        metadata = parse_metadata(md_raw, set_version=set_version)
         front_matter = models.FrontMatter(**metadata)
 
         # first render, just expand (expanded snippets are NOT executed)
@@ -385,16 +387,14 @@ def run_snippets(md_ast, content, front_matter, img_dir, canonical_name):
     return md_out
 
 
-def version():
-    return jupyblog.__version__
+def set_version_to_md(metadata):
+    version = {
+        'jupyblog': {
+            'metadata': {
+                'version': jupyblog.__version__
+            }
+        }
+    }
 
+    metadata.update(version)
 
-def set_version_to_metadata(metadata):
-    metadata['jupyblog']['version'] = version()
-
-
-def grab_metadata_from_markdown(text):
-    metadata = parse_metadata(text)
-    set_version_to_metadata(metadata)
-
-    return metadata

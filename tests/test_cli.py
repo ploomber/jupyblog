@@ -5,6 +5,7 @@ import yaml
 from click.testing import CliRunner
 import pytest
 
+import jupyblog
 from jupyblog.cli import cli
 from jupyblog import cli as cli_module, md
 from jupyblog.md import parse_metadata
@@ -282,8 +283,9 @@ def test_front_matter_template(tmp_sample_post, monkeypatch):
         'date': 'now',
         'description': 'something',
         'jupyblog': {
-            'execute_code': False,
-            'version': md.version()
+            'metadata': {
+                'version': jupyblog.__version__
+            }
         },
         'title': 'some awesome post',
         'image': 'sample_post.png',

@@ -97,7 +97,7 @@ def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
         front_matter_template=cfg.load_front_matter_template(name=post_name))
 
     # TODO: test that expands based on img_dir
-    out, name = mdr.render(name='post.md', include_source_in_footer=incsource)
+    out, name = mdr.render(name='post.md', include_source_in_footer=incsource, set_version=True)
     out_path = Path(cfg.path_to_posts_abs(), (post_name + '.md'))
     click.echo(f'Output: {out_path}')
 

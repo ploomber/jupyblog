@@ -9,6 +9,8 @@ import yaml
 from pydantic import BaseModel, Field
 from jinja2 import Template
 
+import jupyblog
+
 
 def _now():
     return datetime.now(
@@ -110,6 +112,17 @@ class Config(BaseModel):
         return getattr(importlib.import_module(mod), attr)
 
 
+class Metadata(BaseModel):
+    """Schema for metadata section in .md front matter
+
+    Parameters
+    ----------
+    version : str, default=lambda
+        Jupyblog's current version
+    """
+    version: str = Field(default=jupyblog.__version__)
+
+
 class Settings(BaseModel):
     """Schema for jupyblog section in .md front matter
 
@@ -127,13 +140,13 @@ class Settings(BaseModel):
     execute_code : bool, default=True
         Execute code snippets.
 
-    version : str, default=''
-        Jupyblog version used to create the rendered file
+    metadata : Metadata, default=Metadata
+        Metadata section
     """
     serialize_images: bool = False
     allow_expand: bool = False
     execute_code: bool = True
-    version: str = ''
+    metadata: Metadata = Field(default_factory=Metadata)
 
 
 class FrontMatter(BaseModel):
