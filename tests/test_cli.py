@@ -7,7 +7,7 @@ import pytest
 
 import jupyblog
 from jupyblog.cli import cli
-from jupyblog import cli as cli_module, md
+from jupyblog import cli as cli_module
 from jupyblog.md import parse_metadata
 from jupyblog import models
 

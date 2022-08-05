@@ -397,4 +397,3 @@ def set_version_to_md(metadata):
     }
 
     metadata.update(version)
-
