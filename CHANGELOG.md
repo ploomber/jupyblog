@@ -1,5 +1,7 @@
 # CHANGELOG
 
+## 0.0.5dev
+
 ## 0.0.4 (2022-08-13)
 * Adds telemetry
 
