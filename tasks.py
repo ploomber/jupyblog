@@ -26,16 +26,16 @@ def docs_serve(c):
     c.run('mkdocs serve')
 
 
-@task
-def release(c):
+@task(aliases=['v'])
+def version(c):
     """Create a new version of this project
     """
     from pkgmt import versioneer
     versioneer.version(project_root='.', tag=True)
 
 
-@task
-def upload(c, tag, production=True):
+@task(aliases=['r'])
+def release(c, tag, production=True):
     """Upload to PyPI (prod by default): inv upload {tag}
     """
     from pkgmt import versioneer
