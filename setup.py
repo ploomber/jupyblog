@@ -33,6 +33,7 @@ REQUIRES = [
     'parso',
     'pydantic',
     'mistune>=2.0',
+    'ploomber-core>=0.0.4',
 ]
 
 DEV = [

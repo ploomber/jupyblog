@@ -3,12 +3,20 @@ import logging
 from pathlib import Path
 
 import click
+from ploomber_core.telemetry.telemetry import Telemetry
 
+from jupyblog import __version__
 from jupyblog.md import MarkdownRenderer, parse_metadata
 from jupyblog.expand import expand as _expand
 from jupyblog.images import add_image_placeholders
 from jupyblog import util, config
 from jupyblog import medium as medium_module
+
+telemetry = Telemetry(
+    api_key="phc_JtG9P0pl0v0XExLqbqKfmXZjUm2wFq9cCxHE4LM74IG",
+    package_name="jupyblog",
+    version=__version__,
+)
 
 
 @click.group()
@@ -46,6 +54,7 @@ def render(local, incsource, log, cfg):
     return _render(local=local, cfg=cfg, log=log)
 
 
+@telemetry.log_call(action='render')
 def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
     """Render markdown
 
