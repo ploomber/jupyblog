@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## 0.0.4dev
+* Adds telemetry
 
 ## 0.0.3 (2022-04-16)
 * Increases timeout for jupyter executor
