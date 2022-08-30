@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## 0.0.5dev
+* Updates telemetry key
 
 ## 0.0.4 (2022-08-13)
 * Adds telemetry

@@ -13,7 +13,7 @@ from jupyblog import util, config
 from jupyblog import medium as medium_module
 
 telemetry = Telemetry(
-    api_key="phc_JtG9P0pl0v0XExLqbqKfmXZjUm2wFq9cCxHE4LM74IG",
+    api_key="phc_P9SpSeypyPwxrMdFn2edOOEooQioF2axppyEeDwtMSP",
     package_name="jupyblog",
     version=__version__,
 )
