@@ -1,6 +1,9 @@
 import pytest
 from pathlib import Path
 
+import jupytext
+import nbformat
+from ploomber_engine.ipython import PloomberClient
 from jupyblog.md import MarkdownRenderer
 from jupyblog.exceptions import InputPostException
 
@@ -312,3 +315,44 @@ def test_expands_relative_to_config(tmp_empty):
     img_tag = ('![image](static/images/'
                'test_expands_relative_to_confi0/my-image.png)')
     assert img_tag in out
+
+
+@pytest.mark.parametrize('cells, n_cells, expected', [
+    [
+        ['print(1 + 1)'],
+        2,
+        "**Output:**\n\n```txt\n2\n```\n",
+    ],
+    [
+        ['print(1 + 1)', ''],
+        2,
+        "**Output:**\n\n```txt\n2\n```\n",
+    ],
+],
+                         ids=[
+                             'simple',
+                             'ignores-empty-bottom-cells',
+                         ])
+def test_extracts_output_from_paired_notebook(tmp_empty, cells, n_cells,
+                                              expected):
+    front_matter = """\
+---
+title: title
+description: description
+jupyblog:
+  execute_code: false
+---\
+"""
+
+    nb = nbformat.v4.new_notebook()
+    nb.cells = [nbformat.v4.new_raw_cell(source=front_matter)
+                ] + [nbformat.v4.new_code_cell(source=cell) for cell in cells]
+    nb = PloomberClient(nb).execute()
+
+    Path('post.ipynb').write_text(nbformat.writes(nb))
+    Path('post.md').write_text(jupytext.writes(nb, fmt='md'))
+
+    renderer = MarkdownRenderer('.')
+    out, _ = renderer.render('post.md', include_source_in_footer=False)
+
+    assert expected in out

@@ -10,6 +10,7 @@ from pathlib import Path, PurePosixPath
 import jupytext
 import yaml
 from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
+import nbformat
 
 from jupyblog import util, images, models, medium
 from jupyblog.execute import ASTExecutor
@@ -101,7 +102,8 @@ def delete_between_line_content(md, to_delete):
 
 def extract_between_line_content(md, marks):
     if len(marks) != 2:
-        raise ValueError('marks must have two ' f'elements, got: {len(marks)}')
+        raise ValueError('marks must have two '
+                         f'elements, got: {len(marks)}')
 
     location = find_lines(md, marks)
 
@@ -162,6 +164,7 @@ def create_md_parser():
 
 # TODO: use this in ast executor
 class MarkdownAST:
+
     def __init__(self, doc):
         parser = create_md_parser()
         self.ast_raw = parser(doc)
@@ -184,6 +187,7 @@ class MarkdownAST:
 
 
 class GistUploader(MarkdownAST):
+
     def __init__(self, doc):
         super().__init__(doc)
 
@@ -235,6 +239,7 @@ class MarkdownRenderer:
     >>> out = mdr.render('sample.md')
     >>> Path('out.md').write_text(out)
     """
+
     def __init__(self,
                  path_to_mds,
                  img_dir=None,
@@ -277,14 +282,21 @@ class MarkdownRenderer:
         URL_ISSUE = 'https://github.com/ploomber/posts/issues/new?title={}'
         url_issue = URL_ISSUE.format(url_params)
 
+        # extract outputs from notebook with the same name if it exists
+        path_to_notebook = path.with_suffix('.ipynb')
+
+        if path_to_notebook.exists():
+            content = extract_outputs_from_paired_notebook(
+                path_to_notebook=path_to_notebook, path_to_md=path)
+        else:
+            content = md_raw
+
         if front_matter.jupyblog.allow_expand:
-            content = expand(md_raw,
+            content = expand(content,
                              root_path=self.path,
                              url_source=url_source,
                              url_issue=url_issue,
                              args='skip=True')
-        else:
-            content = md_raw
 
         logger.debug('After expand:\n%s', content)
 
@@ -382,3 +394,49 @@ def run_snippets(md_ast, content, front_matter, img_dir, canonical_name):
                                         block['info'].split(' ')[0])
 
     return md_out
+
+
+def extract_outputs_from_paired_notebook(path_to_notebook, path_to_md):
+    """
+    Extract outputs from a paired ipynb file and add them as snippets
+    in the markdown file
+    """
+    nb_ipynb = jupytext.read(path_to_notebook)
+    nb_md = jupytext.read(path_to_md)
+
+    assert len(nb_ipynb.cells) == len(nb_md.cells)
+
+    to_insert = []
+
+    for idx, (cell_md,
+              cell_ipynb) in enumerate(zip(nb_md.cells, nb_ipynb.cells)):
+        if cell_md.cell_type == 'code':
+            to_insert.append((idx, cell_ipynb['outputs']))
+
+    shift = 0
+
+    for idx, output in to_insert:
+        if output:
+            out = output[0]['text']
+
+            if out[-1] != '\n':
+                out = out + '\n'
+
+            source = '**Output:**\n\n```txt\n{}```\n'.format(out)
+            md_cell = nbformat.v4.new_markdown_cell(source=source)
+            nb_md.cells.insert(idx + shift + 1, md_cell)
+            shift += 1
+
+    reversed = nb_md.cells[::-1]
+    empty = 0
+
+    for cell in reversed:
+        if cell.source:
+            break
+        else:
+            empty += 1
+
+    if empty:
+        nb_md.cells = nb_md.cells[:-empty]
+
+    return jupytext.writes(nb_md, fmt='.md')

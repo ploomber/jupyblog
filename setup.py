@@ -34,6 +34,7 @@ REQUIRES = [
     'pydantic',
     'mistune>=2.0',
     'ploomber-core>=0.0.4',
+    'nbformat',
 ]
 
 DEV = [
@@ -47,6 +48,8 @@ DEV = [
     # for docs example
     'matplotlib',
     'pandas',
+    # for testing paired notebooks
+    'ploomber-engine',
 ]
 
 ALL = [
