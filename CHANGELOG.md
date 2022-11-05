@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## 0.0.6dev
+* Adds support for adding UTM tags to links
 
 ## 0.0.5 (2022-08-30)
 * Updates telemetry key

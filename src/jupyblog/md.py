@@ -16,6 +16,7 @@ from jupyblog import util, images, models, medium
 from jupyblog.execute import ASTExecutor
 from jupyblog.expand import expand
 from jupyblog.exceptions import InvalidFrontMatter, InputPostException
+from jupyblog.url import add_utm_to_all_urls
 
 logger = logging.getLogger(__name__)
 
@@ -245,12 +246,16 @@ class MarkdownRenderer:
                  img_dir=None,
                  img_prefix=None,
                  footer_template=None,
-                 front_matter_template=None):
+                 front_matter_template=None,
+                 utm_source=None,
+                 utm_medium=None):
         self.path = path_to_mds
         self._img_dir = img_dir
         self._img_prefix = img_prefix or ''
         self._footer_template = footer_template
         self._front_matter_template = front_matter_template
+        self._utm_source = utm_source
+        self._utm_medium = utm_medium
         self.env = Environment(loader=FileSystemLoader(path_to_mds),
                                undefined=DebugUndefined)
         self.parser = create_md_parser()
@@ -337,6 +342,13 @@ class MarkdownRenderer:
         # TODO: extrac title from front matter and put it as H1 header
 
         md_out = replace_metadata(md_out, metadata)
+
+        # add utm tags, if needed
+        if self._utm_source and self._utm_medium:
+            md_out = add_utm_to_all_urls(md_out,
+                                         source=self._utm_source,
+                                         medium=self._utm_medium,
+                                         campaign=canonical_name)
 
         # FIXME: remove canonical name, add it as a parameter
         return md_out, canonical_name

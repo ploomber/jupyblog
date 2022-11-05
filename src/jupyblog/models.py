@@ -52,6 +52,12 @@ class Config(BaseModel):
         front matter. If None, it uses a default front matter. The template may
         use {{now}} and {{name}} placeholders, which render to the current
         datetime and post name, respectively.
+
+    utm_source : str
+        The utm_source tag to add to all URLs
+
+    utm_medium : str
+        The utm_source tag to add to all URLs
     """
     root: str
     path_to_posts: str
@@ -63,6 +69,8 @@ class Config(BaseModel):
     postprocessor: str = None
     front_matter_template: str = None
     footer: str = None
+    utm_source: str = None
+    utm_medium: str = None
 
     def path_to_posts_abs(self):
         return Path(self.root, self.path_to_posts)

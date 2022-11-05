@@ -289,4 +289,35 @@ def test_front_matter_template(tmp_sample_post, monkeypatch):
     }
 
 
+def test_utm_tags(tmp_sample_post):
+    Path('jupyblog.yaml').write_text("""
+path_to_posts: output
+path_to_static: static
+utm_source: ploomber
+utm_medium: blog
+""")
+
+    Path('post.md').write_text("""\
+---
+title: title
+description: description
+jupyblog:
+  execute_code: false
+---
+
+[some-link](https://ploomber.io/stuff)
+""")
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ['render'], catch_exceptions=False)
+
+    assert not result.exit_code
+    expected = (
+        '[some-link]'
+        '(https://ploomber.io/stuff'
+        '?utm_source=ploomber&utm_medium=blog&utm_campaign=sample_post)')
+    text = Path('output', 'sample_post.md').read_text()
+    assert expected in text
+
+
 # FIXME: test postprocessor

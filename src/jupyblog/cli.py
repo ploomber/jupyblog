@@ -103,7 +103,9 @@ def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
         img_dir=cfg.path_to_static_abs(),
         img_prefix=cfg.prefix_img,
         footer_template=cfg.read_footer_template(),
-        front_matter_template=cfg.load_front_matter_template(name=post_name))
+        front_matter_template=cfg.load_front_matter_template(name=post_name),
+        utm_medium=cfg.utm_medium,
+        utm_source=cfg.utm_source)
 
     # TODO: test that expands based on img_dir
     out, name = mdr.render(name='post.md', include_source_in_footer=incsource)
