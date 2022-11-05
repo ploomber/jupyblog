@@ -1,5 +1,7 @@
 # CHANGELOG
 
+## 0.0.7dev
+
 ## 0.0.6 (2022-11-05)
 * Adds support for adding UTM tags to links
 
