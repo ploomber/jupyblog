@@ -25,14 +25,14 @@ print(1 + 2)
 expected = """\
 **Console output (1/2):**
 
-```
+```txt
 2
 3
 ```
 
 **Console output (2/2):**
 
-```
+```txt
 6
 ```\
 """
@@ -66,7 +66,7 @@ skip_expected = """\
 
 **Console output (1/1):**
 
-```
+```txt
 42
 ```\
 """
@@ -321,12 +321,12 @@ def test_expands_relative_to_config(tmp_empty):
     [
         ['print(1 + 1)'],
         2,
-        "**Console output (1/1):**\n\n```\n2\n```\n",
+        "**Console output (1/1):**\n\n```txt\n2\n```\n",
     ],
     [
         ['print(1 + 1)', ''],
         2,
-        "**Console output (1/1):**\n\n```\n2\n```\n",
+        "**Console output (1/1):**\n\n```txt\n2\n```\n",
     ],
 ],
                          ids=[

@@ -19,7 +19,7 @@ def build_output(parts):
 {% for kind, content in parts %}
 **Console output ({{loop.index}}/{{total}}):**
 {% if kind == 'text/plain' %}
-```
+```txt
 {{content}}
 ```
 {% else %}
