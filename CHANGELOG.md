@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.0.7dev
+## 0.0.7 (2022-11-06)
 * Extract images from outputs in paired notebooks
 * Skipping image paths when adding UTM tags
 * Rendering plain text outputs from notebooks with the `txt` tag
