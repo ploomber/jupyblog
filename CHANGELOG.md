@@ -1,7 +1,9 @@
 # CHANGELOG
 
 ## 0.0.7dev
-
+* Extract images from outputs in paired notebooks
+* Skipping image paths when adding UTM tags
+* Rendering plain text outputs from notebooks with the `txt` tag
 ## 0.0.6 (2022-11-05)
 * Adds support for adding UTM tags to links
 
