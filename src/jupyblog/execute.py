@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 class ASTExecutor:
     """Execute code chunks from a markdown ast
     """
+
     def __init__(self,
                  wd=None,
                  front_matter=None,
@@ -161,12 +162,51 @@ PNG = 'image/png'
 ANSI_ESCAPE = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 
 
+def extract_outputs_from_notebook_cell(outputs, prefix, serialize_images,
+                                       img_dir, canonical_name):
+    return [
+        _process_content_data(out,
+                              counter=prefix,
+                              idx=idx,
+                              serialize_images=serialize_images,
+                              img_dir=img_dir,
+                              canonical_name=canonical_name)
+        for idx, out in enumerate(outputs)
+    ]
+
+
 def _process_content_data(content,
                           counter,
                           idx,
                           serialize_images=False,
                           img_dir=None,
                           canonical_name=None):
+    """
+
+    Parameters
+    ----------
+    content : list
+        "outputs" key in a notebook's cell
+
+    counter : str
+        Prefix to apply to image paths. Only used if
+        serialize_images=True
+
+    idx : str
+        Suffix to apply to the image path. Only used if
+        serialize_images=True
+
+    serialize_images : bool, default=False
+        Serialize images as .png files. Otherwise, embed them as base64 strings
+
+    img_dir : str, default=None
+        Folder to serialize images. Only used if serialize_images=True
+
+    canonical_name : str, default=None
+        Used to construct the path to the images for this post:
+        {img_dir}/{canonical_name}/serialized. Only used if
+        serialize_images=True
+    """
 
     if 'data' in content:
         data = content['data']
@@ -191,7 +231,12 @@ def _process_content_data(content,
         else:
             return PLAIN, data['text/plain']
     elif 'text' in content:
-        return (PLAIN, content['text'].rstrip())
+        out = content['text'].rstrip()
+
+        if out[-1] != '\n':
+            out = out + '\n'
+
+        return PLAIN, out
     elif 'traceback' in content:
         return PLAIN, remove_ansi_escape('\n'.join(content['traceback']))
 

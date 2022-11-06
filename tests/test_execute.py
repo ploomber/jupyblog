@@ -24,9 +24,9 @@ pandas_output = (
 
 
 @pytest.mark.parametrize('code, output', [
-    ['print(1); print(1)', ('text/plain', '1\n1')],
+    ['print(1); print(1)', ('text/plain', '1\n1\n')],
     ['1 + 1', ('text/plain', '2')],
-    ['print(1 + 1)', ('text/plain', '2')],
+    ['print(1 + 1)', ('text/plain', '2\n')],
     [
         'from IPython.display import HTML; HTML("<div>hi</div>")',
         ('text/html', '<div>hi</div>')

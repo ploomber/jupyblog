@@ -23,14 +23,14 @@ print(1 + 2)
 """
 
 expected = """\
-**Console output: (1/2):**
+**Console output (1/2):**
 
 ```
 2
 3
 ```
 
-**Console output: (2/2):**
+**Console output (2/2):**
 
 ```
 6
@@ -64,7 +64,7 @@ skip_expected = """\
 ```
 
 
-**Console output: (1/1):**
+**Console output (1/1):**
 
 ```
 42
@@ -92,7 +92,7 @@ Image('jupyter.png')
 ```
 
 
-**Console output: (1/1):**
+**Console output (1/1):**
 
 <img src="data:image/png;base64, \
 """
@@ -118,7 +118,7 @@ Image('jupyter.png')
 ```
 
 
-**Console output: (1/1):**
+**Console output (1/1):**
 
 ![0-1](serialized/0-1.png)\
 """
@@ -149,7 +149,7 @@ Image('jupyter.png')
 ```
 
 
-**Console output: (1/1):**
+**Console output (1/1):**
 
 ![0-1](serialized/0-1.png)
 
@@ -159,7 +159,7 @@ Image('jupyter.png')
 ```
 
 
-**Console output: (1/1):**
+**Console output (1/1):**
 
 ![1-1](serialized/1-1.png)\
 """
@@ -321,12 +321,12 @@ def test_expands_relative_to_config(tmp_empty):
     [
         ['print(1 + 1)'],
         2,
-        "**Output:**\n\n```txt\n2\n```\n",
+        "**Console output (1/1):**\n\n```\n2\n```\n",
     ],
     [
         ['print(1 + 1)', ''],
         2,
-        "**Output:**\n\n```txt\n2\n```\n",
+        "**Console output (1/1):**\n\n```\n2\n```\n",
     ],
 ],
                          ids=[
@@ -356,3 +356,42 @@ jupyblog:
     out, _ = renderer.render('post.md', include_source_in_footer=False)
 
     assert expected in out
+
+
+@pytest.mark.parametrize('source, expected_md, expected_path', [
+    [
+        '_ = plt.plot(1, 2, 3)',
+        '![2-0](serialized/2-0.png)',
+        'images/image/serialized/2-0.png',
+    ],
+    [
+        'plt.plot(1, 2, 3)',
+        '![2-1](serialized/2-1.png)',
+        'images/image/serialized/2-1.png',
+    ],
+])
+def test_extracts_output_from_paired_notebook_png(tmp_image, source,
+                                                  expected_md, expected_path):
+    front_matter = """\
+---
+title: title
+description: description
+jupyblog:
+  execute_code: false
+---\
+"""
+
+    nb = nbformat.v4.new_notebook()
+    cells = ['import matplotlib.pyplot as plt', source]
+    nb.cells = [nbformat.v4.new_raw_cell(source=front_matter)
+                ] + [nbformat.v4.new_code_cell(source=cell) for cell in cells]
+    nb = PloomberClient(nb).execute()
+
+    Path('post.ipynb').write_text(nbformat.writes(nb))
+    Path('post.md').write_text(jupytext.writes(nb, fmt='md'))
+
+    renderer = MarkdownRenderer('.', img_dir='images')
+    out, _ = renderer.render('post.md', include_source_in_footer=False)
+
+    assert expected_md in out
+    assert Path(expected_path).is_file()

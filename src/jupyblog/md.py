@@ -13,7 +13,7 @@ from jinja2 import Environment, FileSystemLoader, DebugUndefined, Template
 import nbformat
 
 from jupyblog import util, images, models, medium
-from jupyblog.execute import ASTExecutor
+from jupyblog.execute import ASTExecutor, extract_outputs_from_notebook_cell
 from jupyblog.expand import expand
 from jupyblog.exceptions import InvalidFrontMatter, InputPostException
 from jupyblog.url import add_utm_to_all_urls
@@ -292,7 +292,10 @@ class MarkdownRenderer:
 
         if path_to_notebook.exists():
             content = extract_outputs_from_paired_notebook(
-                path_to_notebook=path_to_notebook, path_to_md=path)
+                path_to_notebook=path_to_notebook,
+                path_to_md=path,
+                img_dir=self._img_dir,
+                canonical_name=canonical_name)
         else:
             content = md_raw
 
@@ -408,7 +411,8 @@ def run_snippets(md_ast, content, front_matter, img_dir, canonical_name):
     return md_out
 
 
-def extract_outputs_from_paired_notebook(path_to_notebook, path_to_md):
+def extract_outputs_from_paired_notebook(path_to_notebook, path_to_md, img_dir,
+                                         canonical_name):
     """
     Extract outputs from a paired ipynb file and add them as snippets
     in the markdown file
@@ -427,15 +431,14 @@ def extract_outputs_from_paired_notebook(path_to_notebook, path_to_md):
 
     shift = 0
 
-    for idx, output in to_insert:
-        if output:
-            out = output[0]['text']
-
-            if out[-1] != '\n':
-                out = out + '\n'
-
-            source = '**Output:**\n\n```txt\n{}```\n'.format(out)
-            md_cell = nbformat.v4.new_markdown_cell(source=source)
+    for idx, outputs in to_insert:
+        if outputs:
+            md_cell = create_markdown_cell_from_outputs(
+                outputs,
+                prefix=idx,
+                serialize_images=True,
+                img_dir=img_dir,
+                canonical_name=canonical_name)
             nb_md.cells.insert(idx + shift + 1, md_cell)
             shift += 1
 
@@ -452,3 +455,14 @@ def extract_outputs_from_paired_notebook(path_to_notebook, path_to_md):
         nb_md.cells = nb_md.cells[:-empty]
 
     return jupytext.writes(nb_md, fmt='.md')
+
+
+def create_markdown_cell_from_outputs(outputs, prefix, serialize_images,
+                                      img_dir, canonical_name):
+    extracted = extract_outputs_from_notebook_cell(outputs, prefix,
+                                                   serialize_images, img_dir,
+                                                   canonical_name)
+    source = util.build_output(extracted)
+    md_cell = nbformat.v4.new_markdown_cell(source=source)
+
+    return md_cell

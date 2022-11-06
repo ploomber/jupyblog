@@ -17,7 +17,7 @@ def build_output(parts):
 
     t = Template("""
 {% for kind, content in parts %}
-**Console output: ({{loop.index}}/{{total}}):**
+**Console output ({{loop.index}}/{{total}}):**
 {% if kind == 'text/plain' %}
 ```
 {{content}}
