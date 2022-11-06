@@ -80,14 +80,36 @@ Check out this [cool stuff](https://ploomber.io/something?utm_source=ploomber&ut
 ![some image](https://ploomber.io/assets/something.png)
 """
 
+text3 = """
+# Section
+
+Check out this [cool stuff](https://ploomber.io/something) # noqa
+
+## Another
+
+![some image](https://ploomber.io/assets/something.html) # noqa
+"""
+
+text3_expected = """
+# Section
+
+Check out this [cool stuff](https://ploomber.io/something?utm_source=ploomber&utm_medium=blog&utm_campaign=some-post) # noqa
+
+## Another
+
+![some image](https://ploomber.io/assets/something.html?utm_source=ploomber&utm_medium=blog&utm_campaign=some-post) # noqa
+"""
+
 
 @pytest.mark.parametrize('text, source, medium, campaign, expected', [
     [text1, 'ploomber', 'blog', 'some-post', text1_expected],
     [text2, 'ploomber', 'blog', 'some-post', text2_expected],
+    [text3, 'ploomber', 'blog', 'some-post', text3_expected],
 ],
                          ids=[
                              'simple',
-                             'with-image',
+                             'image',
+                             'static-page',
                          ])
 def test_add_utm_to_all_urls(text, source, medium, campaign, expected):
     assert add_utm_to_all_urls(text, source, medium, campaign) == expected

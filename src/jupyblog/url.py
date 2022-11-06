@@ -31,12 +31,12 @@ def add_utm_to_url(url, source, medium, campaign):
 
 
 def add_utm_to_all_urls(text, source, medium, campaign):
-    """Adds utms to urls found in text, ignores static resources
+    """Adds utms to urls found in text, ignores image resources
     """
     urls = [urlparse(url) for url in find_urls(text)]
 
     # ignore static resources
-    urls = [url for url in urls if '.' not in PurePosixPath(url.path).name]
+    urls = [url for url in urls if not is_image(url.path)]
 
     mapping = {
         url.geturl(): add_utm_to_url(url, source, medium, campaign)
@@ -47,3 +47,10 @@ def add_utm_to_all_urls(text, source, medium, campaign):
         text = text.replace(original, new)
 
     return text
+
+
+def is_image(image_url_path):
+    path = PurePosixPath(image_url_path).name
+    return any(
+        path.endswith(f'.{suffix}')
+        for suffix in {'png', 'jpg', 'jpeg', 'svg', 'webp', 'gif'})
