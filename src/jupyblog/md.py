@@ -16,7 +16,7 @@ from jupyblog import util, images, models, medium
 from jupyblog.execute import ASTExecutor, extract_outputs_from_notebook_cell
 from jupyblog.expand import expand
 from jupyblog.exceptions import InvalidFrontMatter, InputPostException
-from jupyblog.url import add_utm_to_all_urls
+from jupyblog.utm import add_utm_to_all_urls
 
 logger = logging.getLogger(__name__)
 

@@ -1,6 +1,6 @@
 import pytest
 
-from jupyblog.url import find_urls, add_utm_to_url, add_utm_to_all_urls
+from jupyblog.utm import find_urls, add_utm_to_url, add_utm_to_all_urls
 
 BASE = 'https://ploomber.io'
 
