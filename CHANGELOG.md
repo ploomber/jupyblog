@@ -1,6 +1,7 @@
 # CHANGELOG
 
-## 0.0.8dev
+## 0.0.8 (2022-11-08)
+* Adds UTM CLI `python -m jupyblog.utm --help`
 
 ## 0.0.7 (2022-11-06)
 * Extract images from outputs in paired notebooks
