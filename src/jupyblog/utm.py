@@ -3,7 +3,9 @@ Process URLs in a markdown file
 """
 import re
 from urllib.parse import urlparse, urlencode, parse_qsl
-from pathlib import PurePosixPath
+from pathlib import PurePosixPath, Path
+
+import click
 
 
 def find_urls(text):
@@ -54,3 +56,46 @@ def is_image(image_url_path):
     return any(
         path.endswith(f'.{suffix}')
         for suffix in {'png', 'jpg', 'jpeg', 'svg', 'webp', 'gif'})
+
+
+@click.command()
+@click.option('-t',
+              '--template',
+              type=click.Choice(['reddit'], case_sensitive=False))
+@click.option('-f',
+              '--filename',
+              type=click.Path(exists=True),
+              default='file.txt')
+def cli(template, filename):
+    """Add UTM codes to all URLs in the pasted text
+
+    Use the reddit template:
+
+    $ python -m jupyblog.utm -f file.txt -t reddit
+
+    Enter all UTM parameters manually:
+
+    $ python -m jupyblog.utm -f file.txt
+    """
+    templates = {
+        'reddit': {
+            'source': 'reddit',
+            'medium': 'social',
+        }
+    }
+
+    text = Path(filename).read_text()
+
+    if template:
+        source = templates[template]['source']
+        medium = templates[template]['medium']
+    else:
+        source = click.prompt('Enter source', type=str)
+        medium = click.prompt('Enter medium', type=str)
+
+    campaign = click.prompt('Enter campaign', type=str)
+    click.echo(add_utm_to_all_urls(text, source, medium, campaign))
+
+
+if __name__ == '__main__':
+    cli()
