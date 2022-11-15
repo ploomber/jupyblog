@@ -1,5 +1,7 @@
 # CHANGELOG
 
+## 0.0.10dev
+
 ## 0.0.9 (2022-11-15)
 * Moving image files after rendering a post will also move `.gif` files
 
