@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## 0.0.9dev
+* Moving image files after rendering a post will also move `.gif` files
 
 ## 0.0.8 (2022-11-08)
 * Adds UTM CLI `python -m jupyblog.utm --help`
