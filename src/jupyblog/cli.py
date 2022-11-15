@@ -139,4 +139,4 @@ def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
     if not img_dir.exists():
         img_dir.mkdir(exist_ok=True, parents=True)
 
-    util.copy_all_pngs(src=path, target=img_dir, dir_name=post_name)
+    util.copy_all_images(src=path, target=img_dir, dir_name=post_name)

@@ -2,6 +2,7 @@ import shutil
 from pathlib import Path
 from glob import glob
 from jinja2 import Template
+from itertools import chain
 
 
 def find_endings(md):
@@ -50,11 +51,14 @@ def add_output_tags(md, outputs):
     return md_new
 
 
-def copy_all_pngs(src, target, dir_name):
+def copy_all_images(src, target, dir_name):
     """
     Copy all .png files in src to target inside a folder with the passed name
     """
-    for img in glob(str(Path(src, '**', '*.png')), recursive=True):
+    pngs = glob(str(Path(src, '**', '*.png')), recursive=True)
+    gifs = glob(str(Path(src, '**', '*.gif')), recursive=True)
+
+    for img in chain(pngs, gifs):
         # target location: {target}/{dir-name}/{original-relative-path}
         rel_path = str(Path(img).relative_to(src))
         target_file = Path(target, dir_name, rel_path)

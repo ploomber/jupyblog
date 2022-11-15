@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 import os
 
-from jupyblog.util import copy_all_pngs
+from jupyblog.util import copy_all_images
 
 
 @pytest.mark.parametrize('images, images_expected', [
@@ -30,7 +30,7 @@ def test_copy_images(tmp_empty, images, images_expected):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.touch()
 
-    copy_all_pngs('src', 'target', 'something')
+    copy_all_images('src', 'target', 'something')
 
     files = [
         p for p in glob(os.path.join('target', 'something', '**', '*.png'),
