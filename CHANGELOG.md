@@ -1,6 +1,7 @@
 # CHANGELOG
 
-## 0.0.10dev
+## 0.0.10 (2022-11-17)
+* UTM module ignores URLs inside code fences
 
 ## 0.0.9 (2022-11-15)
 * Moving image files after rendering a post will also move `.gif` files
