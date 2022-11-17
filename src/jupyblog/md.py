@@ -17,6 +17,7 @@ from jupyblog.execute import ASTExecutor, extract_outputs_from_notebook_cell
 from jupyblog.expand import expand
 from jupyblog.exceptions import InvalidFrontMatter, InputPostException
 from jupyblog.utm import add_utm_to_all_urls
+from jupyblog.ast import MarkdownAST, create_md_parser
 
 logger = logging.getLogger(__name__)
 
@@ -156,35 +157,6 @@ def replace_metadata(md, new_metadata):
     new_metadata_text = '---\n{}---\n'.format(yaml.dump(new_metadata))
 
     return new_metadata_text + '\n'.join(lines_new)
-
-
-def create_md_parser():
-    import mistune
-    return mistune.create_markdown(renderer=mistune.AstRenderer())
-
-
-# TODO: use this in ast executor
-class MarkdownAST:
-
-    def __init__(self, doc):
-        parser = create_md_parser()
-        self.ast_raw = parser(doc)
-        self.doc = doc
-
-    def iter_blocks(self):
-        for node in self.ast_raw:
-            if node['type'] == 'block_code':
-                yield node
-
-    def replace_blocks(self, blocks_new):
-        doc = self.doc
-
-        # TODO: support for code fences with structured info
-        for block, replacement in zip(self.iter_blocks(), blocks_new):
-            to_replace = f'```{block["info"]}\n{block["text"]}```'
-            doc = doc.replace(to_replace, replacement)
-
-        return doc
 
 
 class GistUploader(MarkdownAST):

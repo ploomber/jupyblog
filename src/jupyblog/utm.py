@@ -1,17 +1,19 @@
 """
 Process URLs in a markdown file
 """
-import re
 from urllib.parse import urlparse, urlencode, parse_qsl
 from pathlib import PurePosixPath, Path
 
 import click
 
+from jupyblog.ast import MarkdownAST
+
 
 def find_urls(text):
     """Find all urls in a text
     """
-    return re.findall(r"https?://[^\s\(\)]+", text)
+    ast = MarkdownAST(text)
+    return list(ast.iter_links())
 
 
 def add_utm_to_url(url, source, medium, campaign):

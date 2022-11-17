@@ -8,13 +8,14 @@ BASE = 'https://ploomber.io'
 @pytest.mark.parametrize('text, expected', [
     ['this is some text without any urls', []],
     [
-        'this is some https url: https://github.com/ploomber/ploomber',
+        'this is some https [url](https://github.com/ploomber/ploomber)',
         ['https://github.com/ploomber/ploomber']
     ],
-    ['this is some http url: http://ploomber.io/', ['http://ploomber.io/']],
+    ['this is some http [url](http://ploomber.io/)', ['http://ploomber.io/']],
     [
-        ('many urls in the same text: https://ploomber.io/blog '
-         'https://ploomber.io/pricing http://ploomber.io/'),
+        ('many urls [in](https://ploomber.io/blog) '
+         '[the](https://ploomber.io/pricing) '
+         '[same](http://ploomber.io/) text'),
         [
             'https://ploomber.io/blog', 'https://ploomber.io/pricing',
             'http://ploomber.io/'
@@ -44,7 +45,7 @@ def test_add_utm_to_url(url, source, medium, campaign, expected):
     assert add_utm_to_url(url, source, medium, campaign) == expected
 
 
-text1 = """
+simple = """
 # Section
 
 Check out this [cool stuff](https://ploomber.io/something) # noqa
@@ -52,7 +53,7 @@ Check out this [cool stuff](https://ploomber.io/something) # noqa
 ## Another
 """
 
-text1_expected = """
+simple_expected = """
 # Section
 
 Check out this [cool stuff](https://ploomber.io/something?utm_source=ploomber&utm_medium=blog&utm_campaign=some-post) # noqa
@@ -60,7 +61,7 @@ Check out this [cool stuff](https://ploomber.io/something?utm_source=ploomber&ut
 ## Another
 """
 
-text2 = """
+image = """
 # Section
 
 Check out this [cool stuff](https://ploomber.io/something) # noqa
@@ -68,9 +69,11 @@ Check out this [cool stuff](https://ploomber.io/something) # noqa
 ## Another
 
 ![some image](https://ploomber.io/assets/something.png)
+
+![another image](https://ploomber.io/assets/something-else)
 """
 
-text2_expected = """
+image_expected = """
 # Section
 
 Check out this [cool stuff](https://ploomber.io/something?utm_source=ploomber&utm_medium=blog&utm_campaign=some-post) # noqa
@@ -78,38 +81,54 @@ Check out this [cool stuff](https://ploomber.io/something?utm_source=ploomber&ut
 ## Another
 
 ![some image](https://ploomber.io/assets/something.png)
+
+![another image](https://ploomber.io/assets/something-else)
 """
 
-text3 = """
+static_page = """
 # Section
 
 Check out this [cool stuff](https://ploomber.io/something) # noqa
 
 ## Another
 
-![some image](https://ploomber.io/assets/something.html) # noqa
+[some link](https://ploomber.io/assets/something.html) # noqa
 """
 
-text3_expected = """
+static_page_expected = """
 # Section
 
 Check out this [cool stuff](https://ploomber.io/something?utm_source=ploomber&utm_medium=blog&utm_campaign=some-post) # noqa
 
 ## Another
 
-![some image](https://ploomber.io/assets/something.html?utm_source=ploomber&utm_medium=blog&utm_campaign=some-post) # noqa
+[some link](https://ploomber.io/assets/something.html?utm_source=ploomber&utm_medium=blog&utm_campaign=some-post) # noqa
+"""
+
+code_fence = """
+# Section
+
+```sh
+curl -O https://ploomber.io/something
+```
+
+```python
+url  = 'https://ploomber.io/something'
+```
 """
 
 
 @pytest.mark.parametrize('text, source, medium, campaign, expected', [
-    [text1, 'ploomber', 'blog', 'some-post', text1_expected],
-    [text2, 'ploomber', 'blog', 'some-post', text2_expected],
-    [text3, 'ploomber', 'blog', 'some-post', text3_expected],
+    [simple, 'ploomber', 'blog', 'some-post', simple_expected],
+    [image, 'ploomber', 'blog', 'some-post', image_expected],
+    [static_page, 'ploomber', 'blog', 'some-post', static_page_expected],
+    [code_fence, 'ploomber', 'blog', 'some-post', code_fence],
 ],
                          ids=[
                              'simple',
                              'image',
                              'static-page',
+                             'code-fence',
                          ])
 def test_add_utm_to_all_urls(text, source, medium, campaign, expected):
     assert add_utm_to_all_urls(text, source, medium, campaign) == expected
