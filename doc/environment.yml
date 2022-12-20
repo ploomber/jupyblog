@@ -1,0 +1,13 @@
+name: jupyblog-doc
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.10
+  - pip
+  - sphinx
+  - pip:
+    - sphinx-book-theme
+    - myst-nb
+    - ..
