@@ -1,7 +1,7 @@
 # CHANGELOG
 
 ## 0.0.11dev
-
+* Fixes error when expanding utms in posts where the same base url appeared more than once
 ## 0.0.10 (2022-11-17)
 * UTM module ignores URLs inside code fences
 
