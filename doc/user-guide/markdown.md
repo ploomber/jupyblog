@@ -40,12 +40,12 @@ path_to_post = path / "my-static-post"
 path_to_post.mkdir(exist_ok=True)
 
 # config file
-urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/docs/examples/quick-start-static/jupyblog.yaml", path / "jupyblog.yaml")
+urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/master/examples/quick-start-static/jupyblog.yaml", path / "jupyblog.yaml")
 
 # download post
-urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/docs/examples/quick-start-static/my-post/post.md", path_to_post / "post.md")
+urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/master/examples/quick-start-static/my-post/post.md", path_to_post / "post.md")
 # download image used in post
-_ = urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/docs/examples/quick-start-static/my-post/ploomber-logo.png", path_to_post / "ploomber-logo.png")
+_ = urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/master/examples/quick-start-static/my-post/ploomber-logo.png", path_to_post / "ploomber-logo.png")
 ```
 
 We stored everything in a `posts/` directory, this is the structure that `jupyblog` expectds: a directory with a `jupyblog.yaml` configuration file and one directory per post:

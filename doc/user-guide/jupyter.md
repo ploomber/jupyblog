@@ -38,10 +38,10 @@ path_to_post = path / "my-jupyter-post"
 path_to_post.mkdir(exist_ok=True)
 
 # config file
-urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/docs/examples/quick-start-jupyter/jupyblog.yaml", path / "jupyblog.yaml")
+urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/master/examples/quick-start-jupyter/jupyblog.yaml", path / "jupyblog.yaml")
 
 # download post
-_ = urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/docs/examples/quick-start-jupyter/my-post/post.ipynb", path_to_post / "post.ipynb")
+_ = urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/master/examples/quick-start-jupyter/my-post/post.ipynb", path_to_post / "post.ipynb")
 ```
 
 We stored everything in a `posts/` directory, this is the structure that `jupyblog` expectds: a directory with a `jupyblog.yaml` configuration file and one directory per post:

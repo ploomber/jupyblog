@@ -52,10 +52,10 @@ path_to_post = path / "my-jupyter-post"
 path_to_post.mkdir(exist_ok=True)
 
 # config file
-urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/docs/examples/quick-start-jupyter/jupyblog.yaml", path / "jupyblog.yaml")
+urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/master/examples/quick-start-jupyter/jupyblog.yaml", path / "jupyblog.yaml")
 
 # download post
-_ = urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/docs/examples/quick-start-jupyter/my-post/post.ipynb", path_to_post / "post.ipynb")
+_ = urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/master/examples/quick-start-jupyter/my-post/post.ipynb", path_to_post / "post.ipynb")
 ```
 
 The `jupyblog.yaml` file configures where to store the rendered posts along with other settings:
