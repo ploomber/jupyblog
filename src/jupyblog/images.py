@@ -2,7 +2,7 @@ from pathlib import PurePosixPath
 import re
 
 # match ![any num of word characters, [space], -, _ or .](filename)
-REGEX_IMAGE = re.compile(r'!\[[\ \_\.\-\w]*\]\((.*)\)')
+REGEX_IMAGE = re.compile(r"!\[[\ \_\.\-\w]*\]\((.*)\)")
 
 
 def find_images(md):
@@ -15,10 +15,10 @@ def process_image_links(post, prefix, *, absolute):
     for img, img_link in find_images(post):
         # ignore paths that are already absolute, they come from
         # serialized images
-        prefix_part = '' if not prefix else prefix + '/'
+        prefix_part = "" if not prefix else prefix + "/"
 
         if not PurePosixPath(img_link).is_absolute():
-            img_link_fixed = ('/' if absolute else '') + prefix_part + img_link
+            img_link_fixed = ("/" if absolute else "") + prefix_part + img_link
             post = post.replace(img, img.replace(img_link, img_link_fixed))
 
     return post
@@ -36,9 +36,8 @@ def get_first_image_path(md):
 
 
 def add_image_placeholders(md):
-    """This helps when uploading to medium
-    """
+    """This helps when uploading to medium"""
     for img_tag, img_link in find_images(md):
-        md = md.replace(img_tag, f'**ADD {img_link} HERE**\n{img_tag}')
+        md = md.replace(img_tag, f"**ADD {img_link} HERE**\n{img_tag}")
 
     return md

@@ -43,7 +43,7 @@ def add_utm_to_all_urls(text, source, medium, campaign):
     }
 
     for original, new in mapping.items():
-        out = out.replace(f'({original})', f'({new})')
+        out = out.replace(f"({original})", f"({new})")
 
     return out
 

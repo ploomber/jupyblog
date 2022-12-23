@@ -8,17 +8,19 @@ import parso
 from jinja2 import Template
 
 _ext2tag = {
-    '.py': 'python',
+    ".py": "python",
 }
 
 
-def expand(md,
-           root_path=None,
-           args=None,
-           template_params=None,
-           header='',
-           footer='',
-           **render_params):
+def expand(
+    md,
+    root_path=None,
+    args=None,
+    template_params=None,
+    header="",
+    footer="",
+    **render_params,
+):
     """Expand markdown string
 
     Parameters
@@ -35,23 +37,17 @@ def expand(md,
     **render_params
         Any other keyword arguments to pass to Template.render
     """
-    expand_partial = partial(_expand,
-                             root_path=root_path,
-                             args=args,
-                             header=header,
-                             footer=footer)
-    return Template(md, **(template_params
-                           or {})).render(expand=expand_partial,
-                                          **render_params)
+    expand_partial = partial(
+        _expand, root_path=root_path, args=args, header=header, footer=footer
+    )
+    return Template(md, **(template_params or {})).render(
+        expand=expand_partial, **render_params
+    )
 
 
-def _expand(path,
-            root_path=None,
-            args=None,
-            lines=None,
-            header='',
-            footer='',
-            symbols=None):
+def _expand(
+    path, root_path=None, args=None, lines=None, header="", footer="", symbols=None
+):
     """Function used inside jinja to expand files
 
     Parameters
@@ -60,21 +56,21 @@ def _expand(path,
         start end end line to display, both inclusive
     """
     if header:
-        header = header + '\n'
+        header = header + "\n"
 
     if footer:
-        footer = '\n' + footer
+        footer = "\n" + footer
 
-    args = '' if not args else f' {args}'
+    args = "" if not args else f" {args}"
 
-    elements = path.split('@')
+    elements = path.split("@")
 
     if len(elements) == 1:
         path, symbol_name = elements[0], None
     elif len(elements) == 2:
         path, symbol_name = elements
     else:
-        raise ValueError('@ appears more than once')
+        raise ValueError("@ appears more than once")
 
     if root_path is None:
         content = Path(path).read_text()
@@ -84,8 +80,7 @@ def _expand(path,
     if symbol_name:
         module = parso.parse(content)
         named = {
-            c.name.value: c.get_code()
-            for c in module.children if hasattr(c, 'name')
+            c.name.value: c.get_code() for c in module.children if hasattr(c, "name")
         }
         content = named[symbol_name]
 
@@ -95,20 +90,21 @@ def _expand(path,
     if lines:
         content_lines = content.splitlines()
         start, end = lines[0] - 1, lines[1]
-        content = '\n'.join(content_lines[start:end])
+        content = "\n".join(content_lines[start:end])
 
     suffix = Path(path).suffix
     tag = _ext2tag.get(suffix, suffix[1:])
 
-    comment = '# Content of {}'.format(path)
-    return '{}```{}{}\n{}\n{}\n```{}'.format(header, tag, args, comment,
-                                             content, footer)
+    comment = "# Content of {}".format(path)
+    return "{}```{}{}\n{}\n{}\n```{}".format(
+        header, tag, args, comment, content, footer
+    )
 
 
 def _process_node(node):
-    if hasattr(node, 'name'):
+    if hasattr(node, "name"):
         return node.name.value
-    elif node.type == 'decorated':
+    elif node.type == "decorated":
         return node.children[-1].name.value
     else:
         raise RuntimeError
@@ -122,13 +118,14 @@ def _get_symbols(content, symbols):
 
     named = {
         _process_node(c): c.get_code().strip()
-        for c in module.children if hasattr(c, 'name') or c.type == 'decorated'
+        for c in module.children
+        if hasattr(c, "name") or c.type == "decorated"
     }
 
     if isinstance(symbols, str):
         content_selected = named[symbols]
     else:
-        content_selected = '\n\n\n'.join([named[s] for s in symbols])
+        content_selected = "\n\n\n".join([named[s] for s in symbols])
 
     # content_selected contains the requested symbols, let's now subset the
     # imports so we only display the ones that are used
@@ -136,10 +133,13 @@ def _get_symbols(content, symbols):
     # build a defined-name -> import-statement-code mapping. Note that
     # the same code may appear more than once if it defines more than one name
     # e.g. from package import a, b, c
-    imports = [{
-        name.value: import_.get_code().rstrip()
-        for name in import_.get_defined_names()
-    } for import_ in module.iter_imports()]
+    imports = [
+        {
+            name.value: import_.get_code().rstrip()
+            for name in import_.get_defined_names()
+        }
+        for import_ in module.iter_imports()
+    ]
 
     if imports:
         imports = reduce(lambda x, y: {**x, **y}, imports)
@@ -152,7 +152,7 @@ def _get_symbols(content, symbols):
     names = []
 
     while leaf:
-        if leaf.type == 'name':
+        if leaf.type == "name":
             names.append(leaf.value)
 
         leaf = leaf.get_next_leaf()
@@ -167,9 +167,8 @@ def _get_symbols(content, symbols):
 
     # remove duplicated elements but keep order, then join
     if imports:
-        imports_to_use = ('\n'.join(list(dict.fromkeys(imports_to_use))) +
-                          '\n\n\n')
+        imports_to_use = "\n".join(list(dict.fromkeys(imports_to_use))) + "\n\n\n"
     else:
-        imports_to_use = '\n\n'
+        imports_to_use = "\n\n"
 
-    return f'{imports_to_use}{content_selected}'
+    return f"{imports_to_use}{content_selected}"

@@ -40,7 +40,7 @@ def find_file_recursively(name, max_levels_up=6, starting_dir=None):
     return path_to_file, levels
 
 
-def get_config(name='jupyblog.yaml'):
+def get_config(name="jupyblog.yaml"):
     """
     Load jupyblog configuration file
     """
@@ -48,10 +48,9 @@ def get_config(name='jupyblog.yaml'):
     path, _ = find_file_recursively(name)
 
     if path is None:
-        raise FileNotFoundError(f'Could not find {name}')
+        raise FileNotFoundError(f"Could not find {name}")
 
-    cfg = Config(**yaml.safe_load(Path(path).read_text()),
-                 root=str(path.parent))
+    cfg = Config(**yaml.safe_load(Path(path).read_text()), root=str(path.parent))
 
     path_to_posts = cfg.path_to_posts_abs()
     path_to_static = cfg.path_to_static_abs()
@@ -63,8 +62,7 @@ def get_config(name='jupyblog.yaml'):
 
 
 def get_local_config():
-    Path('output').mkdir()
-    return Config(path_to_posts='output',
-                  path_to_static='output',
-                  prefix_img='',
-                  root='.')
+    Path("output").mkdir()
+    return Config(
+        path_to_posts="output", path_to_static="output", prefix_img="", root="."
+    )

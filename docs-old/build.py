@@ -4,9 +4,9 @@ from jupytext.config import JupytextConfiguration
 
 c = JupytextConfiguration()
 c.notebook_metadata_filter
-c.cell_metadata_filter = '-all'
+c.cell_metadata_filter = "-all"
 
-nb = jupytext.read('_tutorial.md')
+nb = jupytext.read("_tutorial.md")
 
 # cells = []
 
@@ -22,4 +22,4 @@ out = nbclient.execute(nb)
 
 # nb.cells = cells
 
-jupytext.write(out, 'tutorial.ipynb')
+jupytext.write(out, "tutorial.ipynb")

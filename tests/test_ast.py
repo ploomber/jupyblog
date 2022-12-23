@@ -34,24 +34,27 @@ curl -O https://ploomber.io/something.html
 """
 
 
-@pytest.mark.parametrize('doc, expected', [
+@pytest.mark.parametrize(
+    "doc, expected",
     [
-        simple,
-        ['https://ploomber.io'],
+        [
+            simple,
+            ["https://ploomber.io"],
+        ],
+        [
+            multiple,
+            ["https://ploomber.io", "https://github.com"],
+        ],
+        [
+            images_and_raw_urls,
+            ["https://ploomber.io"],
+        ],
+        [
+            code_fence,
+            [],
+        ],
     ],
-    [
-        multiple,
-        ['https://ploomber.io', 'https://github.com'],
-    ],
-    [
-        images_and_raw_urls,
-        ['https://ploomber.io'],
-    ],
-    [
-        code_fence,
-        [],
-    ],
-])
+)
 def test_iter_links(doc, expected):
     ast = MarkdownAST(doc)
     assert list(ast.iter_links()) == expected

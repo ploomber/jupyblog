@@ -25,11 +25,10 @@ def cli():
 
 
 @cli.command()
-@click.argument('path')
-@click.option('--output', '-o', default=None, help='Path to output')
+@click.argument("path")
+@click.option("--output", "-o", default=None, help="Path to output")
 def expand(path, output):
-    """Expand markdown
-    """
+    """Expand markdown"""
     md = Path(path).read_text()
     out = _expand(md, root_path=None)
 
@@ -41,21 +40,22 @@ def expand(path, output):
 
 @cli.command()
 @click.option(
-    '--local',
-    '-l',
+    "--local",
+    "-l",
     is_flag=True,
-    help='Ignore jupyblog.yaml and export to the current working directory')
-@click.option('--incsource',
-              is_flag=True,
-              help='Whether the source will be on Github or not')
-@click.option('--log', default=None, help='Set logging level')
-@click.option('--cfg', '-c', default='jupyblog.yaml', help='Config filename')
+    help="Ignore jupyblog.yaml and export to the current working directory",
+)
+@click.option(
+    "--incsource", is_flag=True, help="Whether the source will be on Github or not"
+)
+@click.option("--log", default=None, help="Set logging level")
+@click.option("--cfg", "-c", default="jupyblog.yaml", help="Config filename")
 def render(local, incsource, log, cfg):
     return _render(local=local, cfg=cfg, log=log)
 
 
-@telemetry.log_call(action='render')
-def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
+@telemetry.log_call(action="render")
+def _render(local, cfg="jupyblog.yaml", incsource=False, log=None):
     """Render markdown
 
     Parameters
@@ -76,7 +76,7 @@ def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
     if log:
         logging.basicConfig(level=log.upper())
 
-    path = Path('.').resolve()
+    path = Path(".").resolve()
 
     post_name = path.name
 
@@ -87,16 +87,16 @@ def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
 
     # post_dir.mkdir(exist_ok=True, parents=True)
 
-    click.echo(f'Input: {path.resolve()}')
+    click.echo(f"Input: {path.resolve()}")
     click.echo('Processing post "%s"' % post_name)
-    click.echo('Post will be saved to %s' % cfg.path_to_posts_abs())
+    click.echo("Post will be saved to %s" % cfg.path_to_posts_abs())
 
-    if (path / 'build.sh').exists():
-        click.echo('build.sh found, running...')
-        subprocess.call(['bash', 'build.sh'])
-        click.echo('Finished running build.sh\n\n')
+    if (path / "build.sh").exists():
+        click.echo("build.sh found, running...")
+        subprocess.call(["bash", "build.sh"])
+        click.echo("Finished running build.sh\n\n")
 
-    click.echo('Rendering markdown...')
+    click.echo("Rendering markdown...")
 
     mdr = MarkdownRenderer(
         path_to_mds=path,
@@ -105,12 +105,13 @@ def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
         footer_template=cfg.read_footer_template(),
         front_matter_template=cfg.load_front_matter_template(name=post_name),
         utm_medium=cfg.utm_medium,
-        utm_source=cfg.utm_source)
+        utm_source=cfg.utm_source,
+    )
 
     # TODO: test that expands based on img_dir
-    out, name = mdr.render(name='post.md', include_source_in_footer=incsource)
-    out_path = Path(cfg.path_to_posts_abs(), (post_name + '.md'))
-    click.echo(f'Output: {out_path}')
+    out, name = mdr.render(name="post.md", include_source_in_footer=incsource)
+    out_path = Path(cfg.path_to_posts_abs(), (post_name + ".md"))
+    click.echo(f"Output: {out_path}")
 
     # map language in code snippets if needed
     out = medium_module.apply_language_map(out, cfg.language_mapping)
@@ -127,10 +128,10 @@ def _render(local, cfg='jupyblog.yaml', incsource=False, log=None):
 
     if postprocessor:
         print(
-            postprocessor(doc=out,
-                          name=name,
-                          config=dict(cfg),
-                          front_matter=parse_metadata(out)))
+            postprocessor(
+                doc=out, name=name, config=dict(cfg), front_matter=parse_metadata(out)
+            )
+        )
 
     out_path.write_text(out)
 

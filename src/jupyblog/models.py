@@ -11,8 +11,7 @@ from jinja2 import Template
 
 
 def _now():
-    return datetime.now(
-        timezone.utc).astimezone().isoformat(timespec='seconds')
+    return datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
 
 
 class Config(BaseModel):
@@ -59,10 +58,11 @@ class Config(BaseModel):
     utm_medium : str
         The utm_source tag to add to all URLs
     """
+
     root: str
     path_to_posts: str
     path_to_static: str
-    prefix_img: str = ''
+    prefix_img: str = ""
     language_mapping: dict = None
     image_placeholders: bool = False
     processor: str = None
@@ -113,7 +113,7 @@ class Config(BaseModel):
 
     @staticmethod
     def _load_dotted_path(dotted_path):
-        mod, _, attr = dotted_path.rpartition('.')
+        mod, _, attr = dotted_path.rpartition(".")
 
         return getattr(importlib.import_module(mod), attr)
 
@@ -135,6 +135,7 @@ class Settings(BaseModel):
     execute_code : bool, default=True
         Execute code snippets.
     """
+
     serialize_images: bool = False
     allow_expand: bool = False
     execute_code: bool = True
@@ -144,6 +145,7 @@ class FrontMatter(BaseModel):
     """
     Schema for .md front matter
     """
+
     jupyblog: Settings = Field(default_factory=Settings)
 
 

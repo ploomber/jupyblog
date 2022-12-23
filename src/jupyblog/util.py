@@ -6,17 +6,17 @@ from itertools import chain
 
 
 def find_endings(md):
-    n_all = [n for n, l in enumerate(md.splitlines()) if l.startswith('```')]
+    n_all = [n for n, l in enumerate(md.splitlines()) if l.startswith("```")]
     endings = [n for i, n in enumerate(n_all) if i % 2]
     return endings
 
 
 def build_output(parts):
     # remove trailing and leading whitespace, remove empty content
-    parts = [(kind, content.rstrip().lstrip()) for kind, content in parts
-             if content]
+    parts = [(kind, content.rstrip().lstrip()) for kind, content in parts if content]
 
-    t = Template("""
+    t = Template(
+        """
 {% for kind, content in parts %}
 **Console output ({{loop.index}}/{{total}}):**
 {% if kind == 'text/plain' %}
@@ -24,7 +24,8 @@ def build_output(parts):
 {{content}}
 ```
 {% else %}
-{{content}}{% endif %}{% endfor %}""")
+{{content}}{% endif %}{% endfor %}"""
+    )
 
     return t.render(parts=parts, total=len(parts))
 
@@ -46,7 +47,7 @@ def add_output_tags(md, outputs):
             lines.insert(end + 1 + shifts, to_insert)
             shifts += 1
 
-    md_new = '\n'.join(lines)
+    md_new = "\n".join(lines)
 
     return md_new
 
@@ -55,14 +56,14 @@ def copy_all_images(src, target, dir_name):
     """
     Copy all .png files in src to target inside a folder with the passed name
     """
-    pngs = glob(str(Path(src, '**', '*.png')), recursive=True)
-    gifs = glob(str(Path(src, '**', '*.gif')), recursive=True)
+    pngs = glob(str(Path(src, "**", "*.png")), recursive=True)
+    gifs = glob(str(Path(src, "**", "*.gif")), recursive=True)
 
     for img in chain(pngs, gifs):
         # target location: {target}/{dir-name}/{original-relative-path}
         rel_path = str(Path(img).relative_to(src))
         target_file = Path(target, dir_name, rel_path)
         target_file.parent.mkdir(parents=True, exist_ok=True)
-        print('Copying %s to %s' % (img, target_file))
+        print("Copying %s to %s" % (img, target_file))
 
         shutil.copy(img, target_file)

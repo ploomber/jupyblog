@@ -1,5 +1,6 @@
 def create_md_parser():
     import mistune
+
     return mistune.create_markdown(renderer=mistune.AstRenderer())
 
 
@@ -7,13 +8,12 @@ def _traverse(ast):
     for node in ast:
         yield node
 
-        if node.get('children'):
-            yield from _traverse(node['children'])
+        if node.get("children"):
+            yield from _traverse(node["children"])
 
 
 # TODO: use this in ast executor
 class MarkdownAST:
-
     def __init__(self, doc):
         parser = create_md_parser()
         self.ast_raw = parser(doc)
@@ -21,13 +21,13 @@ class MarkdownAST:
 
     def iter_blocks(self):
         for node in self.ast_raw:
-            if node['type'] == 'block_code':
+            if node["type"] == "block_code":
                 yield node
 
     def iter_links(self):
         for node in _traverse(self.ast_raw):
-            if node['type'] == 'link':
-                yield node['link']
+            if node["type"] == "link":
+                yield node["link"]
 
     def replace_blocks(self, blocks_new):
         doc = self.doc

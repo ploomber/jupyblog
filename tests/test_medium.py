@@ -39,20 +39,26 @@ two_expected = """
 """
 
 
-@pytest.mark.parametrize('md, expected', [
-    [one, one_expected],
-    [two, two_expected],
-],
-                         ids=['one', 'two'])
+@pytest.mark.parametrize(
+    "md, expected",
+    [
+        [one, one_expected],
+        [two, two_expected],
+    ],
+    ids=["one", "two"],
+)
 def test_apply_language_map(md, expected):
-    assert medium.apply_language_map(md, {'python': 'py'}) == expected
+    assert medium.apply_language_map(md, {"python": "py"}) == expected
 
 
-@pytest.mark.parametrize('md, expected', [
-    [one, [('Header', 1)]],
-    [two, [('Header', 1), ('Another', 1)]],
-],
-                         ids=['one', 'two'])
+@pytest.mark.parametrize(
+    "md, expected",
+    [
+        [one, [("Header", 1)]],
+        [two, [("Header", 1), ("Another", 1)]],
+    ],
+    ids=["one", "two"],
+)
 def test_find_headers(md, expected):
     assert list(medium.find_headers(md)) == expected
 
@@ -92,18 +98,21 @@ all_headers_expected = """
 """
 
 
-@pytest.mark.parametrize('md, expected', [
-    [one, one_out],
-    [two, two_out],
-    [all_headers, all_headers_expected],
-],
-                         ids=['one', 'two', 'headers'])
+@pytest.mark.parametrize(
+    "md, expected",
+    [
+        [one, one_out],
+        [two, two_out],
+        [all_headers, all_headers_expected],
+    ],
+    ids=["one", "two", "headers"],
+)
 def test_replace_headers(md, expected):
     assert medium.replace_headers(md) == expected
 
 
 def test_error_if_level_six_header():
     with pytest.raises(ValueError) as excinfo:
-        medium.replace_headers('###### H6')
+        medium.replace_headers("###### H6")
 
-    assert str(excinfo.value) == 'Level 6 headers aren ot supoprted: \'H6\''
+    assert str(excinfo.value) == "Level 6 headers aren ot supoprted: 'H6'"
