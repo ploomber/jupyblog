@@ -1,6 +1,9 @@
 <!-- #region -->
 # Jupyblog
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+
 Jupyblog allow you to write blog posts from Jupyter.
 
 We use it at [Ploomber](https://github.com/ploomber/ploomber) to write [technical blog posts](https://ploomber.io/blog/snapshot-testing/) and publish them in our [Hugo](https://github.com/gohugoio/hugo) blog; however, any engine that takes markdown files works.
