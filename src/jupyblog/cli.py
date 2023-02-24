@@ -6,7 +6,7 @@ import click
 from ploomber_core.telemetry.telemetry import Telemetry
 
 from jupyblog import __version__
-from jupyblog.md import MarkdownRenderer, parse_metadata
+from jupyblog.md import MarkdownRenderer, parse_metadata, to_md
 from jupyblog.expand import expand as _expand
 from jupyblog.images import add_image_placeholders
 from jupyblog import util, config
@@ -141,3 +141,11 @@ def _render(local, cfg="jupyblog.yaml", incsource=False, log=None):
         img_dir.mkdir(exist_ok=True, parents=True)
 
     util.copy_all_images(src=path, target=img_dir, dir_name=post_name)
+
+
+@cli.command()
+@click.argument("path")
+def tomd(path):
+    """Export a notebook with outputs to makrdown"""
+    out = to_md(path)
+    print(out)

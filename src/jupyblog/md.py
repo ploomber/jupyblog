@@ -227,7 +227,14 @@ class MarkdownRenderer:
         )
         self.parser = create_md_parser()
 
-    def render(self, name, *, include_source_in_footer):
+    def render(self, name, *, include_source_in_footer, metadata=None):
+        """
+
+        Parameters
+        ----------
+        metadata : dict, default=None
+            Metadata to use. If None, it parses metadata from the markdown front matter
+        """
         path = Path(self.path, name)
         md_raw = path.read_text()
 
@@ -238,8 +245,10 @@ class MarkdownRenderer:
         medium.check_headers(md_raw)
 
         md_ast = self.parser(md_raw)
+
         # TODO: replace and use model object
-        metadata = parse_metadata(md_raw)
+        if metadata is None:
+            metadata = parse_metadata(md_raw)
 
         front_matter = models.FrontMatter(**metadata)
 
@@ -445,3 +454,19 @@ def create_markdown_cell_from_outputs(
     md_cell = nbformat.v4.new_markdown_cell(source=source)
 
     return md_cell
+
+
+def to_md(path):
+    """
+    A function to convert an ipynb notebook into md (with outputs) that
+    doesn't require a configuration file
+    """
+    path = Path(path)
+
+    renderer = MarkdownRenderer(path.parent)
+    out, _ = renderer.render(
+        path.name,
+        include_source_in_footer=False,
+        metadata={"jupyblog": {"execute_code": False}},
+    )
+    return out

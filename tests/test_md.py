@@ -2,6 +2,8 @@ from unittest.mock import Mock
 
 import pytest
 from jupyblog import md
+import nbformat
+from ploomber_engine import execute_notebook
 
 
 @pytest.mark.parametrize(
@@ -247,3 +249,23 @@ More text
     )
 
     assert out == expected
+
+
+def test_tomd(tmp_empty):
+
+    nb = nbformat.v4.new_notebook()
+    nb.cells = [nbformat.v4.new_code_cell(source=cell) for cell in ("1 + 1", "2 + 2")]
+
+    execute_notebook(nb, "post.ipynb")
+
+    nb = nbformat.read("post.ipynb", as_version=nbformat.NO_CONVERT)
+    # add this cell to ensure that to_md doesn't run the notebook
+    nb.cells[0].source = "1 / 0"
+    nbformat.write(nb, "post.ipynb")
+
+    out = md.to_md("post.ipynb")
+
+    assert "ZeroDivisionError" not in out
+    assert "Console output" in out
+    assert "2" in out
+    assert "4" in out
