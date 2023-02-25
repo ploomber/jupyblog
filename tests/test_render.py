@@ -405,3 +405,24 @@ jupyblog:
 
     assert expected_md in out
     assert Path(expected_path).is_file()
+
+
+def test_does_not_convert_sql_magic(tmp_empty):
+
+    nb = nbformat.v4.new_notebook()
+    cells = ("%%sql\nSELECT * FROM TABLE",)
+    nb.cells = [nbformat.v4.new_code_cell(source=cell) for cell in cells]
+
+    Path("post.ipynb").write_text(nbformat.writes(nb))
+    Path("post.md").write_text(jupytext.writes(nb, fmt="md"))
+
+    renderer = MarkdownRenderer(".")
+    out, _ = renderer.render(
+        "post.ipynb",
+        include_source_in_footer=False,
+        metadata={"jupyblog": {"execute_code": False}},
+    )
+
+    assert "%%sql" in out
+    # check jupytext global state isn't modified
+    assert "%%sql" not in jupytext.writes(nb, fmt="md")

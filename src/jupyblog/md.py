@@ -3,6 +3,8 @@ TODO:
 * support for requirements.txt
 * create and destroy env
 """
+from copy import copy
+from contextlib import contextmanager
 from urllib import parse
 import logging
 from pathlib import Path, PurePosixPath
@@ -240,7 +242,7 @@ class MarkdownRenderer:
 
         if path.suffix != ".md":
             nb = jupytext.read(path)
-            md_raw = jupytext.writes(nb, fmt="md")
+            md_raw = jupytext_writes_to_md(nb)
 
         medium.check_headers(md_raw)
 
@@ -441,7 +443,7 @@ def extract_outputs_from_paired_notebook(
     if empty:
         nb_md.cells = nb_md.cells[:-empty]
 
-    return jupytext.writes(nb_md, fmt=".md")
+    return jupytext_writes_to_md(nb_md)
 
 
 def create_markdown_cell_from_outputs(
@@ -470,3 +472,23 @@ def to_md(path):
         metadata={"jupyblog": {"execute_code": False}},
     )
     return out
+
+
+def jupytext_writes_to_md(nb):
+    with remove_sql_magic():
+        return jupytext.writes(nb, fmt="md")
+
+
+@contextmanager
+def remove_sql_magic():
+    backup = copy(jupytext.languages._JUPYTER_LANGUAGES)
+
+    try:
+        jupytext.languages._JUPYTER_LANGUAGES.remove("sql")
+    except KeyError:
+        pass
+
+    try:
+        yield
+    finally:
+        jupytext.languages._JUPYTER_LANGUAGES = backup
