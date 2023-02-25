@@ -2,6 +2,7 @@
 
 ## 0.0.12dev
 * [Feature] Adds `jupyblog tomd` to export Jupyter notebooks with outputs to Markdown
+* [Fix] Keeping `%%sql` magic when exporting to Markdown
 
 ## 0.0.11 (2022-12-21)
 * Fixes error when expanding utms in posts where the same base url appeared more than once
