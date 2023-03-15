@@ -238,9 +238,10 @@ class MarkdownRenderer:
             Metadata to use. If None, it parses metadata from the markdown front matter
         """
         path = Path(self.path, name)
-        md_raw = path.read_text()
 
-        if path.suffix != ".md":
+        if path.suffix == ".md":
+            md_raw = path.read_text()
+        else:
             nb = jupytext.read(path)
             md_raw = jupytext_writes_to_md(nb)
 

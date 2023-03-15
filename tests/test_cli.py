@@ -4,6 +4,8 @@ from pathlib import Path
 import yaml
 from click.testing import CliRunner
 import pytest
+import nbformat
+from ploomber_engine import execute_notebook
 
 from jupyblog.cli import cli
 from jupyblog import cli as cli_module
@@ -341,6 +343,39 @@ jupyblog:
     )
     text = Path("output", "sample_post.md").read_text()
     assert expected in text
+
+
+def test_convert_ipynb(tmp_sample_post):
+    Path("post.md").unlink()
+
+    front_matter = """\
+---
+title: title
+description: description
+jupyblog:
+  execute_code: false
+---\
+"""
+
+    nb = nbformat.v4.new_notebook()
+
+    cells = ["1 + 1", "2 + 2"]
+    nb.cells = [nbformat.v4.new_raw_cell(source=front_matter)] + [
+        nbformat.v4.new_code_cell(source=cell) for cell in cells
+    ]
+
+    execute_notebook(
+        nb,
+        output_path="post.ipynb",
+    )
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["render"], catch_exceptions=False)
+
+    assert not result.exit_code
+    out = Path("content", "posts", "sample_post.md").read_text()
+    assert "txt\n4\n```" in out
+    assert "Console output" in out
 
 
 # FIXME: test postprocessor

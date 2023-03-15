@@ -109,7 +109,16 @@ def _render(local, cfg="jupyblog.yaml", incsource=False, log=None):
     )
 
     # TODO: test that expands based on img_dir
-    out, name = mdr.render(name="post.md", include_source_in_footer=incsource)
+    if Path("post.md").exists():
+        name_input = "post.md"
+    elif Path("post.ipynb").exists():
+        name_input = "post.ipynb"
+    else:
+        raise click.ClickException(
+            "Expected a post.md or post.ipynb  file in the current directory"
+        )
+
+    out, name = mdr.render(name=name_input, include_source_in_footer=incsource)
     out_path = Path(cfg.path_to_posts_abs(), (post_name + ".md"))
     click.echo(f"Output: {out_path}")
 
