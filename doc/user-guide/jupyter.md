@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.14.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -84,14 +84,6 @@ Title is the title of the post, the `jupyblog` section can be copied as-is, and 
 
 +++
 
-Before rendering our notebook, we need to create a copy in markdown format, we can use `jupytext` for that:
-
-```{code-cell} ipython3
-%%sh
-cd posts/my-jupyter-post
-jupytext post.ipynb --to md
-```
-
 Now, we use `jupyblog` to create our post:
 
 ```{code-cell} ipython3
@@ -116,4 +108,8 @@ print(Path("posts/content/posts/my-jupyter-post.md").read_text())
 # remove example directory
 import shutil
 shutil.rmtree("posts")
+```
+
+```{code-cell} ipython3
+
 ```
