@@ -7,7 +7,7 @@ import importlib
 
 import yaml
 from pydantic import BaseModel, Field
-from jinja2 import Template
+from jinja2 import Template, StrictUndefined
 
 
 def _now():
@@ -102,7 +102,9 @@ class Config(BaseModel):
                 text = path.read_text()
 
                 now = _now()
-                rendered = Template(text).render(now=now, name=name)
+                rendered = Template(text, undefined=StrictUndefined).render(
+                    now=now, name=name, env=os.environ
+                )
                 front_matter = yaml.safe_load(rendered)
             else:
                 front_matter = {}

@@ -284,11 +284,16 @@ def add_footer(doc, name):
 
 def test_front_matter_template(tmp_sample_post, monkeypatch):
     monkeypatch.setattr(models, "_now", lambda: "now")
+    monkeypatch.setenv("author_name", "Eduardo Blancas")
 
     fm = yaml.safe_load(Path("jupyblog.yaml").read_text())
     fm["front_matter_template"] = "template.yaml"
 
-    template = {"date": "{{now}}", "author": "Some name", "image": "{{name}}.png"}
+    template = {
+        "date": "{{now}}",
+        "author": "{{env.author_name}}",
+        "image": "{{name}}.png",
+    }
     Path("template.yaml").write_text(yaml.dump(template))
     Path("jupyblog.yaml").write_text(yaml.dump(fm))
 
@@ -300,13 +305,32 @@ def test_front_matter_template(tmp_sample_post, monkeypatch):
 
     assert not result.exit_code
     assert metadata == {
-        "author": "Some name",
+        "author": "Eduardo Blancas",
         "date": "now",
         "description": "something",
         "jupyblog": {"execute_code": False},
         "title": "some awesome post",
         "image": "sample_post.png",
     }
+
+
+def test_front_matter_template_error_missing_env(tmp_sample_post, monkeypatch):
+    fm = yaml.safe_load(Path("jupyblog.yaml").read_text())
+    fm["front_matter_template"] = "template.yaml"
+
+    template = {
+        "date": "{{now}}",
+        "author": "{{env.author_name}}",
+        "image": "{{name}}.png",
+    }
+    Path("template.yaml").write_text(yaml.dump(template))
+    Path("jupyblog.yaml").write_text(yaml.dump(fm))
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["render"], catch_exceptions=True)
+
+    assert result.exit_code
+    assert "has no attribute" in str(result.exception)
 
 
 def test_utm_tags(tmp_sample_post):
