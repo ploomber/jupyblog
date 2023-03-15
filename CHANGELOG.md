@@ -1,6 +1,7 @@
 # CHANGELOG
 
-## 0.0.13dev
+## 0.0.13 (2023-03-14)
+
 * [Feature] Rendering fails if front matter template contains undefined placeholders
 * [Feature] Front matter template now accepts environment variables as parameters: `{{env.ENV_VAR}}`
 * [Fix] Rendering a `post.ipynb` file no londer needs a copy in markdown format (`post.md`)
