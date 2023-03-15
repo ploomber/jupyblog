@@ -24,7 +24,6 @@ class ASTExecutor:
         self.wd = wd if wd is None else Path(wd)
 
     def __call__(self, md_ast):
-
         logger.debug("Starting python code execution...")
 
         if self.wd:

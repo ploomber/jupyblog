@@ -378,7 +378,6 @@ def run_snippets(md_ast, content, front_matter, img_dir, canonical_name):
     with ASTExecutor(
         front_matter=front_matter, img_dir=img_dir, canonical_name=canonical_name
     ) as executor:
-
         # execute
         blocks = executor(md_ast)
 

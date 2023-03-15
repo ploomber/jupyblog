@@ -408,7 +408,6 @@ jupyblog:
 
 
 def test_does_not_convert_sql_magic(tmp_empty):
-
     nb = nbformat.v4.new_notebook()
     cells = ("%%sql\nSELECT * FROM TABLE",)
     nb.cells = [nbformat.v4.new_code_cell(source=cell) for cell in cells]

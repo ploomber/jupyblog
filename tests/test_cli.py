@@ -50,7 +50,6 @@ def test_sample_post(tmp_sample_post):
 
 
 def test_with_python_code(tmp_with_py_code):
-
     runner = CliRunner()
     result = runner.invoke(cli, ["render", "--local"], catch_exceptions=False)
 
@@ -63,7 +62,6 @@ def test_with_python_code(tmp_with_py_code):
 
 
 def test_image(tmp_image):
-
     runner = CliRunner()
     result = runner.invoke(cli, ["render"], catch_exceptions=False)
 
@@ -79,7 +77,6 @@ def test_image(tmp_image):
 
 
 def test_image_nested(tmp_image_nested):
-
     runner = CliRunner()
     result = runner.invoke(cli, ["render"], catch_exceptions=False)
 

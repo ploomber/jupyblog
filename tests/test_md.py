@@ -252,7 +252,6 @@ More text
 
 
 def test_tomd(tmp_empty):
-
     nb = nbformat.v4.new_notebook()
     nb.cells = [nbformat.v4.new_code_cell(source=cell) for cell in ("1 + 1", "2 + 2")]
 
