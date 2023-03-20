@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.6
+      jupytext_version: 1.14.5
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -60,13 +60,14 @@ Let's see the contents of `post.md`:
 
 ```python tags=["hide-source"]
 from pathlib import Path
-print(Path('post.md').read_text())
+
+print(Path("post.md").read_text())
 ```
 
 Put a `jupylog.yaml` file next to your `post.md` (or in a parent directory) with the output paths:
 
 ```python
-print(Path('jupyblog.yaml').read_text())
+print(Path("jupyblog.yaml").read_text())
 ```
 
 Now, let's render the file using `jupyblog`:
@@ -80,14 +81,16 @@ jupyblog render
 
 ```python
 import mistune
-print(f'mistune version: {mistune.__version__}')
+
+print(f"mistune version: {mistune.__version__}")
 ```
 
 Let's look at the output markdown file:
 
 ```python
 from IPython.display import Markdown
-Markdown('output/docs.md')
+
+Markdown("output/docs.md")
 ```
 
 ## Usage

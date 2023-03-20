@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.14.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -40,12 +40,21 @@ path_to_post = path / "my-static-post"
 path_to_post.mkdir(exist_ok=True)
 
 # config file
-urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/master/examples/quick-start-static/jupyblog.yaml", path / "jupyblog.yaml")
+urllib.request.urlretrieve(
+    "https://raw.githubusercontent.com/ploomber/jupyblog/master/examples/quick-start-static/jupyblog.yaml",
+    path / "jupyblog.yaml",
+)
 
 # download post
-urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/master/examples/quick-start-static/my-post/post.md", path_to_post / "post.md")
+urllib.request.urlretrieve(
+    "https://raw.githubusercontent.com/ploomber/jupyblog/master/examples/quick-start-static/my-post/post.md",
+    path_to_post / "post.md",
+)
 # download image used in post
-_ = urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/master/examples/quick-start-static/my-post/ploomber-logo.png", path_to_post / "ploomber-logo.png")
+_ = urllib.request.urlretrieve(
+    "https://raw.githubusercontent.com/ploomber/jupyblog/master/examples/quick-start-static/my-post/ploomber-logo.png",
+    path_to_post / "ploomber-logo.png",
+)
 ```
 
 We stored everything in a `posts/` directory, this is the structure that `jupyblog` expectds: a directory with a `jupyblog.yaml` configuration file and one directory per post:
@@ -114,5 +123,6 @@ print(Path("posts/content/posts/my-static-post.md").read_text())
 ```{code-cell} ipython3
 # remove example directory
 import shutil
+
 shutil.rmtree("posts")
 ```
