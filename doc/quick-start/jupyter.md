@@ -4,12 +4,13 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.14.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
 ---
+
 # Jupyter notebooks
 
 ## Installation
@@ -52,10 +53,16 @@ path_to_post = path / "my-jupyter-post"
 path_to_post.mkdir(exist_ok=True)
 
 # config file
-urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/master/examples/quick-start-jupyter/jupyblog.yaml", path / "jupyblog.yaml")
+urllib.request.urlretrieve(
+    "https://raw.githubusercontent.com/ploomber/jupyblog/master/examples/quick-start-jupyter/jupyblog.yaml",
+    path / "jupyblog.yaml",
+)
 
 # download post
-_ = urllib.request.urlretrieve("https://raw.githubusercontent.com/ploomber/jupyblog/master/examples/quick-start-jupyter/my-post/post.ipynb", path_to_post / "post.ipynb")
+_ = urllib.request.urlretrieve(
+    "https://raw.githubusercontent.com/ploomber/jupyblog/master/examples/quick-start-jupyter/my-post/post.ipynb",
+    path_to_post / "post.ipynb",
+)
 ```
 
 The `jupyblog.yaml` file configures where to store the rendered posts along with other settings:
@@ -82,5 +89,6 @@ print(Path("posts/content/posts/my-jupyter-post.md").read_text())
 ```{code-cell}
 # remove example directory
 import shutil
+
 shutil.rmtree("posts")
 ```

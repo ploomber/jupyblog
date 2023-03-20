@@ -10,4 +10,4 @@ dependencies:
   - pip:
     - sphinx-book-theme
     - myst-nb
-    - ..
+    - -e ..
