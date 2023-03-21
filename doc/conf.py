@@ -50,19 +50,15 @@ html_theme = "sphinx_book_theme"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
-html_theme_options = {
-    "show_navbar_depth": 2,
-}
-
-
 # https://myst-nb.readthedocs.io/en/latest/render/format_code_cells.html#group-into-single-streams
 nb_merge_streams = True
 
 
 html_theme_options = {
-    "extra_navbar": 'Join us on <a href="https://ploomber.io/community/">Slack!</a>',
+    "announcement": ("To launch a tutorial, click on the 🚀 button "
+                     "below! Join us on "
+                     "<a href='https://ploomber.io/community/'>Slack!</a>")
 }
 
 
 html_logo = "square-no-bg-small.png"
-html_title = "Jupyblog"
