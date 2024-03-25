@@ -33,7 +33,7 @@ REQUIRES = [
     "jupytext",
     "parso",
     "pydantic",
-    "mistune>=2.0",
+    "mistune>=2.0,<3",
     "ploomber-core>=0.0.4",
     "nbformat",
 ]

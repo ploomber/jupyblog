@@ -21,6 +21,8 @@ from jupyblog.expand import expand
 from jupyblog.exceptions import InvalidFrontMatter, InputPostException
 from jupyblog.utm import add_utm_to_all_urls, add_utm_to_url
 from jupyblog.ast import MarkdownAST, create_md_parser
+from jupyblog import __version__
+
 
 logger = logging.getLogger(__name__)
 
@@ -321,6 +323,9 @@ class MarkdownRenderer:
 
             if date_existing:
                 metadata["date"] = date_existing
+
+        # add the jupyblog version
+        metadata["jupyblog"]["version_jupysql"] = __version__
 
         if self._footer_template:
             md_out = add_footer(
