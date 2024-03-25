@@ -306,7 +306,7 @@ def test_front_matter_template(tmp_sample_post, monkeypatch):
         "author": "Eduardo Blancas",
         "date": "now",
         "description": "something",
-        "jupyblog": {"execute_code": False, "version_jupysql": "0.0.14dev"},
+        "jupyblog": {"execute_code": False, "version_jupysql": __version__},
         "title": "some awesome post",
         "image": "sample_post.png",
     }
