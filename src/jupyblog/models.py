@@ -103,7 +103,9 @@ class Config(BaseModel):
 
                 now = _now()
                 rendered = Template(text, undefined=StrictUndefined).render(
-                    now=now, name=name, env=os.environ
+                    now=now,
+                    name=name,
+                    env=os.environ,
                 )
                 front_matter = yaml.safe_load(rendered)
             else:

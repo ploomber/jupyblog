@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## 0.0.14dev
+* [Feature] Keep existing date if the current file has been rendered already
+* [Feature] Add utm codes to front matter url (`marketing.url`)
 
 ## 0.0.13 (2023-03-14)
 

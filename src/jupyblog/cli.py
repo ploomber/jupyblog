@@ -97,9 +97,11 @@ def _render(local, cfg="jupyblog.yaml", incsource=False, log=None):
         click.echo("Finished running build.sh\n\n")
 
     click.echo("Rendering markdown...")
+    out_path = Path(cfg.path_to_posts_abs(), (post_name + ".md"))
 
     mdr = MarkdownRenderer(
         path_to_mds=path,
+        path_to_out=out_path,
         img_dir=cfg.path_to_static_abs(),
         img_prefix=cfg.prefix_img,
         footer_template=cfg.read_footer_template(),
@@ -119,7 +121,6 @@ def _render(local, cfg="jupyblog.yaml", incsource=False, log=None):
         )
 
     out, name = mdr.render(name=name_input, include_source_in_footer=incsource)
-    out_path = Path(cfg.path_to_posts_abs(), (post_name + ".md"))
     click.echo(f"Output: {out_path}")
 
     # map language in code snippets if needed

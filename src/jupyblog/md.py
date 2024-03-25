@@ -3,6 +3,7 @@ TODO:
 * support for requirements.txt
 * create and destroy env
 """
+
 from copy import copy
 from contextlib import contextmanager
 from urllib import parse
@@ -18,7 +19,7 @@ from jupyblog import util, images, models, medium
 from jupyblog.execute import ASTExecutor, extract_outputs_from_notebook_cell
 from jupyblog.expand import expand
 from jupyblog.exceptions import InvalidFrontMatter, InputPostException
-from jupyblog.utm import add_utm_to_all_urls
+from jupyblog.utm import add_utm_to_all_urls, add_utm_to_url
 from jupyblog.ast import MarkdownAST, create_md_parser
 
 logger = logging.getLogger(__name__)
@@ -190,6 +191,11 @@ class MarkdownRenderer:
     """
     Parameters
     ----------
+    path_to_out : str or pathlib.Path
+        Path to the rendered version of this markdown file. Currently, it's only
+        used to extract the date from the file (to prevent overridding it when
+        rendering a new version)
+
     img_dir : str or pathlib.Path
         Output path (in the current filesystem) for images.
 
@@ -216,8 +222,10 @@ class MarkdownRenderer:
         front_matter_template=None,
         utm_source=None,
         utm_medium=None,
+        path_to_out=None,
     ):
         self.path = path_to_mds
+        self.path_to_out = path_to_out
         self._img_dir = img_dir
         self._img_prefix = img_prefix or ""
         self._footer_template = footer_template
@@ -249,7 +257,8 @@ class MarkdownRenderer:
 
         md_ast = self.parser(md_raw)
 
-        # TODO: replace and use model object
+        # TODO: parse_metadata validates the schema, we are now using pydantic for
+        # models, hence, we can use it for validation and remove this
         if metadata is None:
             metadata = parse_metadata(md_raw)
 
@@ -303,6 +312,16 @@ class MarkdownRenderer:
         if self._front_matter_template:
             metadata = {**metadata, **self._front_matter_template}
 
+        # if this has been rendered before, use the existing date
+        if self.path_to_out and Path(self.path_to_out).is_file():
+            metadata_rendered = parse_metadata(
+                Path(self.path_to_out).read_text(), validate=False
+            )
+            date_existing = metadata_rendered.get("date", None)
+
+            if date_existing:
+                metadata["date"] = date_existing
+
         if self._footer_template:
             md_out = add_footer(
                 md_out,
@@ -327,7 +346,17 @@ class MarkdownRenderer:
         if path and "images" not in metadata:
             metadata["images"] = [path]
 
-        # TODO: extrac title from front matter and put it as H1 header
+        # if there is a marketing URL, add utm tags
+        marketing_url = metadata.get("marketing", dict()).get("url", None)
+
+        if marketing_url:
+            metadata["marketing"]["url"] = add_utm_to_url(
+                marketing_url,
+                source=canonical_name,
+                medium=self._utm_medium,
+            )
+
+        # TODO: extract title from front matter and put it as H1 header
 
         md_out = replace_metadata(md_out, metadata)
 

@@ -1,6 +1,7 @@
 """
 Process URLs in a markdown file
 """
+
 from urllib.parse import urlparse, urlencode, parse_qsl
 from pathlib import PurePosixPath, Path
 
@@ -15,14 +16,17 @@ def find_urls(text):
     return list(ast.iter_links())
 
 
-def add_utm_to_url(url, source, medium, campaign):
+def add_utm_to_url(url, source, medium, campaign=None):
     if isinstance(url, str):
         parsed = urlparse(url)
     else:
         parsed = url
 
     current_params = dict(parse_qsl(parsed.query))
-    utm = {"utm_source": source, "utm_medium": medium, "utm_campaign": campaign}
+    utm = {"utm_source": source, "utm_medium": medium}
+
+    if campaign:
+        utm["utm_campaign"] = campaign
 
     parsed = parsed._replace(query=urlencode({**current_params, **utm}))
 
