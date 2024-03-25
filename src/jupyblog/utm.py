@@ -33,11 +33,16 @@ def add_utm_to_url(url, source, medium, campaign=None):
     return parsed.geturl()
 
 
-def add_utm_to_all_urls(text, source, medium, campaign):
+def add_utm_to_all_urls(text, source, medium, campaign, base_urls=None):
     """Adds utms to urls found in text, ignores image resources"""
     out = text
 
-    urls = [urlparse(url) for url in find_urls(text)]
+    urls = find_urls(text)
+
+    if base_urls:
+        urls = [url for url in urls if any(base_url in url for base_url in base_urls)]
+
+    urls = [urlparse(url) for url in urls]
 
     # ignore static resources
     urls = [url for url in urls if not is_image(url.path)]

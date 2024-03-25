@@ -3,6 +3,8 @@
 ## 0.0.14dev
 * [Feature] Keep existing date if the current file has been rendered already
 * [Feature] Add utm codes to front matter url (`marketing.url`)
+* [Feature] Adding `jupyblog.version_jupyblog` to rendered markdown files
+* [Feature] Only add UTM tags to URLs included in `utm_base_urls` (`jupyblog.yml`)
 
 ## 0.0.13 (2023-03-14)
 

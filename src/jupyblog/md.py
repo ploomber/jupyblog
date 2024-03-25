@@ -225,6 +225,7 @@ class MarkdownRenderer:
         utm_source=None,
         utm_medium=None,
         path_to_out=None,
+        utm_base_urls=None,
     ):
         self.path = path_to_mds
         self.path_to_out = path_to_out
@@ -234,6 +235,7 @@ class MarkdownRenderer:
         self._front_matter_template = front_matter_template
         self._utm_source = utm_source
         self._utm_medium = utm_medium
+        self._utm_base_urls = utm_base_urls
         self.env = Environment(
             loader=FileSystemLoader(path_to_mds), undefined=DebugUndefined
         )
@@ -372,6 +374,7 @@ class MarkdownRenderer:
                 source=self._utm_source,
                 medium=self._utm_medium,
                 campaign=canonical_name,
+                base_urls=self._utm_base_urls,
             )
 
         # FIXME: remove canonical name, add it as a parameter

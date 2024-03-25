@@ -57,6 +57,9 @@ class Config(BaseModel):
 
     utm_medium : str
         The utm_source tag to add to all URLs
+
+    utm_base_urls : list
+        List of strings with URLs where UTM tags should be added. Matches substrings.
     """
 
     root: str
@@ -71,6 +74,7 @@ class Config(BaseModel):
     footer: str = None
     utm_source: str = None
     utm_medium: str = None
+    utm_base_urls: list = None
 
     def path_to_posts_abs(self):
         return Path(self.root, self.path_to_posts)

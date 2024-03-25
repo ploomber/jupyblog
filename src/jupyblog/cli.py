@@ -108,6 +108,7 @@ def _render(local, cfg="jupyblog.yaml", incsource=False, log=None):
         front_matter_template=cfg.load_front_matter_template(name=post_name),
         utm_medium=cfg.utm_medium,
         utm_source=cfg.utm_source,
+        utm_base_urls=cfg.utm_base_urls,
     )
 
     # TODO: test that expands based on img_dir
