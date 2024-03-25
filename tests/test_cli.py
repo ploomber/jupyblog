@@ -11,6 +11,7 @@ from jupyblog.cli import cli
 from jupyblog import cli as cli_module
 from jupyblog.md import parse_metadata
 from jupyblog import models
+from jupyblog import __version__
 
 # TODO: mock test that render passes the right parameters to _render
 
@@ -305,7 +306,7 @@ def test_front_matter_template(tmp_sample_post, monkeypatch):
         "author": "Eduardo Blancas",
         "date": "now",
         "description": "something",
-        "jupyblog": {"execute_code": False},
+        "jupyblog": {"execute_code": False, "version_jupysql": "0.0.14dev"},
         "title": "some awesome post",
         "image": "sample_post.png",
     }
