@@ -1,6 +1,7 @@
 # CHANGELOG
 
-## 0.0.14dev
+## 0.0.14 (2024-03-25)
+
 * [Feature] Keep existing date if the current file has been rendered already
 * [Feature] Add utm codes to front matter url (`marketing.url`)
 * [Feature] Adding `jupyblog.version_jupyblog` to rendered markdown files
