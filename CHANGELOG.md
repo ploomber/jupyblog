@@ -2,6 +2,8 @@
 
 ## 0.0.15dev
 
+* [Feature] Copying `.webm` files when rendering posts
+
 ## 0.0.14 (2024-03-25)
 
 * [Feature] Keep existing date if the current file has been rendered already
