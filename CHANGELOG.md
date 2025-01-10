@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.0.15dev
+## 0.0.15 (2025-01-10)
 
 * [Feature] Copying `.webm` files when rendering posts
 
