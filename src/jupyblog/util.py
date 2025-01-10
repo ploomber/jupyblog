@@ -54,7 +54,8 @@ def add_output_tags(md, outputs):
 
 def copy_all_images(src, target, dir_name):
     """
-    Copy all .png, .gif, and .webm files in src to target inside a folder with the passed name
+    Copy all .png, .gif, and .webm files in src to target inside a folder with the
+    passed name
     """
     pngs = glob(str(Path(src, "**", "*.png")), recursive=True)
     gifs = glob(str(Path(src, "**", "*.gif")), recursive=True)

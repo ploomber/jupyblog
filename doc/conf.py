@@ -55,9 +55,11 @@ nb_merge_streams = True
 
 
 html_theme_options = {
-    "announcement": ("To launch a tutorial, click on the 🚀 button "
-                     "below! Join us on "
-                     "<a href='https://ploomber.io/community/'>Slack!</a>")
+    "announcement": (
+        "To launch a tutorial, click on the 🚀 button "
+        "below! Join us on "
+        "<a href='https://ploomber.io/community/'>Slack!</a>"
+    )
 }
 
 
